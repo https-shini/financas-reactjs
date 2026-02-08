@@ -1,0 +1,80 @@
+{
+    "name": "financas-reactjs",
+    "version": "1.0.0",
+    "description": "Sistema de gestão financeira com React",
+    "private": true,
+    "author": "Seu Nome",
+    "license": "MIT",
+    "dependencies": {
+        "@testing-library/jest-dom": "^6.5.0",
+        "@testing-library/react": "^16.1.0",
+        "@testing-library/user-event": "^14.5.2",
+        "docx": "^8.5.0",
+        "dompurify": "^3.3.1",
+        "file-saver": "^2.0.5",
+        "framer-motion": "^12.33.0",
+        "jspdf": "^2.5.2",
+        "jspdf-autotable": "^3.8.4",
+        "lucide-react": "^0.563.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-icons": "^5.4.0",
+        "react-scripts": "5.0.1",
+        "react-toastify": "^11.0.5",
+        "recharts": "^3.7.0",
+        "styled-components": "^6.1.15",
+        "web-vitals": "^4.2.4",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "test:coverage": "react-scripts test --coverage --watchAll=false",
+        "eject": "react-scripts eject",
+        "lint": "eslint src/**/*.{js,jsx}",
+        "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\"",
+        "analyze": "source-map-explorer 'build/static/js/*.js'",
+        "clean": "rm -rf node_modules package-lock.json && npm install",
+        "preview": "serve -s build -p 3000"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ],
+        "rules": {
+            "no-unused-vars": "warn",
+            "react/prop-types": "off"
+        }
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all",
+            "not ie 11"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "engines": {
+        "node": ">=16.0.0",
+        "npm": ">=8.0.0"
+    },
+    "keywords": [
+        "react",
+        "financas",
+        "gestao-financeira",
+        "dashboard",
+        "xlsx",
+        "pdf",
+        "export"
+    ]
+}
