@@ -8,7 +8,7 @@
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-009688?style=for-the-badge)](https://financas-reactjs.vercel.app)
+  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-009688?style=for-the-badge)](https://financas.gcruz.dev.br)
   [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
   [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
 
@@ -52,7 +52,7 @@ Os dados ficam **salvos automaticamente** no navegador — mesmo após fechar a 
 
 Você pode usar o projeto sem precisar baixar nada:
 
-👉 **[https://financas-reactjs.vercel.app](https://financas-reactjs.vercel.app)**
+👉 **[https://financas.gcruz.dev.br](https://financas.gcruz.dev.br)**
 
 Basta abrir o link no navegador e começar a registrar suas finanças!
 
