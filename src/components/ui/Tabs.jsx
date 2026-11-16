@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { NavLink, useLocation } from "react-router-dom";
 
-// Abas em pílula (inspiradas em filtros de catálogo): inativas contornadas, ativa preenchida em Aurum.
+// Abas com sublinhado (Functional Design): inativas neutras, ativa com texto forte e indicador Emerald.
 const Bar = styled.div`
     display: flex;
-    gap: 8px;
+    gap: 4px;
     overflow-x: auto;
     scrollbar-width: none;
-    padding: 2px 2px 6px;
-    margin: -2px -2px ${(p) => p.theme.space(5)};
+    border-bottom: 1px solid ${(p) => p.theme.colors.border};
+    margin-bottom: ${(p) => p.theme.space(5)};
     scroll-behavior: smooth;
     &::-webkit-scrollbar {
         display: none;
@@ -26,6 +26,57 @@ const Bar = styled.div`
     }
     @media (prefers-reduced-motion: reduce) {
         scroll-behavior: auto;
+    }
+`;
+
+const TabStyle = styled.button`
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 12px;
+    white-space: nowrap;
+    font-weight: ${(p) => p.theme.fontWeight.medium};
+    font-size: ${(p) => p.theme.fontSize.md};
+    color: ${(p) => p.theme.colors.textSecondary};
+    text-decoration: none;
+    border-radius: ${(p) => p.theme.radius.sm} ${(p) => p.theme.radius.sm} 0 0;
+    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
+    &:hover {
+        color: ${(p) => p.theme.colors.text};
+        background: ${(p) => p.theme.colors.bgHover};
+    }
+    &:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: -2px;
+    }
+    /* Ativa: texto forte + sublinhado Emerald (não depende só da cor). */
+    &[aria-selected="true"],
+    &.active {
+        color: ${(p) => p.theme.colors.text};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
+    }
+    &[aria-selected="true"]::after,
+    &.active::after {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: -1px;
+        height: 2px;
+        border-radius: 2px 2px 0 0;
+        background: ${(p) => p.theme.colors.indicator};
+    }
+    svg {
+        color: ${(p) => p.theme.colors.textMuted};
+    }
+    &.active svg,
+    &[aria-selected="true"] svg {
+        color: ${(p) => p.theme.colors.indicator};
+    }
+    @media (pointer: coarse) {
+        min-height: 44px;
     }
 `;
 
@@ -60,41 +111,6 @@ function useTabStrip(activeKey) {
     }, [activeKey, update]);
     return { ref, onScroll: update, "data-fade": fade };
 }
-
-const TabStyle = styled.button`
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 40px;
-    padding: 0 16px;
-    white-space: nowrap;
-    font-weight: 600;
-    font-size: ${(p) => p.theme.fontSize.sm};
-    color: ${(p) => p.theme.colors.textSecondary};
-    text-decoration: none;
-    border-radius: ${(p) => p.theme.radius.full};
-    border: 1px solid ${(p) => p.theme.colors.borderStrong};
-    background: ${(p) => p.theme.colors.bgInput};
-    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast}, border-color ${(p) => p.theme.motion.fast}, transform 90ms;
-    &:hover {
-        color: ${(p) => p.theme.colors.text};
-        border-color: ${(p) => p.theme.colors.textMuted};
-    }
-    &:active {
-        transform: translateY(1px);
-    }
-    &[aria-selected="true"],
-    &.active {
-        color: ${(p) => p.theme.colors.onAccent};
-        background: ${(p) => p.theme.colors.accent};
-        border-color: transparent;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 0 ${(p) => p.theme.colors.accentLedge};
-    }
-    @media (pointer: coarse) {
-        min-height: 44px;
-    }
-`;
 
 /** Abas como rotas (navegação). tabs: [{ to, label, icon, badge }] */
 export function RouteTabs({ tabs, label }) {

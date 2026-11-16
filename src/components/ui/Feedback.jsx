@@ -154,20 +154,6 @@ const StatBox = styled.section`
     border-radius: ${(p) => p.theme.radius.lg};
     box-shadow: ${(p) => p.theme.shadows.card};
     min-width: 0;
-    ${(p) =>
-        p.$accent &&
-        css`
-            &::before {
-                content: "";
-                position: absolute;
-                left: 20px;
-                right: 20px;
-                top: 0;
-                height: 2px;
-                border-radius: 0 0 2px 2px;
-                background: linear-gradient(90deg, ${p.theme.colors[p.$accent] ?? p.theme.colors.brand}, transparent 85%);
-            }
-        `}
     ${(p) => p.theme.media.mobile} {
         padding: ${(p) => p.theme.space(4)};
     }
@@ -185,10 +171,9 @@ const StatHead = styled.header`
         place-items: center;
         width: 30px;
         height: 30px;
-        border-radius: 9px;
+        border-radius: ${(p) => p.theme.radius.sm};
         background: ${(p) => p.theme.colors.bgSurface};
         border: 1px solid ${(p) => p.theme.colors.border};
-        box-shadow: ${(p) => p.theme.shadows.tile};
         color: ${(p) => p.theme.colors[p.$iconTone] ?? p.theme.colors.primaryText};
     }
     .tip {

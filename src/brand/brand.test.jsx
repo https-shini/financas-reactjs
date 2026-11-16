@@ -1,38 +1,54 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { ThemeProvider } from "styled-components";
 import { readFileSync } from "node:fs";
-import { VeldoraLogo, VeldoraSymbol, VeldoraAppIcon } from "./VeldoraLogo";
-import { SYMBOL_BODY, SYMBOL_FACET, BRAND_COLORS } from "./geometry";
+import { darkTheme } from "../design/themes";
+import { BrandMark, BrandLockup } from "./BrandLogo";
+import { SYMBOL_GLYPH, SYMBOL_TILE, BRAND_COLORS, PRODUCT_NAME, SIGNATURE } from "./geometry";
 
-describe("marca VELDORA", () => {
-    it("logo com título é uma imagem acessível", () => {
-        render(<VeldoraLogo title="VELDORA" />);
-        expect(screen.getByRole("img", { name: "VELDORA" })).toBeInTheDocument();
+const wrap = (ui) => render(<ThemeProvider theme={darkTheme}>{ui}</ThemeProvider>);
+
+describe("marca Finanças by GCruz.DEV", () => {
+    it("lockup: nome do produto + assinatura, como imagem acessível", () => {
+        wrap(<BrandLockup />);
+        const img = screen.getByRole("img", { name: "Finanças by GCruz.DEV" });
+        expect(img).toHaveTextContent(PRODUCT_NAME);
+        expect(img).toHaveTextContent(`${SIGNATURE.prefix}${SIGNATURE.suffix}`);
     });
 
-    it("símbolo sem título é decorativo (aria-hidden)", () => {
-        const { container } = render(<VeldoraSymbol size={24} />);
-        const svg = container.querySelector("svg");
-        expect(svg).toHaveAttribute("aria-hidden", "true");
-        expect(screen.queryByRole("img")).toBeNull();
+    it("lockup compacto omite a assinatura", () => {
+        wrap(<BrandLockup compact title="Finanças" />);
+        expect(screen.getByRole("img", { name: "Finanças" })).not.toHaveTextContent("GCRUZ");
     });
 
-    it.each(["color", "onDark", "onLight", "mono"])("variante %s renderiza o símbolo", (tone) => {
-        const { container } = render(<VeldoraLogo tone={tone} title={`Logo ${tone}`} />);
-        const paths = [...container.querySelectorAll("path")].map((p) => p.getAttribute("d"));
-        expect(paths).toContain(SYMBOL_BODY);
+    it("símbolo sem título é decorativo (aria-hidden); com título é imagem", () => {
+        const { container } = wrap(<BrandMark size={24} />);
+        expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+        wrap(<BrandMark title="Símbolo" />);
+        expect(screen.getByRole("img", { name: "Símbolo" })).toBeInTheDocument();
     });
 
-    it("ícone do app inclui corpo e faceta do V", () => {
-        const { container } = render(<VeldoraAppIcon title="Ícone" />);
-        const paths = [...container.querySelectorAll("path")].map((p) => p.getAttribute("d"));
-        expect(paths).toEqual(expect.arrayContaining([SYMBOL_BODY, SYMBOL_FACET]));
+    it("símbolo colorido usa a placa Emerald e o F; mono usa recorte em currentColor", () => {
+        const { container } = wrap(<BrandMark />);
+        const paths = [...container.querySelectorAll("path")];
+        expect(paths.map((p) => p.getAttribute("d"))).toEqual([SYMBOL_TILE, SYMBOL_GLYPH]);
+        expect(paths[0]).toHaveAttribute("fill", BRAND_COLORS.tile);
+        const mono = wrap(<BrandMark tone="mono" />).container.querySelector("path");
+        expect(mono).toHaveAttribute("fill", "currentColor");
+        expect(mono).toHaveAttribute("fill-rule", "evenodd");
     });
 
-    it("favicon gerado usa a mesma geometria e cores oficiais (sem imagens externas)", () => {
+    it("favicon gerado é o próprio símbolo, sem imagens externas", () => {
         const svg = readFileSync("public/favicon.svg", "utf8");
-        expect(svg).toContain(SYMBOL_BODY);
-        expect(svg.toUpperCase()).toContain(BRAND_COLORS.indigo.toUpperCase());
+        expect(svg).toContain(SYMBOL_GLYPH);
+        expect(svg.toUpperCase()).toContain(BRAND_COLORS.tile.toUpperCase());
         expect(svg).not.toMatch(/<image|href="http/);
+    });
+
+    it("manifest e index.html usam o nome do produto", () => {
+        const manifest = JSON.parse(readFileSync("public/manifest.webmanifest", "utf8"));
+        expect(manifest.name).toBe("Finanças by GCruz.DEV");
+        expect(manifest.theme_color).toBe("#07110F");
+        expect(readFileSync("index.html", "utf8")).toMatch(/<title>Finanças/);
     });
 });

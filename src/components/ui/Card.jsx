@@ -29,7 +29,7 @@ const HeaderWrap = styled.header`
     h2,
     h3 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize.lg};
+        font-size: ${(p) => p.theme.fontSize.base};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         letter-spacing: ${(p) => p.theme.letterSpacing.snug};
         line-height: ${(p) => p.theme.lineHeight.snug};

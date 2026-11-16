@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { downloadText, parseBackupText } from "../../storage/backup";
 import { createEmptyStore } from "../../domain/defaults";
-import { VeldoraLogo } from "../../brand/VeldoraLogo";
+import { BrandLockup } from "../../brand/BrandLogo";
 
 const REASONS = {
     "invalid-json": "Os dados salvos no navegador estão corrompidos e não puderam ser lidos.",
@@ -46,7 +46,7 @@ export function RecoveryScreen() {
         <Wrap>
             <Card role="alertdialog" aria-labelledby="recovery-title" aria-describedby="recovery-desc">
                 <div style={{ marginBottom: 20 }}>
-                    <VeldoraLogo height={24} />
+                    <BrandLockup size={30} />
                 </div>
                 <h1 id="recovery-title">Recuperação de dados</h1>
                 <p id="recovery-desc">{REASONS[recovery?.reason] ?? "Não foi possível carregar seus dados."}</p>

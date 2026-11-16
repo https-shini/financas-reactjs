@@ -1,33 +1,28 @@
-// Gera os arquivos SVG oficiais da marca VELDORA a partir de src/brand/geometry.js.
-// Uso: node scripts/generate-brand-assets.mjs
+// Gera os arquivos SVG oficiais da marca Finanças by GCruz.DEV a partir de src/brand/geometry.js.
+// Uso: node scripts/generate-brand-assets.mjs  (os PNG/ICO são exportados a partir do favicon.svg)
 import { mkdirSync, writeFileSync } from "node:fs";
-import {
-    APP_ICON_RADIUS, APP_ICON_SYMBOL_TRANSFORM, APP_ICON_VIEWBOX, BRAND_COLORS, HORIZONTAL_VIEWBOX, SYMBOL_BODY, SYMBOL_FACET,
-    SYMBOL_VIEWBOX, WORDMARK_HEIGHT, WORDMARK_LETTERS, WORDMARK_OFFSET, WORDMARK_STROKE, WORDMARK_WIDTH,
-} from "../src/brand/geometry.js";
+import { BRAND_COLORS, PRODUCT_NAME, SIGNATURE, SYMBOL_GLYPH, SYMBOL_TILE, SYMBOL_VIEWBOX } from "../src/brand/geometry.js";
 
 const out = new URL("../public/brand/", import.meta.url);
 mkdirSync(out, { recursive: true });
 
-const glyphs = (body, facet, facetOpacity = 1) =>
-    `<path d="${SYMBOL_BODY}" fill="${body}"/><path d="${SYMBOL_FACET}" fill="${facet}"${facetOpacity < 1 ? ` opacity="${facetOpacity}"` : ""}/>`;
-const letters = (color) =>
-    `<g fill="none" stroke="${color}" stroke-width="${WORDMARK_STROKE}" stroke-miterlimit="10">${WORDMARK_LETTERS.map((l) => `<path d="${l.d}" stroke-linejoin="${l.join}"/>`).join("")}</g>`;
-const svg = (viewBox, title, body, extra = "") =>
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"${extra}><title>${title}</title>${body}</svg>\n`;
+const svg = (viewBox, title, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"><title>${title}</title>${body}</svg>\n`;
+const mark = `<path d="${SYMBOL_TILE}" fill="${BRAND_COLORS.tile}"/><path d="${SYMBOL_GLYPH}" fill="${BRAND_COLORS.glyph}"/>`;
+const mono = (color) => `<path d="${SYMBOL_TILE}${SYMBOL_GLYPH}" fill="${color}" fill-rule="evenodd"/>`;
+// Lockup: o texto usa as fontes da marca (IBM Plex Sans / JetBrains Mono) com fallback do sistema.
+const lockup = (nameColor, suffixColor) =>
+    `${mark}<text x="60" y="24" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" font-size="24" font-weight="600" fill="${nameColor}">${PRODUCT_NAME}</text>` +
+    `<text x="61" y="41" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="${BRAND_COLORS.muted}">${SIGNATURE.prefix}<tspan fill="${suffixColor}">${SIGNATURE.suffix}</tspan></text>`;
 
-const { indigo: blue, aurum: violet, mist: iceWhite, ink } = BRAND_COLORS;
+const T = `${PRODUCT_NAME} by GCruz.DEV`;
 const files = {
-    "veldora-symbol.svg": svg(SYMBOL_VIEWBOX, "VELDORA", glyphs(blue, violet)),
-    "veldora-symbol-mono-dark.svg": svg(SYMBOL_VIEWBOX, "VELDORA", glyphs(ink, ink, 0.55)),
-    "veldora-symbol-mono-light.svg": svg(SYMBOL_VIEWBOX, "VELDORA", glyphs(iceWhite, iceWhite, 0.55)),
-    "veldora-logo-on-dark.svg": svg(HORIZONTAL_VIEWBOX, "VELDORA", `${glyphs(blue, violet)}<g transform="translate(${WORDMARK_OFFSET.x} ${WORDMARK_OFFSET.y})">${letters(iceWhite)}</g>`),
-    "veldora-logo-on-light.svg": svg(HORIZONTAL_VIEWBOX, "VELDORA", `${glyphs(blue, violet)}<g transform="translate(${WORDMARK_OFFSET.x} ${WORDMARK_OFFSET.y})">${letters(ink)}</g>`),
-    "veldora-logo-mono.svg": svg(HORIZONTAL_VIEWBOX, "VELDORA", `${glyphs(ink, ink, 0.55)}<g transform="translate(${WORDMARK_OFFSET.x} ${WORDMARK_OFFSET.y})">${letters(ink)}</g>`),
-    "veldora-wordmark.svg": svg(`${-WORDMARK_STROKE / 2} ${-WORDMARK_STROKE / 2} ${WORDMARK_WIDTH + WORDMARK_STROKE} ${WORDMARK_HEIGHT + WORDMARK_STROKE}`, "VELDORA", letters(ink)),
-    "veldora-app-icon.svg": svg(APP_ICON_VIEWBOX, "VELDORA", `<rect width="64" height="64" rx="${APP_ICON_RADIUS}" fill="${BRAND_COLORS.indigoDeep}"/><rect width="64" height="60" rx="${APP_ICON_RADIUS}" fill="${blue}"/><g transform="${APP_ICON_SYMBOL_TRANSFORM}">${glyphs("#FFFFFF", violet)}</g>`),
+    "financas-mark.svg": svg(SYMBOL_VIEWBOX, T, mark),
+    "financas-mark-mono-dark.svg": svg(SYMBOL_VIEWBOX, T, mono(BRAND_COLORS.ink)),
+    "financas-mark-mono-light.svg": svg(SYMBOL_VIEWBOX, T, mono(BRAND_COLORS.mist)),
+    "financas-lockup-on-dark.svg": svg("0 0 210 48", T, lockup(BRAND_COLORS.mist, BRAND_COLORS.gcruzIndigo)),
+    "financas-lockup-on-light.svg": svg("0 0 210 48", T, lockup(BRAND_COLORS.ink, BRAND_COLORS.gcruzIndigoLight)),
 };
 for (const [name, content] of Object.entries(files)) writeFileSync(new URL(name, out), content);
-// Favicon vetorial na raiz (mesmo desenho do ícone do app).
-writeFileSync(new URL("../public/favicon.svg", import.meta.url), files["veldora-app-icon.svg"]);
+// Favicon vetorial na raiz (o próprio símbolo).
+writeFileSync(new URL("../public/favicon.svg", import.meta.url), files["financas-mark.svg"]);
 console.log(`Gerados ${Object.keys(files).length + 1} arquivos SVG da marca.`);

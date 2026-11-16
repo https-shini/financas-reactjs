@@ -783,9 +783,9 @@ function AboutSection() {
     return (
         <Stack $gap={4}>
             <Card aria-labelledby="ab-title">
-                <CardHeader id="ab-title" title="Sobre o VELDORA" />
+                <CardHeader id="ab-title" title="Sobre o Finanças" />
                 <Stack $gap={3}>
-                    <p>VELDORA — Smart Financial Platform. Controle financeiro pessoal local-first: funciona sem internet e não envia seus dados a nenhum servidor.</p>
+                    <p>Finanças by GCruz.DEV — tenha clareza sobre seu dinheiro. Gestão financeira pessoal local-first: funciona sem internet e não envia seus dados a nenhum servidor.</p>
                     <p>
                         <Link to="/design-system">Ver o Design System</Link> (componentes, cores e tipografia da interface).
                     </p>
@@ -832,9 +832,9 @@ function AboutSection() {
                     </dt>
                     <dd>Captura rápida</dd>
                     <dt>
-                        <Kbd>/</Kbd>
+                        <Kbd>Ctrl</Kbd> <Kbd>K</Kbd> ou <Kbd>/</Kbd>
                     </dt>
-                    <dd>Buscar movimentações</dd>
+                    <dd>Buscar transações</dd>
                     <dt>
                         <Kbd>←</Kbd> <Kbd>→</Kbd>
                     </dt>

@@ -1,5 +1,5 @@
-// VELDORA — temas claro e escuro (tokens semânticos).
-// Componentes usam apenas estes nomes (theme.colors.text, theme.colors.primary...).
+// Finanças by GCruz.DEV — temas escuro e claro (tokens semânticos, paleta "Emerald Finance").
+// Componentes usam apenas estes nomes (theme.colors.text, theme.colors.primary...), nunca hex diretos.
 // Todas as combinações de texto foram verificadas para WCAG AA (ver src/design/contrast.test.js).
 import { brand, palette as p, typography, space, radius, borderWidth, opacity, motion, breakpoints, media, layout, zIndex } from "./tokens";
 
@@ -26,63 +26,62 @@ export const darkTheme = {
     ...shared,
     mode: "dark",
     colors: {
-        bg: p.ink[950], // #0B0B14 — noite com matiz índigo
-        bgElevated: p.ink[900], // #13141F — cards
-        bgSurface: p.ink[880], // #1B1C2B — áreas internas, cards secundários
-        bgHover: p.ink[800],
-        bgGlass: "rgba(19, 20, 31, 0.72)", // barras flutuantes (topbar, navegação inferior)
-        bgInput: "rgba(246, 246, 251, 0.035)",
-        border: p.ink[850],
-        borderStrong: p.ink[870],
-        text: p.ink[25],
-        textSecondary: p.ink[300],
-        textMuted: p.ink[400],
-        brand: p.indigo[500], // #625DF5
-        primary: p.indigo[600], // preenchimento de botões (branco ≥ 5,5:1)
-        primaryHover: p.indigo[700],
-        primaryActive: p.indigo[800],
-        primaryLedge: p.indigo[900], // "degrau" inferior dos botões táteis
-        primaryText: p.indigo[300],
-        primarySoft: p.indigo[950],
+        bg: p.pine[950], // #07110F — Background
+        bgSidebar: p.pine[900], // #0D1915 — Surface 1 (sidebar, header, navegação)
+        bgElevated: p.pine[880], // #12221C — Surface 2 (cards)
+        bgSurface: p.pine[870], // #193027 — Surface 3 (elementos elevados, áreas internas)
+        bgHover: p.pine[850],
+        bgGlass: "rgba(13, 25, 21, 0.86)",
+        bgInput: p.pine[900],
+        border: p.pine[800], // #263B32
+        borderStrong: p.pine[700], // contorno de campos (≥ 3:1)
+        text: p.pine[990], // #F0FDF4
+        textSecondary: p.pine[450], // #A7C9B7
+        textMuted: p.pine[400], // #839D8F (AA)
+        brand: p.emerald[400], // #34D399 — marca e destaques
+        primary: p.emerald[700], // botões (branco 5,48:1; spec #059669 = 3,77:1)
+        primaryHover: p.emerald[800],
+        primaryActive: p.emerald[900],
+        primaryText: p.emerald[400], // links e textos de destaque
+        primarySoft: "#0F2E24", // Emerald Surface — item ativo da navegação, badges
         onPrimary: "#FFFFFF",
-        accent: p.aurum[500], // ouro Aurum — destaque/inteligência
-        accentText: p.aurum[500],
-        accentSoft: p.aurum[950],
-        onAccent: p.ink[975],
-        accentLedge: p.aurum[700], // "degrau" sob botões/abas preenchidos em ouro
-        indicator: p.aurum[500], // item ativo (navegação, abas)
-        income: p.emerald[500],
-        incomeSoft: p.emerald[950],
-        expense: p.coral[500],
-        expenseSoft: p.coral[950],
-        warning: p.ember[500],
-        warningSoft: p.ember[950],
-        info: p.indigo[300],
+        accent: p.indigo[400], // índigo — informação e visualizações complementares
+        accentText: p.indigo[400],
+        accentSoft: p.indigo[950],
+        onAccent: p.pine[950],
+        accentLedge: p.indigo[600],
+        indicator: p.emerald[400], // indicador do item ativo
+        income: p.emerald[400],
+        incomeSoft: "#0F2E24",
+        expense: p.red[400],
+        expenseSoft: p.red[950],
+        warning: p.amber[400],
+        warningSoft: p.amber[950],
+        info: p.indigo[400],
         infoSoft: p.indigo[950],
-        success: p.emerald[500],
-        error: p.coral[500],
-        focus: p.indigo[300],
-        overlay: "rgba(5, 5, 12, 0.66)",
-        chartGrid: "#20223A",
-        chartAxis: p.ink[400],
-        transfer: p.ink[300],
-        chart: { income: p.emerald[500], expense: p.coral[500], primary: p.indigo[500], accent: p.aurum[500], neutral: p.ink[400], area: "rgba(98, 93, 245, 0.18)" },
-        ambient:
-            "radial-gradient(1100px 620px at 8% -12%, rgba(98, 93, 245, 0.16), transparent 62%), radial-gradient(900px 520px at 105% -6%, rgba(242, 195, 91, 0.06), transparent 60%)",
+        success: p.emerald[400],
+        error: p.red[400],
+        focus: p.emerald[400],
+        overlay: "rgba(2, 8, 6, 0.72)",
+        chartGrid: "#1B2E26",
+        chartAxis: p.pine[400],
+        transfer: p.pine[450],
+        chart: { income: p.emerald[400], expense: p.red[400], primary: p.emerald[400], accent: p.indigo[400], neutral: p.pine[400], area: "rgba(52, 211, 153, 0.14)" },
+        ambient: "radial-gradient(1100px 560px at 18% -14%, rgba(16, 185, 129, 0.09), transparent 62%)",
     },
     shadows: {
-        sm: "inset 0 1px 0 rgba(255, 255, 255, 0.04)",
-        card: "inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 1px 0 rgba(0, 0, 0, 0.5), 0 18px 40px -28px rgba(0, 0, 0, 0.9)",
+        sm: "none",
+        card: "none", // cards se separam por superfície e borda, sem sombra
         md: "0 10px 28px rgba(0, 0, 0, 0.45)",
         lg: "0 16px 40px rgba(0, 0, 0, 0.5)",
-        overlay: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 30px 80px rgba(0, 0, 0, 0.6)",
+        overlay: "0 24px 64px rgba(0, 0, 0, 0.6)",
         base: "none",
-        focus: "0 0 0 3px rgba(165, 168, 255, 0.45)",
-        brand: "inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 0 #2B288C, 0 14px 28px -10px rgba(98, 93, 245, 0.6)",
-        ledge: "inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 0 #2B288C",
-        ledgePressed: "inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 0 #2B288C",
-        ledgeNeutral: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 0 rgba(0, 0, 0, 0.55)",
-        tile: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 0 rgba(0, 0, 0, 0.45)",
+        focus: "0 0 0 3px rgba(52, 211, 153, 0.35)",
+        brand: "0 8px 20px rgba(4, 120, 87, 0.45)",
+        ledge: "none",
+        ledgePressed: "none",
+        ledgeNeutral: "none",
+        tile: "none",
     },
 };
 
@@ -90,62 +89,62 @@ export const lightTheme = {
     ...shared,
     mode: "light",
     colors: {
-        bg: p.ink[25], // #F6F6FB
-        bgElevated: p.ink[0],
-        bgSurface: p.ink[50], // #EEEEF6
-        bgHover: p.ink[75],
-        bgGlass: "rgba(255, 255, 255, 0.78)",
-        bgInput: p.ink[0],
-        border: p.ink[100],
-        borderStrong: p.ink[200],
-        text: p.ink[975],
-        textSecondary: p.ink[600],
-        textMuted: p.ink[500],
-        brand: p.indigo[500],
-        primary: p.indigo[600],
-        primaryHover: p.indigo[700],
-        primaryActive: p.indigo[800],
-        primaryLedge: p.indigo[900],
-        primaryText: p.indigo[850],
-        primarySoft: p.indigo[50],
+        bg: p.pine[25], // #F7FAF8
+        bgSidebar: p.pine[0],
+        bgElevated: p.pine[0], // cards
+        bgSurface: p.pine[50], // #EFF5F1
+        bgHover: p.pine[75], // #E4EEE8
+        bgGlass: "rgba(255, 255, 255, 0.9)",
+        bgInput: p.pine[0],
+        border: p.pine[100], // #DCE7E0
+        borderStrong: p.pine[300],
+        text: p.pine[975], // #10251B
+        textSecondary: p.pine[600], // #52665A
+        textMuted: p.pine[500], // #5E7166 (AA)
+        brand: p.emerald[600],
+        primary: p.emerald[700], // #047857
+        primaryHover: p.emerald[800],
+        primaryActive: p.emerald[900],
+        primaryText: p.emerald[700],
+        primarySoft: "#E3F6EC",
         onPrimary: "#FFFFFF",
-        accent: p.aurum[500],
-        accentText: p.aurum[800],
-        accentSoft: p.aurum[50],
-        onAccent: p.ink[975],
-        accentLedge: p.aurum[700],
-        indicator: p.aurum[700],
-        income: p.emerald[800],
-        incomeSoft: p.emerald[50],
-        expense: p.coral[800],
-        expenseSoft: p.coral[50],
-        warning: p.ember[800],
-        warningSoft: p.ember[50],
-        info: p.indigo[850],
+        accent: p.indigo[600],
+        accentText: p.indigo[600],
+        accentSoft: p.indigo[50],
+        onAccent: "#FFFFFF",
+        accentLedge: p.indigo[600],
+        indicator: p.emerald[700],
+        income: p.emerald[700],
+        incomeSoft: "#E3F6EC",
+        expense: p.red[700], // #B91C1C (AA; spec #DC2626 = 4,37:1 em superfícies)
+        expenseSoft: p.red[50],
+        warning: p.amber[700],
+        warningSoft: p.amber[50],
+        info: p.indigo[600],
         infoSoft: p.indigo[50],
-        success: p.emerald[800],
-        error: p.coral[800],
-        focus: p.indigo[600],
-        overlay: "rgba(17, 18, 29, 0.42)",
-        chartGrid: "#E7E7F2",
-        chartAxis: p.ink[500],
-        transfer: p.ink[600],
-        chart: { income: p.emerald[600], expense: p.coral[600], primary: p.indigo[600], accent: p.aurum[700], neutral: p.ink[500], area: "rgba(98, 93, 245, 0.12)" },
-        ambient: "radial-gradient(1100px 620px at 8% -12%, rgba(98, 93, 245, 0.09), transparent 62%), radial-gradient(900px 520px at 105% -6%, rgba(242, 195, 91, 0.10), transparent 60%)",
+        success: p.emerald[700],
+        error: p.red[700],
+        focus: p.emerald[700],
+        overlay: "rgba(16, 37, 27, 0.4)",
+        chartGrid: "#E3ECE6",
+        chartAxis: p.pine[500],
+        transfer: p.pine[600],
+        chart: { income: p.emerald[600], expense: p.red[600], primary: p.emerald[700], accent: p.indigo[600], neutral: p.pine[500], area: "rgba(4, 120, 87, 0.1)" },
+        ambient: "radial-gradient(1100px 560px at 18% -14%, rgba(16, 185, 129, 0.07), transparent 62%)",
     },
     shadows: {
-        sm: "0 1px 0 rgba(17, 18, 29, 0.04)",
-        card: "0 1px 0 rgba(17, 18, 29, 0.03), 0 3px 0 #E4E4F0",
-        md: "0 8px 20px rgba(17, 18, 29, 0.08)",
-        lg: "0 14px 32px rgba(17, 18, 29, 0.12)",
-        overlay: "0 30px 80px rgba(17, 18, 29, 0.22)",
-        base: "0 1px 0 rgba(17, 18, 29, 0.04)",
-        focus: "0 0 0 3px rgba(84, 79, 230, 0.32)",
-        brand: "inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 0 #2B288C, 0 14px 28px -12px rgba(84, 79, 230, 0.55)",
-        ledge: "inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 0 #2B288C",
-        ledgePressed: "inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 0 #2B288C",
-        ledgeNeutral: "0 2px 0 #DEDFEC",
-        tile: "inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 0 rgba(17, 18, 29, 0.08)",
+        sm: "none",
+        card: "none",
+        md: "0 8px 20px rgba(16, 37, 27, 0.08)",
+        lg: "0 14px 32px rgba(16, 37, 27, 0.12)",
+        overlay: "0 24px 64px rgba(16, 37, 27, 0.18)",
+        base: "none",
+        focus: "0 0 0 3px rgba(4, 120, 87, 0.28)",
+        brand: "0 8px 20px rgba(4, 120, 87, 0.3)",
+        ledge: "none",
+        ledgePressed: "none",
+        ledgeNeutral: "none",
+        tile: "none",
     },
 };
 

@@ -5,13 +5,14 @@ import { iconFor } from "./icons";
 
 // ---------------- Amount ----------------
 
+// Valores monetários sempre em JetBrains Mono com algarismos tabulares (alinhamento financeiro).
 const AmountText = styled.span`
+    font-family: ${(p) => p.theme.fonts.mono};
     font-variant-numeric: tabular-nums;
-    font-family: ${(p) => (p.$big ? p.theme.fonts.display : "inherit")};
     white-space: nowrap;
     font-weight: ${(p) => p.$weight ?? 600};
     color: ${(p) => (p.$tone ? p.theme.colors[p.$tone] : "inherit")};
-    letter-spacing: ${(p) => (p.$big ? "-0.02em" : "normal")};
+    letter-spacing: ${(p) => (p.$big ? "-0.03em" : "-0.01em")};
 `;
 
 /**
@@ -85,8 +86,9 @@ export const Badge = styled.span`
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 8px;
-    border-radius: ${(p) => p.theme.radius.full};
+    padding: 2px 7px;
+    border-radius: ${(p) => p.theme.radius.xs};
+    font-family: ${(p) => p.theme.fonts.mono};
     font-size: ${(p) => p.theme.fontSize.xs};
     font-weight: 600;
     line-height: 1.6;
@@ -147,7 +149,6 @@ const Track = styled.div`
     height: ${(p) => p.$height}px;
     border-radius: 999px;
     background: ${(p) => p.theme.colors.bgSurface};
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, ${(p) => (p.theme.mode === "dark" ? 0.4 : 0.08)});
     overflow: hidden;
 `;
 
@@ -186,9 +187,9 @@ const EmptyWrap = styled.div`
         width: 52px;
         height: 52px;
         border-radius: 15px;
-        background: ${(p) => p.theme.colors.primary};
-        color: ${(p) => p.theme.colors.onPrimary};
-        box-shadow: ${(p) => p.theme.shadows.ledge};
+        background: ${(p) => p.theme.colors.primarySoft};
+        color: ${(p) => p.theme.colors.primaryText};
+        border: 1px solid ${(p) => p.theme.colors.border};
         margin-bottom: 8px;
     }
     h3 {

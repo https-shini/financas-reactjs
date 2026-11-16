@@ -1,10 +1,10 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24&height=120&section=header"/>
 
-<p align="center"><img src="./public/brand/veldora-logo-on-dark.svg" alt="VELDORA" height="56"/></p>
+<p align="center"><img src="./public/brand/financas-mark.svg" alt="Símbolo do Finanças" height="64"/></p>
 
-<h1 align="center">VELDORA</h1>
+<h1 align="center">Finanças</h1>
 
-<p align="center"><b>Smart Financial Platform</b> · <i>Seu dinheiro. Sua visão. Seu futuro.</i></p>
+<p align="center"><code>BY GCRUZ.DEV</code> · <b>Personal Finance Management Platform</b> · <i>Tenha clareza sobre seu dinheiro.</i></p>
 
 <p align="center">
   Controle financeiro pessoal <b>local-first</b>: receitas, despesas, contas, cartões, parcelas, recorrências, orçamentos, metas, relatórios e projeções — no seu navegador, sem servidor.
@@ -12,14 +12,14 @@
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-625DF5?style=for-the-badge)](https://financas.gcruz.dev.br)
+  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-047857?style=for-the-badge)](https://financas.gcruz.dev.br)
   [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
   [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
 
 </div>
 
 <div align="center">
-  <img src="./read-model/img/veldora-dashboard-escuro.png" alt="Dashboard VELDORA no tema escuro" width="100%"/>
+  <img src="./read-model/img/financas-dashboard-escuro.png" alt="Visão geral do Finanças no tema escuro" width="100%"/>
 </div>
 
 ---
@@ -30,7 +30,7 @@
 
 ## Descrição
 
-O **VELDORA** (antigo *Finanças*) é uma aplicação React para gestão financeira pessoal. Todos os números vêm dos seus lançamentos, com regras explícitas e testadas:
+O **Finanças** (by GCruz.DEV) é uma aplicação React para gestão financeira pessoal. Todos os números vêm dos seus lançamentos, com regras explícitas e testadas:
 
 - valores guardados em **centavos inteiros** (sem erros de arredondamento de ponto flutuante);
 - **transferências** movem dinheiro entre contas sem contar como receita ou despesa;
@@ -70,7 +70,7 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 | Tema claro | Celular | Cadastro no celular |
 | --- | --- | --- |
-| <img src="./read-model/img/veldora-dashboard-claro.png" alt="Dashboard no tema claro" width="420"/> | <img src="./read-model/img/veldora-mobile.png" alt="Dashboard no celular" width="200"/> | <img src="./read-model/img/v2-mobile-cadastro.png" alt="Cadastro no celular" width="200"/> |
+| <img src="./read-model/img/financas-dashboard-claro.png" alt="Dashboard no tema claro" width="420"/> | <img src="./read-model/img/financas-mobile.png" alt="Dashboard no celular" width="200"/> | <img src="./read-model/img/v2-mobile-cadastro.png" alt="Cadastro no celular" width="200"/> |
 
 | Movimentações | Cartões e faturas | Saúde financeira |
 | --- | --- | --- |
@@ -78,7 +78,7 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 ## Identidade visual e Design System
 
-A interface usa a identidade **VELDORA** na direção visual **Nocturne**, inspirada no Cinelux e no Fluxer: noite com matiz índigo, índigo `#625DF5` para ações (botões táteis com degrau), ouro Aurum `#F2C35B` para destaques e item ativo, abas e filtros em pílula, títulos editoriais em Space Grotesk e barra inferior flutuante no celular. A auditoria das referências, a paleta (com as variantes acessíveis), a tipografia, os tokens, os componentes e as comparações de antes e depois estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
+A interface segue a especificação **Finanças by GCruz.DEV — Brand Identity & Design System**: paleta **Emerald Finance** (fundo `#07110F` no escuro e `#F7FAF8` no claro, ações em Emerald 700 `#047857`, destaques em `#34D399`), IBM Plex Sans na interface e JetBrains Mono nos valores financeiros, ícones Lucide, sidebar de 220 px (64 px recolhida) e header de 58 px no padrão do GCruz Lab Platform, com breadcrumbs, busca global (`Ctrl K`), alternância de tema e notificações. Paleta, ajustes de acessibilidade, tipografia, tokens, componentes e comparações de antes e depois estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
 
 - Tokens primitivos em `src/design/tokens.js` e semânticos em `src/design/themes.js`, também exportados como variáveis CSS `--v-*`.
 - Logo e ícones em `src/brand/` (componentes React) e `public/brand/` (SVG/PNG), gerados por `node scripts/generate-brand-assets.mjs`.
@@ -94,7 +94,7 @@ A interface usa a identidade **VELDORA** na direção visual **Nocturne**, inspi
 | Gráficos | Recharts |
 | Regras e validação | JavaScript puro em `src/domain`, Zod (schema do armazenamento), date-fns |
 | Arquivos | SheetJS/xlsx 0.20.3 (CDN oficial), jsPDF + autotable, docx, file-saver — carregados sob demanda |
-| Fontes | Inter e Space Grotesk (self-hosted via `@fontsource-variable/*`) |
+| Fontes | IBM Plex Sans e JetBrains Mono (self-hosted via `@fontsource-variable/*`) |
 | Build e testes | Vite 7, Vitest 4, Testing Library, ESLint 9 |
 
 ## Requisitos
@@ -177,7 +177,7 @@ src/
 │                recorrências, orçamentos, metas, projeção, insights, importação, captura rápida)
 ├── storage/     schema Zod, migrações, repositório (localStorage) e backup
 ├── state/       FinanceProvider e operações puras (store → store)
-├── brand/       logo VELDORA (geometria única + componentes React)
+├── brand/       marca Finanças (geometria do símbolo F + BrandMark/BrandLockup)
 ├── design/      tokens primitivos, temas claro/escuro e teste de contraste
 ├── components/  design system (ui/), gráficos (charts/) e layout
 ├── app/         shell (sidebar, topbar, navegação inferior), navegação agrupada, tema, contexto de UI

@@ -66,12 +66,14 @@ export function Field({ label, hint, error, children, className, labelHidden = f
 
 export const controlStyles = css`
     width: 100%;
-    min-height: 44px;
+    min-height: 40px;
     padding: 0 12px;
-    border-radius: ${(p) => p.theme.radius.md};
+    border-radius: ${(p) => p.theme.radius.sm};
     border: 1px solid ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.borderStrong)};
     background: ${(p) => p.theme.colors.bgInput};
-    box-shadow: ${(p) => (p.theme.mode === "light" ? "inset 0 1px 2px rgba(17, 18, 29, 0.04)" : "none")};
+    @media (pointer: coarse) {
+        min-height: 44px;
+    }
     color: ${(p) => p.theme.colors.text};
     font-size: 16px; /* evita zoom automático no iOS */
     transition: border-color ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, box-shadow ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, background ${(p) => p.theme.motion.fast};
@@ -217,27 +219,26 @@ export const MoneyInput = forwardRef(function MoneyInput({ value, onChange, larg
     );
 });
 
-// Controle segmentado em pílula: trilho rebaixado, opção ativa elevada (com "degrau").
+// Controle segmentado: trilho em superfície secundária, opção ativa elevada com borda.
 const SegWrap = styled.div`
     display: grid;
     grid-template-columns: repeat(${(p) => p.$count}, 1fr);
     gap: 4px;
     padding: 4px;
-    border-radius: ${(p) => p.theme.radius.full};
+    border-radius: ${(p) => p.theme.radius.md};
     background: ${(p) => p.theme.colors.bgSurface};
     border: 1px solid ${(p) => p.theme.colors.border};
 `;
 
 const SegButton = styled.button`
-    min-height: 38px;
-    padding: 0 14px;
-    border-radius: ${(p) => p.theme.radius.full};
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: ${(p) => p.theme.radius.sm};
     font-weight: 600;
     font-size: ${(p) => p.theme.fontSize.sm};
     color: ${(p) => (p["aria-checked"] ? p.theme.colors[p.$tone] ?? p.theme.colors.text : p.theme.colors.textSecondary)};
     background: ${(p) => (p["aria-checked"] ? p.theme.colors.bgElevated : "transparent")};
-    box-shadow: ${(p) => (p["aria-checked"] ? p.theme.shadows.ledgeNeutral : "none")};
-    border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.borderStrong : "transparent")};
+    border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.border : "transparent")};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &:hover {
         color: ${(p) => p.theme.colors.text};

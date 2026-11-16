@@ -338,7 +338,7 @@ export default function TransactionsPage() {
     return (
         <>
             <PageHeader
-                title="Movimentações"
+                title="Transações"
                 description={periodLabel}
                 actions={
                     <>

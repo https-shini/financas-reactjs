@@ -14,20 +14,20 @@ const Head = styled.div`
     margin-top: ${(p) => p.theme.space(2)};
     h1 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize["3xl"]};
-        font-weight: ${(p) => p.theme.fontWeight.bold};
+        font-size: ${(p) => p.theme.fontSize.xl};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
         letter-spacing: ${(p) => p.theme.letterSpacing.tighter};
         line-height: ${(p) => p.theme.lineHeight.tight};
-        margin-top: 10px;
-        ${(p) => p.theme.media.desktop} {
-            font-size: ${(p) => p.theme.fontSize["4xl"]};
+        margin-top: 8px;
+        ${(p) => p.theme.media.tablet} {
+            font-size: ${(p) => p.theme.fontSize["2xl"]};
         }
     }
     .desc {
         color: ${(p) => p.theme.colors.textSecondary};
-        margin-top: 8px;
-        font-size: ${(p) => p.theme.fontSize.base};
-        max-width: 64ch;
+        margin-top: 6px;
+        font-size: ${(p) => p.theme.fontSize.md};
+        max-width: 72ch;
     }
     .actions {
         display: flex;
@@ -58,7 +58,7 @@ const Head = styled.div`
 `;
 
 /**
- * Cabeçalho de página: sobretítulo numerado do grupo de navegação ("— 02 · Financeiro"),
+ * Cabeçalho de página: sobretítulo com o grupo de navegação ("— Financeiro"),
  * título (h1) em display, descrição e ações. Atualiza o título da aba.
  * A trilha (breadcrumbs) fica na barra superior.
  */
@@ -66,13 +66,12 @@ export function PageHeader({ title, description, actions, docTitle, eyebrow, gro
     const location = useLocation();
     const ctx = navContext(location);
     useEffect(() => {
-        document.title = `${docTitle ?? title} · VELDORA`;
+        document.title = `${docTitle ?? title} · Finanças`;
     }, [title, docTitle]);
     // `group` fixa o grupo do sobretítulo quando a página reúne seções de grupos diferentes
     // (ex.: Planejamento contém Cartões e Vencimentos, que no menu ficam em "Financeiro").
     const eyebrowGroup = (group && NAV_GROUPS.find((g) => g.id === group)) || ctx?.group;
-    const groupIndex = eyebrowGroup ? NAV_GROUPS.indexOf(eyebrowGroup) + 1 : 0;
-    const eyebrowText = eyebrow ?? (eyebrowGroup ? `${String(groupIndex).padStart(2, "0")} · ${eyebrowGroup.label}` : null);
+    const eyebrowText = eyebrow ?? eyebrowGroup?.label ?? null;
     return (
         <Head>
             <div>

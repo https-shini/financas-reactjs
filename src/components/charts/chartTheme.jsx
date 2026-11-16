@@ -1,4 +1,4 @@
-// Padrão visual único para todos os gráficos (Recharts) da VELDORA.
+// Padrão visual único para todos os gráficos (Recharts) do Finanças.
 import { useMemo } from "react";
 import { useTheme } from "styled-components";
 import { CartesianGrid, Tooltip, XAxis, YAxis } from "recharts";

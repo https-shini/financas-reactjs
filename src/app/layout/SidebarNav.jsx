@@ -7,25 +7,25 @@ const Group = styled.div`
     display: grid;
     gap: 2px;
     & + & {
-        margin-top: ${(p) => p.theme.space(3)};
+        margin-top: ${(p) => p.theme.space(5)};
     }
 `;
 
 const GroupLabel = styled.p`
     ${typeRole("overline")}
+    font-family: ${(p) => p.theme.fonts.mono};
     text-transform: uppercase;
     color: ${(p) => p.theme.colors.textMuted};
-    padding: 0 12px 6px;
+    padding: 0 12px 8px;
     ${(p) =>
         p.$collapsed &&
         css`
-            text-align: center;
-            padding: 0 0 6px;
+            padding: 0 0 8px;
             &::before {
                 content: "";
                 display: block;
                 height: 1px;
-                margin: 0 20px;
+                margin: 0 14px;
                 background: ${p.theme.colors.border};
             }
         `}
@@ -35,10 +35,10 @@ const ItemLink = styled(Link)`
     position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     min-height: 36px;
-    padding: 0 12px;
-    border-radius: ${(p) => p.theme.radius.md};
+    padding: 0 10px;
+    border-radius: ${(p) => p.theme.radius.sm};
     color: ${(p) => p.theme.colors.textSecondary};
     text-decoration: none;
     font-weight: ${(p) => p.theme.fontWeight.medium};
@@ -64,9 +64,13 @@ const ItemLink = styled(Link)`
             color: ${(p) => p.theme.colors.text};
         }
     }
+    &:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: -2px;
+    }
+    /* Ativo: fundo Emerald Surface + indicador lateral Emerald (não depende só da cor: há o indicador e o peso). */
     &[aria-current="page"] {
-        background: ${(p) => p.theme.colors.bgSurface};
-        box-shadow: inset 0 0 0 1px ${(p) => p.theme.colors.border}, ${(p) => p.theme.shadows.sm};
+        background: ${(p) => p.theme.colors.primarySoft};
         color: ${(p) => p.theme.colors.text};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         svg {
@@ -76,8 +80,8 @@ const ItemLink = styled(Link)`
             content: "";
             position: absolute;
             left: 0;
-            top: 9px;
-            bottom: 9px;
+            top: 8px;
+            bottom: 8px;
             width: 3px;
             border-radius: 0 3px 3px 0;
             background: ${(p) => p.theme.colors.indicator};
@@ -88,15 +92,15 @@ const ItemLink = styled(Link)`
     }
 `;
 
-/** Lista de navegação agrupada. collapsed: só ícones (com rótulo acessível e dica). */
+/** Navegação agrupada da sidebar (e do drawer no celular). collapsed: só ícones, com rótulo acessível e dica. */
 export function SidebarNav({ collapsed = false, onNavigate, label = "Navegação principal" }) {
     const location = useLocation();
     const active = activeNavId(location);
     return (
         <nav aria-label={label}>
             {NAV_GROUPS.map((g) => (
-                <Group key={g.id} role="group" aria-labelledby={`nav-g-${g.id}`}>
-                    <GroupLabel id={`nav-g-${g.id}`} $collapsed={collapsed}>
+                <Group key={g.id} role="group" aria-labelledby={`nav-g-${g.id}-${label.length}`}>
+                    <GroupLabel id={`nav-g-${g.id}-${label.length}`} $collapsed={collapsed}>
                         <span className={collapsed ? "sr-only" : undefined}>{g.label}</span>
                     </GroupLabel>
                     {g.items.map((it) => (

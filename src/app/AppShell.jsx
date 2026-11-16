@@ -1,17 +1,23 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { LayoutDashboard, ArrowLeftRight, Target, Plus, Search, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, Eye, EyeOff, Zap, Menu as MenuIcon } from "lucide-react";
+import {
+    LayoutDashboard, ArrowLeftRight, CalendarRange, Plus, Search, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, Eye, EyeOff, Zap,
+    Menu as MenuIcon, ArrowUpRight,
+} from "lucide-react";
 import { Button, IconButton, Drawer, ModalBody, Breadcrumbs } from "../components/ui";
 import { useFinance, useFinanceActions } from "../state/contexts";
 import { useUI } from "./UIContext";
 import { addMonthsToKey, currentMonthKey, formatMonthLabel } from "../domain/dates";
 import { useHotkeys } from "../hooks/useHotkeys";
-import { VeldoraLogo, VeldoraSymbol } from "../brand/VeldoraLogo";
+import { BrandLockup, BrandMark } from "../brand/BrandLogo";
 import { SidebarNav } from "./layout/SidebarNav";
-import { ThemeSwitcher } from "./layout/ThemeSwitcher";
-import { WorkspaceCard } from "./layout/WorkspaceCard";
-import { navContext } from "./navigation";
+import { SidebarUser } from "./layout/SidebarUser";
+import { ThemeToggle } from "./layout/ThemeToggle";
+import { Notifications } from "./layout/Notifications";
+import { breadcrumbItems } from "./navigation";
+
+// ---------------- Estrutura ----------------
 
 const Shell = styled.div`
     min-height: 100vh;
@@ -28,8 +34,8 @@ const SkipLink = styled.a`
     left: 8px;
     top: -100px;
     z-index: 100;
-    padding: 12px 16px;
-    border-radius: ${(p) => p.theme.radius.md};
+    padding: 10px 14px;
+    border-radius: ${(p) => p.theme.radius.sm};
     background: ${(p) => p.theme.colors.primary};
     color: ${(p) => p.theme.colors.onPrimary};
     font-weight: ${(p) => p.theme.fontWeight.semibold};
@@ -37,6 +43,8 @@ const SkipLink = styled.a`
         top: 8px;
     }
 `;
+
+// ---------------- Sidebar ----------------
 
 const Side = styled.aside`
     display: none;
@@ -47,39 +55,77 @@ const Side = styled.aside`
         top: 0;
         height: 100vh;
         border-right: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgGlass};
-        backdrop-filter: blur(18px);
-        padding: 20px ${(p) => (p.$collapsed ? "12px" : "14px")} 14px;
-        gap: 18px;
+        background: ${(p) => p.theme.colors.bgSidebar};
     }
 `;
 
-const BrandLink = styled(Link)`
+const SideBrand = styled(Link)`
     display: flex;
     align-items: center;
     justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
-    gap: 10px;
-    min-height: 40px;
-    padding: 0 6px;
+    height: ${(p) => p.theme.layout.topbar};
+    padding: 0 ${(p) => (p.$collapsed ? "0" : "16px")};
+    flex-shrink: 0;
+    border-bottom: 1px solid ${(p) => p.theme.colors.border};
     color: ${(p) => p.theme.colors.text};
     text-decoration: none;
-    border-radius: ${(p) => p.theme.radius.md};
+    &:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: -2px;
+    }
 `;
 
 const NavScroll = styled.div`
     flex: 1;
     overflow-y: auto;
-    margin: 0 -6px;
-    padding: 0 6px 16px;
+    padding: 16px ${(p) => (p.$collapsed ? "10px" : "10px")} 20px;
     scrollbar-width: thin;
-    /* Esmaece a borda inferior quando a lista rola */
-    mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
 `;
 
 const SideFooter = styled.div`
     display: grid;
-    gap: 10px;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid ${(p) => p.theme.colors.border};
 `;
+
+const SideActions = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: ${(p) => (p.$collapsed ? "center" : "space-between")};
+    gap: 6px;
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 32px;
+        padding: 0 8px;
+        border-radius: ${(p) => p.theme.radius.sm};
+        color: ${(p) => p.theme.colors.textMuted};
+        font-size: ${(p) => p.theme.fontSize.sm};
+        &:hover {
+            color: ${(p) => p.theme.colors.text};
+            background: ${(p) => p.theme.colors.bgHover};
+        }
+    }
+    a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-height: 32px;
+        padding: 0 8px;
+        border-radius: ${(p) => p.theme.radius.sm};
+        font-family: ${(p) => p.theme.fonts.mono};
+        font-size: ${(p) => p.theme.fontSize.xs};
+        color: ${(p) => p.theme.colors.textMuted};
+        text-decoration: none;
+        &:hover {
+            color: ${(p) => p.theme.colors.text};
+        }
+    }
+`;
+
+// ---------------- Header ----------------
 
 const Main = styled.div`
     min-width: 0;
@@ -97,18 +143,38 @@ const Top = styled.header`
     height: ${(p) => p.theme.layout.topbar};
     padding: 0 12px;
     background: ${(p) => p.theme.colors.bgGlass};
-    backdrop-filter: saturate(160%) blur(16px);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     ${(p) => p.theme.media.tablet} {
         padding: 0 16px;
     }
     ${(p) => p.theme.media.desktop} {
-        padding: 0 28px;
+        padding: 0 24px 0 16px;
     }
-    /* Telas estreitas: menos respiro para o mês não ser truncado (alvos de toque continuam com 44 px). */
     @media (max-width: 374px) {
         gap: 2px;
         padding: 0 6px;
+    }
+`;
+
+const OnlyDesktop = styled.span`
+    display: none;
+    ${(p) => p.theme.media.desktop} {
+        display: contents;
+    }
+`;
+
+const OnlyBelowDesktop = styled.span`
+    display: contents;
+    ${(p) => p.theme.media.desktop} {
+        display: none;
+    }
+`;
+
+const HideMobile = styled.span`
+    display: contents;
+    ${(p) => p.theme.media.mobile} {
+        display: none;
     }
 `;
 
@@ -117,25 +183,23 @@ const MobileBrand = styled(Link)`
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: ${(p) => p.theme.radius.md};
+    border-radius: ${(p) => p.theme.radius.sm};
     flex-shrink: 0;
-    ${(p) => p.theme.media.desktop} {
-        display: none;
-    }
-    /* Em 320 px o símbolo cede espaço ao mês; a marca continua no menu (drawer). */
     @media (max-width: 349px) {
         display: none;
     }
 `;
 
-const Context = styled.div`
+const Crumbs = styled.div`
     display: none;
     white-space: nowrap;
+    padding-left: 4px;
     ${(p) => p.theme.media.wide} {
         display: block;
-        margin-right: 12px;
-        padding-right: 16px;
-        border-right: 1px solid ${(p) => p.theme.colors.border};
+        margin-right: 8px;
+    }
+    ol {
+        font-size: ${(p) => p.theme.fontSize.md};
     }
 `;
 
@@ -145,24 +209,21 @@ const MonthBox = styled.div`
     gap: 2px;
     min-width: 0;
     padding: 2px;
-    border-radius: ${(p) => p.theme.radius.full};
+    border-radius: ${(p) => p.theme.radius.sm};
     border: 1px solid ${(p) => p.theme.colors.border};
-    background: ${(p) => p.theme.colors.bgInput};
-    button {
-        border-radius: ${(p) => p.theme.radius.full};
-    }
+    background: ${(p) => p.theme.colors.bgElevated};
     h2 {
-        font-family: ${(p) => p.theme.fonts.display};
+        font-family: ${(p) => p.theme.fonts.sans};
         font-size: ${(p) => p.theme.fontSize.md};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
-        letter-spacing: ${(p) => p.theme.letterSpacing.snug};
+        letter-spacing: 0;
         min-width: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: center;
         ${(p) => p.theme.media.tablet} {
-            min-width: 168px;
+            min-width: 150px;
         }
     }
     .short {
@@ -184,29 +245,29 @@ const MonthBox = styled.div`
 
 const SearchForm = styled.form`
     position: relative;
-    display: none;
     flex: 1;
-    max-width: 380px;
+    max-width: 360px;
+    min-width: 160px;
     margin-left: auto;
-    ${(p) => p.theme.media.desktop} {
-        display: block;
-    }
     svg {
         position: absolute;
-        left: 12px;
+        left: 11px;
         top: 50%;
         transform: translateY(-50%);
         color: ${(p) => p.theme.colors.textMuted};
     }
     input {
         width: 100%;
-        min-height: 40px;
-        padding: 0 40px 0 36px;
-        border-radius: ${(p) => p.theme.radius.full};
-        border: 1px solid ${(p) => p.theme.colors.borderStrong};
-        background: ${(p) => p.theme.colors.bgInput};
+        min-height: 36px;
+        padding: 0 64px 0 34px;
+        border-radius: ${(p) => p.theme.radius.sm};
+        border: 1px solid ${(p) => p.theme.colors.border};
+        background: ${(p) => p.theme.colors.bgElevated};
         font-size: ${(p) => p.theme.fontSize.md};
         transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast};
+        &:hover {
+            border-color: ${(p) => p.theme.colors.borderStrong};
+        }
         &:focus {
             outline: none;
             border-color: ${(p) => p.theme.colors.brand};
@@ -218,14 +279,15 @@ const SearchForm = styled.form`
     }
     kbd {
         position: absolute;
-        right: 10px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
-        font: inherit;
-        font-size: ${(p) => p.theme.fontSize.xs};
-        padding: 1px 6px;
-        border-radius: 4px;
+        font-family: ${(p) => p.theme.fonts.mono};
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: ${(p) => p.theme.radius.xs};
         border: 1px solid ${(p) => p.theme.colors.border};
+        background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.textMuted};
     }
 `;
@@ -233,25 +295,28 @@ const SearchForm = styled.form`
 const TopActions = styled.div`
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     margin-left: auto;
     ${(p) => p.theme.media.desktop} {
-        margin-left: 0;
+        margin-left: 4px;
+        gap: 4px;
     }
-    .new-label {
-        display: none;
-        ${(p) => p.theme.media.desktop} {
-            display: inline-flex;
-        }
+    .divider {
+        width: 1px;
+        height: 22px;
+        margin: 0 4px;
+        background: ${(p) => p.theme.colors.border};
     }
 `;
+
+// ---------------- Conteúdo ----------------
 
 const Content = styled.main`
     flex: 1;
     width: 100%;
     max-width: ${(p) => p.theme.layout.content};
     margin: 0 auto;
-    padding: 20px 16px calc(${(p) => p.theme.layout.bottomNav} + 44px + env(safe-area-inset-bottom));
+    padding: 20px 16px calc(${(p) => p.theme.layout.bottomNav} + 32px + env(safe-area-inset-bottom));
     overflow-x: clip;
     &:focus {
         outline: none;
@@ -261,113 +326,109 @@ const Content = styled.main`
         padding-right: 24px;
     }
     ${(p) => p.theme.media.desktop} {
-        padding: 36px 40px 64px;
+        padding: 32px 40px 56px;
     }
 `;
 
-// Navegação inferior flutuante em pílula de vidro (celular).
+// ---------------- Navegação inferior (celular e tablet) ----------------
+
 const Bottom = styled.nav`
     position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: ${(p) => p.theme.z.nav};
-    /* Itens com largura proporcional ao rótulo: cabe em telas de 320 px sem cortar "Menu". */
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2px;
-    height: ${(p) => p.theme.layout.bottomNav};
-    padding: 0 6px;
+    height: calc(${(p) => p.theme.layout.bottomNav} + env(safe-area-inset-bottom));
+    padding: 0 6px env(safe-area-inset-bottom);
+    background: ${(p) => p.theme.colors.bgGlass};
+    backdrop-filter: blur(12px);
+    border-top: 1px solid ${(p) => p.theme.colors.border};
     > * {
         flex: 1 1 auto;
         min-width: 0;
     }
-    @media (max-width: 374px) {
-        left: 6px;
-        right: 6px;
-        gap: 0;
-        padding: 0 3px;
-        letter-spacing: -0.01em;
-    }
-    border-radius: 24px;
-    background: ${(p) => p.theme.colors.bgGlass};
-    backdrop-filter: saturate(160%) blur(18px);
-    border: 1px solid ${(p) => p.theme.colors.borderStrong};
-    box-shadow: ${(p) => p.theme.shadows.lg}, ${(p) => p.theme.shadows.sm};
     ${(p) => p.theme.media.desktop} {
         display: none;
     }
+    @media (max-width: 374px) {
+        gap: 0;
+        padding-left: 2px;
+        padding-right: 2px;
+        letter-spacing: -0.01em;
+    }
+`;
+
+const bottomItem = `
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 3px;
+    min-height: 52px;
+    padding: 0 6px;
+    white-space: nowrap;
+    font-size: 11px;
+    text-decoration: none;
 `;
 
 const BottomLink = styled(NavLink)`
-    display: grid;
-    justify-items: center;
-    gap: 2px;
-    min-height: 54px;
-    margin: 0 2px;
-    align-content: center;
-    border-radius: 18px;
-    padding: 0 6px;
-    font-size: 11px;
-    white-space: nowrap;
+    ${bottomItem}
+    position: relative;
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
-    text-decoration: none;
-    @media (max-width: 374px) {
-        font-size: 10px;
-        padding: 0 3px;
-        margin: 0;
-    }
-    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &.active {
         color: ${(p) => p.theme.colors.text};
-        background: ${(p) => p.theme.colors.bgSurface};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         svg {
             color: ${(p) => p.theme.colors.indicator};
         }
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 30%;
+            right: 30%;
+            height: 2px;
+            border-radius: 0 0 2px 2px;
+            background: ${(p) => p.theme.colors.indicator};
+        }
+    }
+    @media (max-width: 374px) {
+        font-size: 10px;
+        padding: 0 3px;
     }
 `;
 
 const BottomButton = styled.button`
-    display: grid;
-    justify-items: center;
-    gap: 2px;
-    min-height: 54px;
-    padding: 0 6px;
-    border-radius: 18px;
-    align-content: center;
-    white-space: nowrap;
-    font-size: 11px;
-    @media (max-width: 374px) {
-        font-size: 10px;
-    }
+    ${bottomItem}
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
+    @media (max-width: 374px) {
+        font-size: 10px;
+        padding: 0 3px;
+    }
 `;
 
 const Fab = styled.button`
+    flex: 0 0 48px !important;
     justify-self: center;
-    flex: 0 0 52px !important;
-    @media (max-width: 374px) {
-        flex-basis: 48px !important;
-        width: 48px;
-        height: 48px;
-    }
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 18px;
+    width: 48px;
+    height: 48px;
+    border-radius: ${(p) => p.theme.radius.lg};
     background: ${(p) => p.theme.colors.primary};
     color: ${(p) => p.theme.colors.onPrimary};
     box-shadow: ${(p) => p.theme.shadows.brand};
-    transform: translateY(-14px);
-    transition: background ${(p) => p.theme.motion.fast}, transform 90ms, box-shadow 90ms;
+    transition: background ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
+    &:hover {
+        background: ${(p) => p.theme.colors.primaryHover};
+    }
     &:active {
-        transform: translateY(-11px);
-        box-shadow: ${(p) => p.theme.shadows.ledgePressed};
+        transform: scale(0.96);
         background: ${(p) => p.theme.colors.primaryActive};
     }
 `;
@@ -377,7 +438,13 @@ const DrawerBody = styled(ModalBody)`
     flex-direction: column;
     gap: 16px;
     padding-top: 4px;
+    .quick {
+        display: flex;
+        gap: 8px;
+    }
 `;
+
+// ---------------- Peças ----------------
 
 function MonthSwitcher() {
     const { month, setMonth } = useUI();
@@ -401,6 +468,12 @@ function MonthSwitcher() {
     );
 }
 
+const GCRUZ_URL = "https://gcruz.dev.br";
+
+/**
+ * App Shell: sidebar (220 px; 64 px recolhida) + header (58 px) com breadcrumbs, mês, busca global (Ctrl+K),
+ * tema e notificações. No celular e tablet: header compacto, navegação inferior e menu em drawer.
+ */
 export function AppShell() {
     const { store } = useFinance();
     const { updateSettings } = useFinanceActions();
@@ -411,18 +484,35 @@ export function AppShell() {
     const [menuOpen, setMenuOpen] = useState(false);
     const collapsed = store.settings.sidebarCollapsed;
     const hide = store.settings.hideBalances;
-    const ctx = navContext(location);
+    const toggleSidebar = () => updateSettings({ sidebarCollapsed: !collapsed });
+
+    const focusSearch = () => {
+        if (searchRef.current && searchRef.current.offsetParent !== null) searchRef.current.focus();
+        else navigate("/movimentacoes?focus=busca");
+    };
 
     useHotkeys({
         n: () => openTransaction(),
-        "/": () => {
-            if (searchRef.current && searchRef.current.offsetParent !== null) searchRef.current.focus();
-            else navigate("/movimentacoes?focus=busca");
-        },
+        "/": focusSearch,
         q: () => openQuickCapture(),
         ArrowLeft: () => setMonth(addMonthsToKey(month, -1)),
         ArrowRight: () => setMonth(addMonthsToKey(month, 1)),
     });
+
+    // Ctrl+K / ⌘K: busca global (funciona também com o foco em um campo).
+    const focusSearchRef = useRef(focusSearch);
+    focusSearchRef.current = focusSearch;
+    useEffect(() => {
+        const onKey = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+                if (document.querySelector("[role='dialog'][aria-modal='true']")) return;
+                e.preventDefault();
+                focusSearchRef.current();
+            }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, []);
 
     const submitSearch = (e) => {
         e.preventDefault();
@@ -431,59 +521,75 @@ export function AppShell() {
         e.currentTarget.reset();
     };
 
+    const hideToggle = <IconButton icon={hide ? EyeOff : Eye} size="sm" label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />;
+
     return (
         <Shell $collapsed={collapsed}>
             <SkipLink href="#conteudo">Pular para o conteúdo</SkipLink>
-            <Side $collapsed={collapsed} aria-label="Barra lateral">
-                <BrandLink to="/" $collapsed={collapsed} aria-label="VELDORA — ir para o Dashboard">
-                    {collapsed ? <VeldoraSymbol size={30} /> : <VeldoraLogo height={28} title={null} />}
-                </BrandLink>
-                <NavScroll>
+            <Side aria-label="Barra lateral">
+                <SideBrand to="/" $collapsed={collapsed} aria-label="Finanças by GCruz.DEV — ir para a Visão geral">
+                    {collapsed ? <BrandMark size={30} /> : <BrandLockup size={32} title={null} />}
+                </SideBrand>
+                <NavScroll $collapsed={collapsed}>
                     <SidebarNav collapsed={collapsed} />
                 </NavScroll>
                 <SideFooter>
-                    <ThemeSwitcher vertical={collapsed} />
-                    <WorkspaceCard collapsed={collapsed} />
-                    <IconButton
-                        icon={collapsed ? PanelLeftOpen : PanelLeftClose}
-                        label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
-                        onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
-                    />
+                    <SidebarUser collapsed={collapsed} />
+                    <SideActions $collapsed={collapsed}>
+                        <button type="button" onClick={toggleSidebar} aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"} title={collapsed ? "Expandir" : undefined}>
+                            {collapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
+                            {!collapsed && "Recolher"}
+                        </button>
+                        {!collapsed && (
+                            <a href={GCRUZ_URL} target="_blank" rel="noopener noreferrer">
+                                gcruz.dev <ArrowUpRight size={12} aria-hidden="true" />
+                                <span className="sr-only">(abre em nova aba)</span>
+                            </a>
+                        )}
+                    </SideActions>
                 </SideFooter>
             </Side>
 
             <Main>
                 <Top>
-                    <MobileBrand to="/" aria-label="VELDORA — ir para o Dashboard">
-                        <VeldoraSymbol size={26} />
-                    </MobileBrand>
-                    {ctx && (
-                        <Context>
-                            <Breadcrumbs items={ctx.item.id === "dashboard" ? [{ label: "Dashboard" }] : [{ label: "Dashboard", to: "/" }, { label: ctx.group.label }, { label: ctx.item.label }]} />
-                        </Context>
-                    )}
+                    <OnlyDesktop>
+                        <IconButton icon={collapsed ? PanelLeftOpen : PanelLeftClose} size="sm" bordered label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"} onClick={toggleSidebar} />
+                        <Crumbs>
+                            <Breadcrumbs items={breadcrumbItems(location)} />
+                        </Crumbs>
+                    </OnlyDesktop>
+                    <OnlyBelowDesktop>
+                        <MobileBrand to="/" aria-label="Finanças — ir para a Visão geral">
+                            <BrandMark size={28} />
+                        </MobileBrand>
+                    </OnlyBelowDesktop>
                     <MonthSwitcher />
-                    <SearchForm role="search" onSubmit={submitSearch}>
-                        <Search size={16} aria-hidden="true" />
-                        <label htmlFor="global-search" className="sr-only">
-                            Buscar movimentações
-                        </label>
-                        <input ref={searchRef} id="global-search" name="q" type="search" placeholder="Buscar movimentações" autoComplete="off" />
-                        <kbd aria-hidden="true">/</kbd>
-                    </SearchForm>
+                    <OnlyDesktop>
+                        <SearchForm role="search" onSubmit={submitSearch}>
+                            <Search size={15} aria-hidden="true" />
+                            <label htmlFor="global-search" className="sr-only">
+                                Buscar transações
+                            </label>
+                            <input ref={searchRef} id="global-search" name="q" type="search" placeholder="Buscar transações" autoComplete="off" />
+                            <kbd aria-hidden="true">Ctrl K</kbd>
+                        </SearchForm>
+                    </OnlyDesktop>
                     <TopActions>
-                        {location.pathname !== "/movimentacoes" && (
-                            <span className="only-mobile" style={{ display: "contents" }}>
-                                <IconButton icon={Search} label="Buscar" onClick={() => navigate("/movimentacoes?focus=busca")} />
-                            </span>
-                        )}
-                        <IconButton icon={hide ? EyeOff : Eye} label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />
-                        <IconButton icon={Zap} label="Captura rápida (Q)" onClick={openQuickCapture} />
-                        <span className="new-label">
-                            <Button variant="primary" icon={Plus} onClick={() => openTransaction()} title="Nova transação (N)">
+                        <OnlyBelowDesktop>
+                            {location.pathname !== "/movimentacoes" && <IconButton icon={Search} size="sm" label="Buscar transações" onClick={() => navigate("/movimentacoes?focus=busca")} />}
+                        </OnlyBelowDesktop>
+                        <HideMobile>{hideToggle}</HideMobile>
+                        <IconButton icon={Zap} size="sm" label="Captura rápida (Q)" onClick={openQuickCapture} />
+                        <HideMobile>
+                            <ThemeToggle />
+                        </HideMobile>
+                        <Notifications />
+                        <OnlyDesktop>
+                            <span className="divider" aria-hidden="true" />
+                            <Button variant="primary" size="sm" icon={Plus} onClick={() => openTransaction()} title="Nova transação (N)">
                                 Nova transação
                             </Button>
-                        </span>
+                        </OnlyDesktop>
                     </TopActions>
                 </Top>
                 <Content id="conteudo" tabIndex={-1}>
@@ -493,31 +599,34 @@ export function AppShell() {
 
             <Bottom aria-label="Navegação rápida">
                 <BottomLink to="/" end>
-                    <LayoutDashboard size={22} aria-hidden="true" />
-                    Dashboard
+                    <LayoutDashboard size={21} aria-hidden="true" />
+                    Visão geral
                 </BottomLink>
                 <BottomLink to="/movimentacoes">
-                    <ArrowLeftRight size={22} aria-hidden="true" />
-                    Movimentações
+                    <ArrowLeftRight size={21} aria-hidden="true" />
+                    Transações
                 </BottomLink>
                 <Fab type="button" aria-label="Nova transação" onClick={() => openTransaction()}>
-                    <Plus size={26} aria-hidden="true" />
+                    <Plus size={24} aria-hidden="true" />
                 </Fab>
                 <BottomLink to="/planejamento">
-                    <Target size={22} aria-hidden="true" />
+                    <CalendarRange size={21} aria-hidden="true" />
                     Planejamento
                 </BottomLink>
                 <BottomButton type="button" aria-haspopup="dialog" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
-                    <MenuIcon size={22} aria-hidden="true" />
+                    <MenuIcon size={21} aria-hidden="true" />
                     Menu
                 </BottomButton>
             </Bottom>
 
-            <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title={<VeldoraLogo height={24} />}>
+            <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} title={<BrandLockup size={30} title={null} />}>
                 <DrawerBody>
                     <SidebarNav onNavigate={() => setMenuOpen(false)} label="Menu" />
-                    <ThemeSwitcher />
-                    <WorkspaceCard onNavigate={() => setMenuOpen(false)} />
+                    <div className="quick">
+                        <ThemeToggle size="md" />
+                        <IconButton icon={hide ? EyeOff : Eye} label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />
+                    </div>
+                    <SidebarUser onNavigate={() => setMenuOpen(false)} />
                 </DrawerBody>
             </Drawer>
         </Shell>

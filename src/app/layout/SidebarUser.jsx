@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { ShieldCheck, ShieldAlert } from "lucide-react";
-import { VeldoraSymbol } from "../../brand/VeldoraLogo";
+import { ShieldCheck, ShieldAlert, UserRound } from "lucide-react";
 import { useFinance } from "../../state/contexts";
 import { diffDays, todayISO } from "../../domain/dates";
 
@@ -9,30 +8,32 @@ const Card = styled(Link)`
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px;
+    padding: 8px;
     border-radius: ${(p) => p.theme.radius.md};
     text-decoration: none;
     color: ${(p) => p.theme.colors.text};
     border: 1px solid ${(p) => p.theme.colors.border};
-    background: ${(p) => p.theme.colors.bgSurface};
-    transition: border-color ${(p) => p.theme.motion.fast};
+    background: ${(p) => p.theme.colors.bgElevated};
+    transition: border-color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
+    justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
     &:hover {
         border-color: ${(p) => p.theme.colors.borderStrong};
     }
     .avatar {
         display: grid;
         place-items: center;
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: ${(p) => p.theme.colors.bg};
+        width: 32px;
+        height: 32px;
+        border-radius: ${(p) => p.theme.radius.full};
+        background: ${(p) => p.theme.colors.primarySoft};
+        color: ${(p) => p.theme.colors.primaryText};
         border: 1px solid ${(p) => p.theme.colors.border};
         flex-shrink: 0;
     }
     .txt {
         min-width: 0;
         display: grid;
-        line-height: 1.3;
+        line-height: 1.35;
     }
     .name {
         font-weight: ${(p) => p.theme.fontWeight.semibold};
@@ -51,10 +52,10 @@ const Card = styled(Link)`
 `;
 
 /**
- * Perfil local: o app não tem contas de usuário — os dados pertencem a este navegador.
- * Mostra o status do último backup e leva à área de backup.
+ * Perfil da sidebar. O app não tem contas de usuário — o perfil é local (dados neste navegador).
+ * Mostra o status do último backup e leva à área de backup e dados.
  */
-export function WorkspaceCard({ collapsed = false, onNavigate }) {
+export function SidebarUser({ collapsed = false, onNavigate }) {
     const { store, today } = useFinance();
     const last = store.settings.lastBackupAt;
     const days = last ? diffDays(today, todayISO(new Date(last))) : null;
@@ -62,13 +63,20 @@ export function WorkspaceCard({ collapsed = false, onNavigate }) {
     const status = last ? (days === 0 ? "Backup feito hoje" : `Backup há ${days} dia(s)`) : "Sem backup ainda";
     const Icon = warn ? ShieldAlert : ShieldCheck;
     return (
-        <Card to="/configuracoes/dados#backup" $warn={warn} aria-label={`Meu espaço local. ${status}. Abrir backup`} title={collapsed ? status : undefined} onClick={onNavigate}>
+        <Card
+            to="/configuracoes/dados#backup"
+            $warn={warn}
+            $collapsed={collapsed}
+            aria-label={`Perfil local: dados neste navegador. ${status}. Abrir backup e dados`}
+            title={collapsed ? `Perfil local · ${status}` : undefined}
+            onClick={onNavigate}
+        >
             <span className="avatar" aria-hidden="true">
-                <VeldoraSymbol size={20} />
+                <UserRound size={16} />
             </span>
             {!collapsed && (
                 <span className="txt">
-                    <span className="name">Meu espaço</span>
+                    <span className="name">Perfil local</span>
                     <span className="status">
                         <Icon size={12} aria-hidden="true" /> {status}
                     </span>

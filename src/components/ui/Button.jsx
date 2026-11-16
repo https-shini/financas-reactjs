@@ -2,35 +2,27 @@ import { forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { Loader2 } from "lucide-react";
 
-// Botões táteis: o primário tem um "degrau" inferior (ledge) que afunda ao pressionar.
+// Botões planos (Functional Design): contraste por cor e borda, sem sombras. Pressionar reduz levemente a escala.
 const variants = {
     primary: css`
         background: ${(p) => p.theme.colors.primary};
         color: ${(p) => p.theme.colors.onPrimary};
-        border-color: transparent;
-        box-shadow: ${(p) => p.theme.shadows.ledge};
-        margin-bottom: 3px;
+        border-color: ${(p) => p.theme.colors.primary};
         &:hover:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryHover};
+            border-color: ${(p) => p.theme.colors.primaryHover};
         }
         &:active:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryActive};
-            box-shadow: ${(p) => p.theme.shadows.ledgePressed};
-            transform: translateY(2px);
         }
     `,
     secondary: css`
         background: ${(p) => p.theme.colors.bgElevated};
         color: ${(p) => p.theme.colors.text};
-        border-color: ${(p) => p.theme.colors.borderStrong};
-        box-shadow: ${(p) => p.theme.shadows.ledgeNeutral};
-        margin-bottom: 2px;
+        border-color: ${(p) => p.theme.colors.border};
         &:hover:not(:disabled) {
-            background: ${(p) => p.theme.colors.bgSurface};
-        }
-        &:active:not(:disabled) {
-            box-shadow: none;
-            transform: translateY(2px);
+            background: ${(p) => p.theme.colors.bgHover};
+            border-color: ${(p) => p.theme.colors.borderStrong};
         }
     `,
     ghost: css`
@@ -43,12 +35,11 @@ const variants = {
         }
     `,
     danger: css`
-        background: ${(p) => p.theme.colors.expenseSoft};
+        background: transparent;
         color: ${(p) => p.theme.colors.expense};
         border-color: ${(p) => p.theme.colors.expense};
         &:hover:not(:disabled) {
-            background: ${(p) => p.theme.colors.expense};
-            color: ${(p) => p.theme.colors.bg};
+            background: ${(p) => p.theme.colors.expenseSoft};
         }
     `,
     "danger-ghost": css`
@@ -60,34 +51,34 @@ const variants = {
         }
     `,
     accent: css`
-        background: ${(p) => p.theme.colors.accent};
-        color: ${(p) => p.theme.colors.onAccent};
+        background: ${(p) => p.theme.colors.accentSoft};
+        color: ${(p) => p.theme.colors.accentText};
         border-color: transparent;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 0 ${(p) => p.theme.colors.accentLedge};
-        margin-bottom: 3px;
-        &:active:not(:disabled) {
-            box-shadow: none;
-            transform: translateY(3px);
+        &:hover:not(:disabled) {
+            border-color: ${(p) => p.theme.colors.accentText};
         }
     `,
 };
 
 const sizes = {
     sm: css`
-        min-height: 36px;
+        min-height: 34px;
         padding: 0 12px;
-        font-size: ${(p) => p.theme.fontSize.sm};
+        font-size: ${(p) => p.theme.fontSize.md};
         @media (pointer: coarse) {
             min-height: 44px;
         }
     `,
     md: css`
-        min-height: 44px;
+        min-height: 40px;
         padding: 0 16px;
         font-size: ${(p) => p.theme.fontSize.md};
+        @media (pointer: coarse) {
+            min-height: 44px;
+        }
     `,
     lg: css`
-        min-height: 52px;
+        min-height: 48px;
         padding: 0 20px;
         font-size: ${(p) => p.theme.fontSize.base};
     `,
@@ -99,15 +90,17 @@ const StyledButton = styled.button`
     justify-content: center;
     gap: 8px;
     border: 1px solid transparent;
-    border-radius: ${(p) => p.theme.radius.md};
-    font-weight: 650;
-    letter-spacing: 0.005em;
+    border-radius: ${(p) => p.theme.radius.sm};
+    font-weight: ${(p) => p.theme.fontWeight.semibold};
     line-height: 1;
     white-space: nowrap;
     user-select: none;
     transition: background ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, border-color ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast},
-        transform 90ms ${(p) => p.theme.motion.easing}, box-shadow 90ms ${(p) => p.theme.motion.easing};
+        transform ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing};
     width: ${(p) => (p.$full ? "100%" : "auto")};
+    &:active:not(:disabled) {
+        transform: scale(0.98);
+    }
     &:focus-visible {
         outline: 2px solid ${(p) => p.theme.colors.focus};
         outline-offset: 2px;
@@ -150,7 +143,7 @@ const StyledIconButton = styled.button`
     width: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
     height: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
     flex-shrink: 0;
-    border-radius: ${(p) => p.theme.radius.md};
+    border-radius: ${(p) => p.theme.radius.sm};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
     color: ${(p) => (p.$tone === "danger" ? p.theme.colors.expense : p.theme.colors.textSecondary)};
     border: 1px solid ${(p) => (p.$bordered ? p.theme.colors.border : "transparent")};

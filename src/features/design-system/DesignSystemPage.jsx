@@ -42,12 +42,12 @@ import {
     Pagination,
     Breadcrumbs,
 } from "../../components/ui";
-import { VeldoraLogo, VeldoraSymbol, VeldoraAppIcon } from "../../brand/VeldoraLogo";
-import { SLOGAN, TAGLINE } from "../../brand/geometry";
+import { BrandLockup, BrandMark } from "../../brand/BrandLogo";
+import { TAGLINE, CATEGORY } from "../../brand/geometry";
 import { brand } from "../../design/tokens";
 
 /**
- * Página interna do Design System VELDORA (rota /design-system, fora da navegação principal).
+ * Página interna do Design System do Finanças (rota /design-system, fora da navegação principal).
  * Demonstra marca, paleta, tipografia e todos os componentes com seus estados.
  * Não lê nem grava dados financeiros.
  */
@@ -63,41 +63,45 @@ export default function DesignSystemPage() {
     const [money, setMoney] = useState(125000);
     const [loading, setLoading] = useState(false);
 
-    const semantic = ["bg", "bgElevated", "bgSurface", "border", "text", "textSecondary", "textMuted", "brand", "primary", "primaryText", "accent", "income", "expense", "warning"];
+    const semantic = ["bg", "bgSidebar", "bgElevated", "bgSurface", "border", "text", "textSecondary", "textMuted", "brand", "primary", "primaryText", "primarySoft", "income", "expense", "warning", "info"];
 
     return (
         <Stack $gap={6}>
-            <PageHeader title="Design System" description="VELDORA — componentes, tokens e identidade visual" eyebrow="Sistema interno" />
+            <PageHeader title="Design System" description="Finanças by GCruz.DEV — componentes, tokens e identidade visual (Emerald Finance)" eyebrow="Sistema interno" />
 
             {/* Marca */}
             <Card aria-labelledby="ds-brand">
-                <CardHeader id="ds-brand" title="Identidade" subtitle={`${TAGLINE} · ${SLOGAN.pt}`} />
+                <CardHeader id="ds-brand" title="Identidade" subtitle={`${CATEGORY} · ${TAGLINE}`} />
                 <Grid>
                     <Span $desktop={6}>
-                        <Swatch $bg={brand.night}>
-                            <VeldoraLogo height={32} tone="onDark" title="VELDORA sobre fundo escuro" />
+                        <Swatch $bg={brand.darkBackground}>
+                            <BrandLockup size={40} tone="onDark" title="Finanças sobre fundo escuro" />
                         </Swatch>
                     </Span>
                     <Span $desktop={6}>
                         <Swatch $bg="#FFFFFF" $border>
-                            <VeldoraLogo height={32} tone="onLight" title="VELDORA sobre fundo claro" />
+                            <BrandLockup size={40} tone="onLight" title="Finanças sobre fundo claro" />
                         </Swatch>
                     </Span>
                     <Span $desktop={4}>
                         <Swatch $bg={theme.colors.bgSurface}>
-                            <VeldoraSymbol size={56} title="Símbolo VELDORA" />
+                            <BrandMark size={56} title="Símbolo do Finanças (favicon, ícone e avatar)" />
                         </Swatch>
                     </Span>
                     <Span $desktop={4}>
                         <Swatch $bg={theme.colors.bgSurface}>
                             <span style={{ color: theme.colors.text }}>
-                                <VeldoraLogo height={28} tone="mono" title="VELDORA monocromático" />
+                                <BrandLockup size={36} tone="mono" title="Finanças monocromático" />
                             </span>
                         </Swatch>
                     </Span>
                     <Span $desktop={4}>
                         <Swatch $bg={theme.colors.bgSurface}>
-                            <VeldoraAppIcon size={64} title="Ícone do app" />
+                            <span style={{ display: "flex", gap: 12, alignItems: "center", color: theme.colors.text }}>
+                                <BrandMark size={16} title="Símbolo em 16 px" />
+                                <BrandMark size={32} title="Símbolo em 32 px" />
+                                <BrandMark size={48} tone="mono" title="Símbolo monocromático" />
+                            </span>
                         </Swatch>
                     </Span>
                 </Grid>
@@ -154,7 +158,7 @@ export default function DesignSystemPage() {
                                 </Button>
                                 <Button>Secundário</Button>
                                 <Button variant="ghost">Ghost</Button>
-                                <Button variant="accent">Destaque</Button>
+                                <Button variant="accent">Informação</Button>
                                 <Button variant="danger" icon={Trash2}>
                                     Excluir
                                 </Button>

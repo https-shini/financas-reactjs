@@ -749,17 +749,8 @@ export default function DashboardPage() {
     return (
         <>
             <PageHeader
-                title="Dashboard"
-                description={isEmpty ? "Bem-vindo à VELDORA. Comece registrando sua primeira movimentação." : `Visão geral de ${formatMonthLabel(month).toLowerCase()}`}
-                actions={
-                    isEmpty ? null : (
-                        <span className="only-mobile">
-                            <Button variant="primary" icon={Plus} onClick={() => openTransaction()}>
-                                Nova transação
-                            </Button>
-                        </span>
-                    )
-                }
+                title="Visão geral"
+                description={isEmpty ? "Bem-vindo ao Finanças. Comece registrando sua primeira transação." : `Resumo financeiro de ${formatMonthLabel(month).toLowerCase()}`}
             />
             {showOnboarding && <OnboardingCard />}
             {!showOnboarding && isEmpty && (

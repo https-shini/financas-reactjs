@@ -26,9 +26,8 @@ const Global = createGlobalStyle`
   body {
     font-family: ${(p) => p.theme.fonts.sans};
     font-size: ${(p) => p.theme.fontSize.md};
-    font-feature-settings: "cv11", "ss01";
     background-color: ${(p) => p.theme.colors.bg};
-    /* Brilho ambiente (índigo + Aurum) fixo atrás do conteúdo */
+    /* Brilho ambiente Emerald, discreto, fixo atrás do conteúdo */
     background-image: ${(p) => p.theme.colors.ambient};
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -71,6 +70,10 @@ const Global = createGlobalStyle`
   /* Valores numéricos e tabelas: algarismos tabulares, alinhados */
   table, .num, [data-numeric] {
     font-variant-numeric: tabular-nums;
+  }
+  /* Valores financeiros e indicadores em JetBrains Mono */
+  .num, [data-numeric], code, kbd {
+    font-family: ${(p) => p.theme.fonts.mono};
   }
 
   :focus-visible {
@@ -117,7 +120,7 @@ const Global = createGlobalStyle`
     }
   }
 
-  /* Toasts com a identidade VELDORA */
+  /* Toasts com a identidade do Finanças */
   :root {
     --toastify-color-light: ${(p) => p.theme.colors.bgElevated};
     --toastify-color-dark: ${(p) => p.theme.colors.bgElevated};
