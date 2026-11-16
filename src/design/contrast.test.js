@@ -7,6 +7,15 @@ function luminance(hex) {
     const c = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
     return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 }
+/** Compõe uma cor rgba(...) sobre um fundo hex (alpha blending) e devolve hex. */
+function blend(rgba, bgHex) {
+    const m = rgba.match(/rgba?\(([^)]+)\)/);
+    const [r, g, b, a = 1] = m[1].split(",").map((x) => parseFloat(x));
+    const bg = [0, 2, 4].map((i) => parseInt(bgHex.replace("#", "").slice(i, i + 2), 16));
+    const out = [r, g, b].map((c, i) => Math.round(c * a + bg[i] * (1 - a)));
+    return `#${out.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
+}
+
 export function contrast(a, b) {
     const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
     return (x + 0.05) / (y + 0.05);
@@ -55,6 +64,19 @@ describe.each([
         for (const bg of [c.bg, c.bgElevated, c.bgInput]) expect(contrast(c.borderStrong, bg)).toBeGreaterThanOrEqual(3);
     });
 
+    it("estados de interação (sidebar, menus, listas): texto AA sobre hover e seleção compostos na superfície", () => {
+        for (const surface of [c.bgSidebar, c.bgElevated]) {
+            const hover = blend(c.interactiveHover, surface);
+            const selected = blend(c.interactiveSelected, surface);
+            expect(contrast(c.interactiveText, surface), "texto em repouso").toBeGreaterThanOrEqual(4.5);
+            expect(contrast(c.interactiveText, hover), "texto no hover").toBeGreaterThanOrEqual(4.5);
+            expect(contrast(c.interactiveSelectedText, selected), "texto selecionado").toBeGreaterThanOrEqual(4.5);
+            // Seleção precisa ser distinguível do hover (antes eram a mesma cor).
+            expect(selected).not.toBe(hover);
+            expect(contrast(selected, surface)).toBeGreaterThan(contrast(hover, surface));
+        }
+    });
+
     it("item ativo da navegação: texto e indicador legíveis sobre o Emerald Surface", () => {
         expect(contrast(c.text, c.primarySoft)).toBeGreaterThanOrEqual(4.5);
         expect(contrast(c.indicator, c.primarySoft)).toBeGreaterThanOrEqual(3);
@@ -70,6 +92,10 @@ describe.each([
         expect(vars["--v-color-bg"]).toBe(c.bg);
         expect(vars["--v-radius-lg"]).toBe("14px");
         expect(vars["--v-chart-income"]).toBe(c.chart.income);
+        // Tokens de layout (estrutura do shell) também viram variáveis CSS.
+        expect(vars["--v-layout-header"]).toBe("60px");
+        expect(vars["--v-layout-sidebar"]).toBe("248px");
+        expect(vars["--v-layout-sidebar-footer-min-height"]).toBe(vars["--v-layout-header"]);
     });
 });
 

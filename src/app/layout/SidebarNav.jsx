@@ -1,15 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { NAV_GROUPS, activeNavId } from "../navigation";
-import { typeRole } from "../../components/ui";
+import { typeRole, interactiveItem } from "../../components/ui";
 import { useFinance } from "../../state/contexts";
 import { upcomingItems } from "../../domain/selectors";
 
 const Group = styled.div`
     display: grid;
-    gap: 2px;
+    gap: ${(p) => p.theme.layout.sidebarItemGap};
     & + & {
-        margin-top: ${(p) => p.theme.space(2)};
+        margin-top: ${(p) => p.theme.layout.sidebarSectionGap};
     }
 `;
 
@@ -32,21 +32,21 @@ const GroupLabel = styled.p`
         `}
 `;
 
+// Item de navegação: dimensões vêm de theme.layout; cores e estados vêm do padrão `interactiveItem`.
 const ItemLink = styled(Link)`
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 36px;
-    padding: 0 10px;
+    gap: ${(p) => p.theme.space(2.5)};
+    min-height: ${(p) => p.theme.layout.sidebarItemHeight};
+    padding-inline: ${(p) => p.theme.layout.sidebarItemPaddingInline};
     border-radius: ${(p) => p.theme.radius.md};
-    color: ${(p) => p.theme.colors.textSecondary};
     text-decoration: none;
     font-weight: ${(p) => p.theme.fontWeight.medium};
     font-size: 0.84375rem;
     white-space: nowrap;
     overflow: hidden;
-    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
+    ${interactiveItem}
     ${(p) =>
         p.$collapsed &&
         css`
@@ -55,8 +55,8 @@ const ItemLink = styled(Link)`
         `}
     svg {
         flex-shrink: 0;
-        color: ${(p) => p.theme.colors.textMuted};
-        transition: color ${(p) => p.theme.motion.fast};
+        width: ${(p) => p.theme.layout.sidebarIcon};
+        height: ${(p) => p.theme.layout.sidebarIcon};
     }
     .label {
         overflow: hidden;
@@ -79,35 +79,15 @@ const ItemLink = styled(Link)`
     }
     .dot {
         position: absolute;
-        top: 7px;
+        top: 6px;
         right: 9px;
         width: 7px;
         height: 7px;
         border-radius: 50%;
         background: ${(p) => p.theme.colors.expense};
     }
-    &:hover {
-        background: ${(p) => p.theme.colors.bgSurface};
-        color: ${(p) => p.theme.colors.text};
-        svg {
-            color: ${(p) => p.theme.colors.text};
-        }
-    }
-    &:focus-visible {
-        outline: 2px solid ${(p) => p.theme.colors.focus};
-        outline-offset: -2px;
-    }
-    /* Ativo (padrão Nexus): superfície secundária, texto forte e ícone violeta (não depende só da cor). */
-    &[aria-current="page"] {
-        background: ${(p) => p.theme.colors.bgSurface};
-        color: ${(p) => p.theme.colors.text};
-        font-weight: ${(p) => p.theme.fontWeight.semibold};
-        svg {
-            color: ${(p) => p.theme.colors.indicator};
-        }
-    }
     ${(p) => p.theme.media.coarse} {
-        min-height: 44px;
+        min-height: ${(p) => p.theme.layout.touchTarget};
     }
 `;
 

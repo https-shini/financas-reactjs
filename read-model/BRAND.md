@@ -132,7 +132,15 @@ As fontes são self-hosted (CSP `font-src 'self'`), e o build nunca as embute co
 <img src="./img/nexus-antes-depois-transacoes-claro.png" alt="Transações no tema claro: antes e depois" width="100%"/>
 <img src="./img/nexus-antes-depois-mobile.png" alt="Celular: antes e depois" width="60%"/>
 
-## 9. Validação
+## 9. Estrutura (Sidebar, Header e estados)
+
+Evoluída a partir da análise do Fluxer. Detalhes em [FLUXER-ANALYSIS.md](./FLUXER-ANALYSIS.md).
+
+- **Tokens de layout:** `theme.layout` (estrutura, controles e componentes); `--v-layout-*` em CSS.
+- **Estados de interação:** camadas `interactiveHover`, `interactiveSelected` e `interactivePressed`, aplicadas pelo padrão `interactiveItem` em `src/components/ui/interaction.js`.
+- **Componentes:** `Sidebar` (marca · navegação rolável · perfil e recolher), `Header` (contexto · ferramentas · ações) e `MobileNav`, em `src/app/layout/`.
+
+## 10. Validação
 
 - **Páginas:** 18 (17 do app mais `/design-system`) × 4 cenários (desktop e iPhone 13, temas claro e escuro), além das larguras 320, 360, 768 e 1024 px. As verificações cobrem rolagem horizontal, texto cortado, aba ativa visível, botões sobrepostos, um único H1 e console sem erros.
 - **Estados:** vazios, erros de validação, modais, folha de filtros e drawer.

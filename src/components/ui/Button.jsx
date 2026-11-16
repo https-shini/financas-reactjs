@@ -63,7 +63,7 @@ const variants = {
 
 const sizes = {
     sm: css`
-        min-height: 32px;
+        min-height: ${(p) => p.theme.layout.control};
         padding: 0 10px;
         gap: 6px;
         font-size: 0.8125rem;
@@ -143,11 +143,10 @@ export const Button = forwardRef(function Button(
 const StyledIconButton = styled.button`
     display: inline-grid;
     place-items: center;
-    width: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
-    height: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
+    width: ${(p) => (p.$size === "sm" ? p.theme.layout.control : p.theme.layout.touchTarget)};
+    height: ${(p) => (p.$size === "sm" ? p.theme.layout.control : p.theme.layout.touchTarget)};
     flex-shrink: 0;
     border-radius: ${(p) => p.theme.radius.md};
-    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
     color: ${(p) => (p.$tone === "danger" ? p.theme.colors.expense : p.theme.colors.textSecondary)};
     border: 1px solid ${(p) => (p.$bordered ? p.theme.colors.border : "transparent")};
     background: ${(p) => (p.$bordered ? p.theme.colors.bgElevated : "transparent")};

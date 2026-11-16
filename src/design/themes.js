@@ -32,6 +32,12 @@ export const darkTheme = {
         bgSurface: p.zinc[880], // #18181D — áreas internas, item ativo
         bgHover: p.zinc[870], // #1F1F25
         bgGlass: "rgba(10, 10, 12, 0.82)",
+        // Interação (camadas translúcidas, como os "modifiers" do Fluxer): funcionam sobre qualquer superfície.
+        interactiveHover: "rgba(255, 255, 255, 0.045)",
+        interactiveSelected: "rgba(255, 255, 255, 0.085)",
+        interactivePressed: "rgba(255, 255, 255, 0.12)",
+        interactiveText: p.zinc[800], // item não selecionado
+        interactiveSelectedText: p.zinc[995], // item selecionado
         bgInput: p.zinc[930],
         border: p.zinc[850], // #25252B
         borderStrong: p.zinc[700], // contorno de campos (≥ 3:1)
@@ -95,6 +101,11 @@ export const lightTheme = {
         bgSurface: p.zinc[50], // #F5F5F4
         bgHover: p.zinc[75],
         bgGlass: "rgba(250, 250, 249, 0.85)",
+        interactiveHover: "rgba(10, 10, 11, 0.04)",
+        interactiveSelected: "rgba(10, 10, 11, 0.07)",
+        interactivePressed: "rgba(10, 10, 11, 0.1)",
+        interactiveText: p.zinc[600],
+        interactiveSelectedText: p.zinc[990],
         bgInput: p.zinc[0],
         border: p.zinc[150], // #E7E7E4
         borderStrong: p.zinc[400],
@@ -160,6 +171,7 @@ export function themeToCssVars(theme) {
     for (const [k, v] of Object.entries(theme.shadows)) vars[`--v-shadow-${k}`] = v;
     for (const [k, v] of Object.entries(theme.motion)) vars[`--v-motion-${kebab(k)}`] = v;
     for (const [k, v] of Object.entries(theme.fontSize)) vars[`--v-font-size-${k}`] = v;
+    for (const [k, v] of Object.entries(theme.layout)) vars[`--v-layout-${kebab(k)}`] = v;
     vars["--v-font-sans"] = theme.fonts.sans;
     vars["--v-font-display"] = theme.fonts.display;
     return vars;

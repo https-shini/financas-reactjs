@@ -9,3 +9,4 @@ export { Tabs, RouteTabs } from "./Tabs";
 export { iconFor, CATEGORY_ICON_COMPONENTS } from "./icons";
 export { Text, Heading, NumericDisplay, Overline, Subheading, FieldLabel, Eyebrow, typeRole } from "./Typography";
 export { Spinner, Alert, Tooltip, StatCard, DataTable, Pagination, Breadcrumbs } from "./Feedback";
+export { focusRing, interactiveItem, floatingSurface, compactControl } from "./interaction";

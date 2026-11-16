@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Bell, CalendarClock, CheckCircle2 } from "lucide-react";
-import { IconButton, Amount } from "../../components/ui";
+import { IconButton, Amount, floatingSurface, interactiveItem } from "../../components/ui";
 import { useFinance } from "../../state/contexts";
 import { upcomingItems } from "../../domain/selectors";
 import { formatDateBR } from "../../domain/dates";
@@ -36,10 +36,7 @@ const Panel = styled.div`
     right: 0;
     z-index: ${(p) => p.theme.z.dropdown};
     width: min(340px, calc(100vw - 24px));
-    border-radius: ${(p) => p.theme.radius.lg};
-    background: ${(p) => p.theme.colors.bgElevated};
-    border: 1px solid ${(p) => p.theme.colors.border};
-    box-shadow: ${(p) => p.theme.shadows.lg};
+    ${floatingSurface}
     overflow: hidden;
     header {
         display: flex;
@@ -70,12 +67,8 @@ const Panel = styled.div`
         align-items: center;
         padding: 10px 14px;
         text-decoration: none;
+        ${interactiveItem}
         color: ${(p) => p.theme.colors.text};
-        &:hover,
-        &:focus-visible {
-            background: ${(p) => p.theme.colors.bgHover};
-            outline: none;
-        }
     }
     .ic {
         color: ${(p) => p.theme.colors.textMuted};

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ShieldCheck, ShieldAlert, UserRound } from "lucide-react";
 import { useFinance } from "../../state/contexts";
+import { interactiveItem } from "../../components/ui";
 import { diffDays, todayISO } from "../../domain/dates";
 
 const Card = styled(Link)`
@@ -11,16 +12,9 @@ const Card = styled(Link)`
     padding: 8px;
     border-radius: ${(p) => p.theme.radius.md};
     text-decoration: none;
-    color: ${(p) => p.theme.colors.text};
-    transition: background ${(p) => p.theme.motion.fast};
     justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
-    &:hover {
-        background: ${(p) => p.theme.colors.bgSurface};
-    }
-    &:focus-visible {
-        outline: 2px solid ${(p) => p.theme.colors.focus};
-        outline-offset: -2px;
-    }
+    ${interactiveItem}
+    color: ${(p) => p.theme.colors.text};
     .avatar {
         display: grid;
         place-items: center;

@@ -100,4 +100,15 @@ describe("shell Finanças", () => {
         // No celular o rótulo visível encurta para "Cancelar", mas o nome acessível é o completo.
         expect(screen.getByRole("button", { name: "Cancelar seleção" })).toHaveAttribute("aria-pressed", "true");
     });
+    it("sidebar: um único controle de recolher, que persiste a preferência e expõe aria-expanded", async () => {
+        const user = userEvent.setup();
+        render(<App />);
+        await screen.findByRole("heading", { level: 1, name: "Visão geral" });
+        const toggles = screen.getAllByRole("button", { name: /menu lateral/, hidden: true });
+        expect(toggles).toHaveLength(1);
+        expect(toggles[0]).toHaveAttribute("aria-expanded", "true");
+        await user.click(toggles[0]);
+        await waitFor(() => expect(JSON.parse(localStorage.getItem(STORE_KEY)).settings.sidebarCollapsed).toBe(true));
+        expect(screen.getByRole("button", { name: "Expandir menu lateral", hidden: true })).toHaveAttribute("aria-expanded", "false");
+    });
 });

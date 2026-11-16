@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import styled from "styled-components";
 import { MoreHorizontal } from "lucide-react";
 import { IconButton } from "./Button";
+import { floatingSurface, interactiveItem } from "./interaction";
 
 const Wrap = styled.div`
     position: relative;
@@ -12,13 +13,11 @@ const List = styled.div`
     position: absolute;
     ${(p) => (p.$up ? "bottom: calc(100% + 4px);" : "top: calc(100% + 4px);")}
     ${(p) => (p.$align === "left" ? "left: 0;" : "right: 0;")}
-    z-index: ${(p) => p.theme.z.nav + 5};
+    z-index: ${(p) => p.theme.z.dropdown};
     min-width: 200px;
     padding: 4px;
+    ${floatingSurface}
     border-radius: ${(p) => p.theme.radius.md};
-    background: ${(p) => p.theme.colors.bgElevated};
-    border: 1px solid ${(p) => p.theme.colors.border};
-    box-shadow: ${(p) => p.theme.shadows.lg};
 `;
 
 const Item = styled.button`
@@ -26,17 +25,23 @@ const Item = styled.button`
     align-items: center;
     gap: 10px;
     width: 100%;
-    min-height: 40px;
+    min-height: 36px;
     padding: 0 10px;
-    border-radius: 8px;
+    border-radius: ${(p) => p.theme.radius.sm};
     text-align: left;
     font-size: ${(p) => p.theme.fontSize.md};
+    ${interactiveItem}
     color: ${(p) => (p.$danger ? p.theme.colors.expense : p.theme.colors.text)};
-    &:hover,
+    /* Navegação por setas: o item focado recebe a mesma camada do hover. */
     &:focus-visible {
-        background: ${(p) => (p.$danger ? p.theme.colors.expenseSoft : p.theme.colors.bgHover)};
-        outline: none;
+        background: ${(p) => p.theme.colors.interactiveHover};
     }
+    ${(p) =>
+        p.$danger &&
+        `
+        svg { color: currentColor; }
+        &:hover { color: ${p.theme.colors.expense}; background: ${p.theme.colors.expenseSoft}; }
+    `}
     @media (pointer: coarse) {
         min-height: 44px;
     }

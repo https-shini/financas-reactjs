@@ -27,8 +27,9 @@ src/
 │   │              Tooltip, Alert, Pagination, Breadcrumbs; Typography)
 │   ├── charts/    useChartTheme + ChartLegend (eixos, grade, tooltip BRL por tema)
 │   └── layout/    PageHeader (breadcrumbs automáticos) e grade responsiva
-├── app/           AppShell, navigation.js (grupos, item ativo, breadcrumbs), layout/ (SidebarNav,
-│                  SidebarUser, ThemeToggle, Notifications), tema, UIContext, alertas
+├── app/           AppShell (composição + atalhos), navigation.js (seções, item ativo, breadcrumbs),
+│                  layout/ (Sidebar, Header, MobileNav, SidebarNav, SidebarUser, ThemeToggle,
+│                  Notifications, responsive), tema, UIContext, alertas
 ├── features/      dashboard, transactions, planning, reports, settings, data, recovery, design-system
 ├── hooks/         useFormat, useMediaQuery, useHotkeys
 ├── styles/        estilos globais (theme.js reexporta src/design/themes.js)
@@ -42,6 +43,7 @@ src/
 - **Persistência resiliente.** O repositório valida com Zod, corrige problemas recuperáveis (IDs duplicados, referências quebradas), migra versões e entra em modo de recuperação quando os dados são ilegíveis, sem sobrescrever nada.
 - **Local-first.** Sem backend; depois de carregado, o app não depende de servidor. Fontes self-hosted (`@fontsource-variable/geist` e `@fontsource-variable/geist-mono`), sem requisições externas em tempo de execução.
 - **Segurança em produção.** `vercel.json` define CSP restritiva (somente a própria origem, sem `unsafe-eval`; o Zod roda em modo `jitless`), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` e `Permissions-Policy`. `npm run preview` aplica os mesmos cabeçalhos. Exportações CSV/XLSX passam por `utils/csv.js` (proteção contra injeção de fórmulas).
+- **Shell em componentes estruturais.** Sidebar (cabeçalho · corpo rolável · rodapé), Header (contexto · ferramentas · ações) e MobileNav, com medidas de `theme.layout` e estados de `interactiveItem`. Análise e decisões em [FLUXER-ANALYSIS.md](./FLUXER-ANALYSIS.md).
 - **Design system em duas camadas.** Tokens primitivos → tokens semânticos por tema. Componentes só usam nomes semânticos; o contraste AA de cada par é garantido por teste. Detalhes em [BRAND.md](./BRAND.md).
 - **Marca sem dependências externas.** Logo, favicon e ícones são SVG gerados a partir de `src/brand/geometry.js` (`node scripts/generate-brand-assets.mjs`).
 - **Vite** substituiu o Create React App (descontinuado). O build continua em `build/` para manter o deploy existente.
