@@ -1,22 +1,24 @@
 import { NEUTRAL_COLOR } from "../../design/tokens";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { ResponsiveContainer, ComposedChart, Bar, Line } from "recharts";
 import {
     Wallet, TrendingUp, CalendarClock, Lightbulb, PieChart, ListOrdered, Target, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2,
-    Info, Plus, Upload, Sparkles, CreditCard, Flag, Receipt,
+    Info, Plus, Upload, Sparkles, CreditCard, Flag, Receipt, ArrowUp, ArrowDown, ArrowLeftRight, PiggyBank,
 } from "lucide-react";
 import {
-    Card, CardHeader, Amount, Delta, Progress, levelTone, EmptyState, Button, Badge, CategoryIcon, StatCard, NumericDisplay, Text,
+    Card, CardHeader, Amount, Delta, Progress, levelTone, EmptyState, Button, Badge, CategoryIcon, StatCard, NumericDisplay, Text, SegmentedControl,
 } from "../../components/ui";
 import { PageHeader, Grid, Span, Stack, Row } from "../../components/layout/Page";
 import { useChartTheme, ChartLegend } from "../../components/charts/chartTheme";
+import { Sparkline } from "../../components/charts/Sparkline";
+import { percentOf } from "../../domain/money";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
 import { useFormat } from "../../hooks/useFormat";
 import {
-    balancesByAccount, categoryBreakdown, consolidatedBalance, groupByDay, indexById, monthComparison, monthlySeries, sortTransactions,
+    balancesByAccount, categoryBreakdown, consolidatedBalance, indexById, monthComparison, monthlySeries, sortTransactions,
     upcomingItems,
 } from "../../domain/selectors";
 import { budgetStatus } from "../../domain/budgets";
@@ -24,9 +26,8 @@ import { goalProgress } from "../../domain/goals";
 import { generateInsights } from "../../domain/insights";
 import { forecastEndOfMonth, spendableToday } from "../../domain/projection";
 import { cardSummary, isCard, INVOICE_STATUS_LABEL } from "../../domain/cards";
-import { formatDateBR, formatDayHeading, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
+import { formatDateBR, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
 import { ACCOUNT_TYPES } from "../../domain/defaults";
-import { TransactionRow, TxList } from "../transactions/TransactionRow";
 import { OnboardingCard } from "./OnboardingCard";
 
 // ---------------- estilos locais ----------------
@@ -127,16 +128,6 @@ const BarList = styled.ul`
         min-width: 36px;
         text-align: right;
     }
-`;
-
-const DayHeading = styled.h3`
-    font-family: ${(p) => p.theme.fonts.sans} !important;
-    font-size: ${(p) => p.theme.fontSize.xs} !important;
-    font-weight: ${(p) => p.theme.fontWeight.semibold};
-    text-transform: uppercase;
-    letter-spacing: ${(p) => p.theme.letterSpacing.wide} !important;
-    color: ${(p) => p.theme.colors.textMuted};
-    padding: 10px 8px 4px;
 `;
 
 const ItemList = styled.ul`
@@ -264,41 +255,131 @@ function BalanceCard({ store, today }) {
     );
 }
 
-function MonthResultCard({ store, month }) {
+// ---------------- KPIs do mês (padrão Nexus: valor em mono + variação + minigráfico) ----------------
+
+const KpiGrid = styled.div`
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    ${(p) => p.theme.media.desktop} {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+    /* Celular: duas colunas, valor menor e variação em linha própria. */
+    ${(p) => p.theme.media.mobile} {
+        section {
+            padding: 12px 14px;
+            gap: 8px;
+        }
+        .kpi-value > span {
+            font-size: 1.25rem;
+        }
+        .kpi-foot {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+        }
+        .kpi-foot svg {
+            width: 100%;
+        }
+    }
+`;
+
+const KpiFoot = styled.div`
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 28px;
+`;
+
+function KpiRow({ store, month }) {
+    const theme = useTheme();
     const cmp = monthComparison(store, month);
     const cur = cmp.current;
+    const prev = cmp.previous;
+    const series = monthlySeries(store, month, 6);
+    const rate = (r) => (r.incomeCents ? percentOf(r.resultCents, r.incomeCents) : null);
+    const curRate = rate(cur);
+    const prevRate = rate(prev);
+    const rateDelta = curRate !== null && prevRate !== null ? curRate - prevRate : null;
     const monthName = formatMonthLabel(month).split(" de ")[0].toLowerCase();
+    const items = [
+        {
+            key: "in",
+            label: "Entradas",
+            icon: ArrowUp,
+            tone: "income",
+            tip: "Receitas do mês (competência: data do lançamento, incluindo pendentes). Transferências não entram.",
+            value: <Amount cents={cur.incomeCents} private colored={false} weight={600} big />,
+            delta: <Delta value={cmp.incomeVariation} suffix="vs. mês ant." />,
+            spark: series.map((r) => r.incomeCents),
+            color: theme.colors.chart.income,
+        },
+        {
+            key: "out",
+            label: "Saídas",
+            icon: ArrowDown,
+            tone: "expense",
+            tip: "Despesas do mês (competência), incluindo pendentes e compras no cartão.",
+            value: <Amount cents={cur.expenseCents} private colored={false} weight={600} big />,
+            delta: <Delta value={cmp.expenseVariation} goodWhenUp={false} suffix="vs. mês ant." />,
+            spark: series.map((r) => r.expenseCents),
+            color: theme.colors.chart.expense,
+        },
+        {
+            key: "res",
+            label: `Saldo de ${monthName}`,
+            icon: Wallet,
+            tone: "accentText",
+            tip: "Entradas menos saídas do mês. Transferências entre contas não entram.",
+            value: <Amount cents={cur.resultCents} sign private weight={600} big />,
+            delta: <Delta value={cmp.resultVariation} suffix="vs. mês ant." />,
+            spark: series.map((r) => r.resultCents),
+            color: theme.colors.chart.primary,
+        },
+        {
+            key: "rate",
+            label: "Taxa de poupança",
+            icon: PiggyBank,
+            tone: "neutral",
+            tip: "Quanto das entradas do mês sobrou: saldo do mês ÷ entradas.",
+            value:
+                curRate === null ? (
+                    <Text $tone="muted">Sem entradas no mês</Text>
+                ) : (
+                    <>
+                        {Math.round(curRate)}
+                        <span style={{ fontSize: "0.54em", opacity: 0.6, marginLeft: 2 }}>%</span>
+                    </>
+                ),
+            delta: <Delta value={rateDelta} unit=" pp" suffix="vs. mês ant." />,
+            spark: series.map((r) => rate(r) ?? 0),
+            color: theme.colors.chart.neutral,
+        },
+    ];
     return (
-        <StatCard
-            label={`Resultado de ${monthName}`}
-            icon={TrendingUp}
-            iconTone={cur.resultCents >= 0 ? "income" : "expense"}
-            accent={cur.resultCents >= 0 ? "income" : "expense"}
-            tooltip="Receitas menos despesas do mês (competência: data do lançamento, incluindo pendentes). Transferências não entram."
-            value={
-                <BigValue>
-                    <Amount cents={cur.resultCents} sign private weight={700} big />
-                </BigValue>
-            }
-            delta={<Delta value={cmp.resultVariation} />}
-        >
-            <Split>
-                <div>
-                    <dt>Receitas</dt>
-                    <dd>
-                        <Amount cents={cur.incomeCents} type="income" private />
-                        <Delta value={cmp.incomeVariation} suffix="" />
-                    </dd>
-                </div>
-                <div>
-                    <dt>Despesas</dt>
-                    <dd>
-                        <Amount cents={cur.expenseCents} type="expense" private />
-                        <Delta value={cmp.expenseVariation} goodWhenUp={false} suffix="" />
-                    </dd>
-                </div>
-            </Split>
-        </StatCard>
+        <KpiGrid>
+            {items.map((k) => (
+                <StatCard
+                    key={k.key}
+                    label={k.label}
+                    icon={k.icon}
+                    iconTone={k.tone}
+                    tooltip={k.tip}
+                    value={
+                        <span className="kpi-value">
+                            <BigValue>{k.value}</BigValue>
+                        </span>
+                    }
+                >
+                    <KpiFoot className="kpi-foot">
+                        {k.delta}
+                        <Sparkline values={k.spark} color={k.color} />
+                    </KpiFoot>
+                </StatCard>
+            ))}
+        </KpiGrid>
     );
 }
 
@@ -461,40 +542,299 @@ function CategoriesCard({ store, month }) {
 
 // ---------------- listas ----------------
 
+// ---------------- Transações recentes (tabela no padrão Nexus) ----------------
+
+const RecentTable = styled.table`
+    width: 100%;
+    border-collapse: collapse;
+    font-size: ${(p) => p.theme.fontSize.md};
+    th {
+        text-align: left;
+        font-size: ${(p) => p.theme.fontSize.xs};
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+        letter-spacing: ${(p) => p.theme.letterSpacing.wide};
+        text-transform: uppercase;
+        color: ${(p) => p.theme.colors.textMuted};
+        padding: 10px 8px;
+        border-bottom: 1px solid ${(p) => p.theme.colors.border};
+    }
+    td {
+        padding: 10px 8px;
+        border-bottom: 1px solid ${(p) => p.theme.colors.border};
+        vertical-align: middle;
+    }
+    tr:last-child td {
+        border-bottom: 0;
+    }
+    tbody tr {
+        transition: background ${(p) => p.theme.motion.fast};
+    }
+    tbody tr:hover {
+        background: ${(p) => p.theme.colors.bgSurface};
+    }
+    .r {
+        text-align: right;
+    }
+    .desc {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        text-align: left;
+        width: 100%;
+        border-radius: ${(p) => p.theme.radius.sm};
+    }
+    .desc:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: 2px;
+    }
+    .desc .t {
+        display: grid;
+        min-width: 0;
+    }
+    .desc .n {
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .desc .c {
+        font-size: ${(p) => p.theme.fontSize.sm};
+        color: ${(p) => p.theme.colors.textMuted};
+    }
+    .date {
+        color: ${(p) => p.theme.colors.textSecondary};
+        white-space: nowrap;
+    }
+    /* Celular: só descrição e valor (tipo e data aparecem na linha de detalhe). */
+    ${(p) => p.theme.media.mobile} {
+        .hide-sm {
+            display: none;
+        }
+    }
+`;
+
+const TYPE_BADGE = {
+    income: { tone: "income", icon: ArrowUp, label: "Entrada" },
+    expense: { tone: "expense", icon: ArrowDown, label: "Saída" },
+    transfer: { tone: "neutral", icon: ArrowLeftRight, label: "Transferência" },
+};
+
+function TypeBadge({ type }) {
+    const b = TYPE_BADGE[type] ?? TYPE_BADGE.expense;
+    return (
+        <Badge $tone={b.tone}>
+            <b.icon size={11} aria-hidden="true" /> {b.label}
+        </Badge>
+    );
+}
+
 function RecentCard({ store, today }) {
     const { openTransaction } = useUI();
+    const [filter, setFilter] = useState("all");
     const cats = useMemo(() => indexById(store.categories), [store.categories]);
-    const accs = useMemo(() => indexById(store.accounts), [store.accounts]);
-    const recent = sortTransactions(store.transactions.filter((t) => t.date <= today), "date-desc").slice(0, 7);
-    const groups = groupByDay(recent);
+    const all = sortTransactions(store.transactions.filter((t) => t.date <= today), "date-desc");
+    const rows = all.filter((t) => filter === "all" || t.type === filter).slice(0, 8);
     return (
         <Card aria-labelledby="recent-title">
             <CardHeader
                 id="recent-title"
-                title="Últimas transações"
+                title="Transações recentes"
+                subtitle={`${rows.length} ${rows.length === 1 ? "registro" : "registros"} · até hoje`}
                 actions={
-                    <Button size="sm" variant="ghost" as={Link} to="/movimentacoes">
-                        Ver todas
-                    </Button>
+                    <SegmentedControl
+                        label="Filtrar transações recentes"
+                        value={filter}
+                        onChange={setFilter}
+                        options={[
+                            { value: "all", label: "Todas" },
+                            { value: "income", label: "Entradas" },
+                            { value: "expense", label: "Saídas" },
+                        ]}
+                    />
                 }
             />
-            {groups.length ? (
-                groups.map((g) => (
-                    <section key={g.date} aria-label={formatDayHeading(g.date, today)}>
-                        <DayHeading>{formatDayHeading(g.date, today)}</DayHeading>
-                        <TxList>
-                            {g.items.map((tx) => (
-                                <TransactionRow key={tx.id} tx={tx} categories={cats} accounts={accs} today={today} onOpen={(t) => openTransaction({ mode: "edit", tx: t })} />
-                            ))}
-                        </TxList>
-                    </section>
-                ))
+            {rows.length ? (
+                <div style={{ overflowX: "auto", margin: "0 -8px" }}>
+                    <RecentTable>
+                        <caption className="sr-only">Transações recentes</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Descrição</th>
+                                <th scope="col" className="hide-sm">
+                                    Tipo
+                                </th>
+                                <th scope="col" className="hide-sm">
+                                    Data
+                                </th>
+                                <th scope="col" className="r">
+                                    Valor
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.map((tx) => {
+                                const cat = tx.categoryId ? cats.get(tx.categoryId) : null;
+                                return (
+                                    <tr key={tx.id}>
+                                        <td>
+                                            <button type="button" className="desc" onClick={() => openTransaction({ mode: "edit", tx })} aria-label={`Editar ${tx.description}`}>
+                                                <CategoryIcon category={cat ?? { icon: "Tag", color: NEUTRAL_COLOR }} size={32} />
+                                                <span className="t">
+                                                    <span className="n">{tx.description}</span>
+                                                    <span className="c">{cat?.name ?? (tx.type === "transfer" ? "Transferência" : "Sem categoria")}</span>
+                                                </span>
+                                            </button>
+                                        </td>
+                                        <td className="hide-sm">
+                                            <TypeBadge type={tx.type} />
+                                        </td>
+                                        <td className="hide-sm date">{formatDateBR(tx.date, "dd 'de' MMM")}</td>
+                                        <td className="r">
+                                            <Amount cents={tx.amountCents} type={tx.type} private />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </RecentTable>
+                </div>
             ) : (
-                <EmptyState compact icon={ListOrdered} title="Nenhuma movimentação" description="Registre receitas e despesas para acompanhar seu mês.">
+                <EmptyState compact icon={ListOrdered} title="Nenhuma transação" description="Registre receitas e despesas para acompanhar seu mês.">
                     <Button variant="primary" icon={Plus} onClick={() => openTransaction()}>
                         Nova transação
                     </Button>
                 </EmptyState>
+            )}
+            {all.length > 0 && (
+                <Row $justify="space-between" style={{ marginTop: 12 }}>
+                    <Text as="span" $variant="caption" $tone="muted">
+                        Clique em uma transação para editar
+                    </Text>
+                    <Button size="sm" variant="ghost" as={Link} to="/movimentacoes">
+                        Ver todas
+                    </Button>
+                </Row>
+            )}
+        </Card>
+    );
+}
+
+// ---------------- Distribuição: entradas × saídas do mês (donut) ----------------
+
+const DonutWrap = styled.div`
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    padding: 4px 0 2px;
+    .donut {
+        position: relative;
+        width: 200px;
+        height: 200px;
+    }
+    .donut svg {
+        transform: rotate(-90deg);
+    }
+    .center {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        text-align: center;
+    }
+    .center .l {
+        font-size: ${(p) => p.theme.fontSize.xs};
+        text-transform: uppercase;
+        letter-spacing: ${(p) => p.theme.letterSpacing.wide};
+        color: ${(p) => p.theme.colors.textMuted};
+    }
+    .center .v {
+        font-size: 0.95rem;
+        margin-top: 2px;
+    }
+    ul {
+        list-style: none;
+        width: 100%;
+        display: grid;
+        gap: 8px;
+    }
+    li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid ${(p) => p.theme.colors.border};
+        border-radius: ${(p) => p.theme.radius.md};
+        background: ${(p) => p.theme.colors.bgSurface};
+    }
+    li .sw {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+    li .k {
+        flex: 1;
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+    }
+    li .v {
+        display: grid;
+        justify-items: end;
+        line-height: 1.3;
+    }
+    li .p {
+        font-size: ${(p) => p.theme.fontSize.xs};
+        color: ${(p) => p.theme.colors.textMuted};
+    }
+`;
+
+function DistributionCard({ store, month }) {
+    const theme = useTheme();
+    const cur = monthComparison(store, month).current;
+    const total = cur.incomeCents + cur.expenseCents;
+    const inPct = total ? Math.round(percentOf(cur.incomeCents, total)) : 0;
+    const outPct = total ? 100 - inPct : 0;
+    const r = 84;
+    const circ = 2 * Math.PI * r;
+    const inLen = total ? (cur.incomeCents / total) * circ : 0;
+    return (
+        <Card aria-labelledby="dist-title">
+            <CardHeader id="dist-title" title="Distribuição" subtitle={`Entradas × saídas em ${formatMonthLabel(month).toLowerCase()}`} />
+            {total ? (
+                <DonutWrap>
+                    <div className="donut" role="img" aria-label={`Entradas ${inPct}%, saídas ${outPct}% do movimento do mês.`}>
+                        <svg width="200" height="200" viewBox="0 0 200 200" aria-hidden="true">
+                            <circle cx="100" cy="100" r={r} fill="none" stroke={theme.colors.chart.expense} strokeWidth="14" />
+                            <circle cx="100" cy="100" r={r} fill="none" stroke={theme.colors.chart.income} strokeWidth="14" strokeDasharray={`${inLen} ${circ - inLen}`} />
+                        </svg>
+                        <div className="center">
+                            <span className="l">Saldo</span>
+                            <span className="v">
+                                <Amount cents={cur.resultCents} sign private />
+                            </span>
+                        </div>
+                    </div>
+                    <ul>
+                        <li>
+                            <span className="sw" style={{ background: theme.colors.chart.income }} aria-hidden="true" />
+                            <span className="k">Entradas</span>
+                            <span className="v">
+                                <Amount cents={cur.incomeCents} private colored={false} />
+                                <span className="p">{inPct}%</span>
+                            </span>
+                        </li>
+                        <li>
+                            <span className="sw" style={{ background: theme.colors.chart.expense }} aria-hidden="true" />
+                            <span className="k">Saídas</span>
+                            <span className="v">
+                                <Amount cents={cur.expenseCents} private colored={false} />
+                                <span className="p">{outPct}%</span>
+                            </span>
+                        </li>
+                    </ul>
+                </DonutWrap>
+            ) : (
+                <EmptyState compact icon={PieChart} title="Sem movimento no mês" description="Entradas e saídas aparecem aqui assim que forem registradas." />
             )}
         </Card>
     );
@@ -766,13 +1106,19 @@ export default function DashboardPage() {
                 </Card>
             )}
             <Grid>
+                <Span $desktop={12}>
+                    <KpiRow store={store} month={month} />
+                </Span>
+                <Span $desktop={8}>
+                    <RecentCard store={store} today={today} />
+                </Span>
                 <Span $desktop={4}>
+                    <DistributionCard store={store} month={month} />
+                </Span>
+                <Span $desktop={6}>
                     <BalanceCard store={store} today={today} />
                 </Span>
-                <Span $desktop={4}>
-                    <MonthResultCard store={store} month={month} />
-                </Span>
-                <Span $desktop={4}>
+                <Span $desktop={6}>
                     <ForecastCard store={store} today={today} />
                 </Span>
                 <Span $desktop={8}>
@@ -785,15 +1131,12 @@ export default function DashboardPage() {
                     <UpcomingCard store={store} today={today} />
                 </Span>
                 <Span $desktop={6}>
-                    <RecentCard store={store} today={today} />
-                </Span>
-                <Span $desktop={4}>
                     <InvoicesCard store={store} today={today} />
                 </Span>
-                <Span $desktop={4}>
+                <Span $desktop={6}>
                     <GoalsCard store={store} today={today} />
                 </Span>
-                <Span $desktop={4}>
+                <Span $desktop={6}>
                     <BudgetsCard store={store} month={month} />
                 </Span>
                 <Span $desktop={12}>

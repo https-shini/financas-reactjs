@@ -730,8 +730,8 @@ function DataSection() {
                 </Row>
             </Card>
 
-            <Card aria-labelledby="exp-title">
-                <CardHeader id="exp-title" title="Exportar todas as transações" subtitle="Para exportar um período ou filtro, use Movimentações › Exportar." />
+            <Card id="exportar" aria-labelledby="exp-title" style={{ scrollMarginTop: 88 }}>
+                <CardHeader id="exp-title" title="Exportar todas as transações" subtitle="Para exportar um período ou filtro, use Transações › Exportar." />
                 <ActionGrid>
                     <Button icon={FileSpreadsheet} onClick={() => exp(() => exportToExcel(all, store))}>
                         Excel (.xlsx)
@@ -856,7 +856,7 @@ function AboutSection() {
 export default function SettingsPage() {
     return (
         <>
-            <PageHeader title="Configurações" group="system" description="Preferências, cadastros e seus dados" />
+            <PageHeader title="Configurações" description="Preferências, cadastros e seus dados" />
             <RouteTabs tabs={TABS} label="Seções de configurações" />
             <Routes>
                 <Route index element={<Navigate to="aparencia" replace />} />

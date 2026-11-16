@@ -2,13 +2,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { NavLink, useLocation } from "react-router-dom";
 
-// Abas com sublinhado (Functional Design): inativas neutras, ativa com texto forte e indicador Emerald.
+// Abas segmentadas (padrão Nexus): trilho em superfície secundária; aba ativa elevada com sombra leve.
 const Bar = styled.div`
     display: flex;
-    gap: 4px;
+    gap: 2px;
+    width: fit-content;
+    max-width: 100%;
     overflow-x: auto;
     scrollbar-width: none;
-    border-bottom: 1px solid ${(p) => p.theme.colors.border};
+    padding: 2px;
+    border-radius: 8px;
+    background: ${(p) => p.theme.colors.bgSurface};
+    border: 1px solid ${(p) => p.theme.colors.border};
     margin-bottom: ${(p) => p.theme.space(5)};
     scroll-behavior: smooth;
     &::-webkit-scrollbar {
@@ -33,40 +38,30 @@ const TabStyle = styled.button`
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 0 12px;
+    gap: 6px;
+    min-height: 30px;
+    padding: 0 10px;
     white-space: nowrap;
     font-weight: ${(p) => p.theme.fontWeight.medium};
-    font-size: ${(p) => p.theme.fontSize.md};
+    font-size: 0.78125rem;
     color: ${(p) => p.theme.colors.textSecondary};
     text-decoration: none;
-    border-radius: ${(p) => p.theme.radius.sm} ${(p) => p.theme.radius.sm} 0 0;
+    border-radius: 6px;
     transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
     &:hover {
         color: ${(p) => p.theme.colors.text};
-        background: ${(p) => p.theme.colors.bgHover};
     }
     &:focus-visible {
         outline: 2px solid ${(p) => p.theme.colors.focus};
         outline-offset: -2px;
     }
-    /* Ativa: texto forte + sublinhado Emerald (não depende só da cor). */
+    /* Ativa: superfície elevada + sombra leve + texto forte (não depende só da cor). */
     &[aria-selected="true"],
     &.active {
         color: ${(p) => p.theme.colors.text};
+        background: ${(p) => p.theme.colors.bgElevated};
+        box-shadow: 0 1px 2px rgba(15, 15, 17, 0.08), inset 0 0 0 1px ${(p) => p.theme.colors.border};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
-    }
-    &[aria-selected="true"]::after,
-    &.active::after {
-        content: "";
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        bottom: -1px;
-        height: 2px;
-        border-radius: 2px 2px 0 0;
-        background: ${(p) => p.theme.colors.indicator};
     }
     svg {
         color: ${(p) => p.theme.colors.textMuted};
@@ -76,7 +71,7 @@ const TabStyle = styled.button`
         color: ${(p) => p.theme.colors.indicator};
     }
     @media (pointer: coarse) {
-        min-height: 44px;
+        min-height: 40px;
     }
 `;
 

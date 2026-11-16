@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import styled from "styled-components";
 import {
     LayoutDashboard, ArrowLeftRight, CalendarRange, Plus, Search, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, Eye, EyeOff, Zap,
-    Menu as MenuIcon, ArrowUpRight,
+    Menu as MenuIcon, ArrowUpRight, CircleHelp,
 } from "lucide-react";
 import { Button, IconButton, Drawer, ModalBody, Breadcrumbs } from "../components/ui";
 import { useFinance, useFinanceActions } from "../state/contexts";
@@ -64,7 +64,7 @@ const SideBrand = styled(Link)`
     align-items: center;
     justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
     height: ${(p) => p.theme.layout.topbar};
-    padding: 0 ${(p) => (p.$collapsed ? "0" : "16px")};
+    padding: 0 ${(p) => (p.$collapsed ? "0" : "18px")};
     flex-shrink: 0;
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     color: ${(p) => p.theme.colors.text};
@@ -78,14 +78,14 @@ const SideBrand = styled(Link)`
 const NavScroll = styled.div`
     flex: 1;
     overflow-y: auto;
-    padding: 16px ${(p) => (p.$collapsed ? "10px" : "10px")} 20px;
+    padding: 6px 8px 16px;
     scrollbar-width: thin;
 `;
 
 const SideFooter = styled.div`
     display: grid;
-    gap: 8px;
-    padding: 10px;
+    gap: 4px;
+    padding: 8px;
     border-top: 1px solid ${(p) => p.theme.colors.border};
 `;
 
@@ -142,14 +142,14 @@ const Top = styled.header`
     gap: 8px;
     height: ${(p) => p.theme.layout.topbar};
     padding: 0 12px;
-    background: ${(p) => p.theme.colors.bgGlass};
-    backdrop-filter: blur(12px);
+    background: ${(p) => p.theme.colors.bgSidebar};
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     ${(p) => p.theme.media.tablet} {
         padding: 0 16px;
     }
     ${(p) => p.theme.media.desktop} {
         padding: 0 24px 0 16px;
+        gap: 12px;
     }
     @media (max-width: 374px) {
         gap: 2px;
@@ -178,6 +178,20 @@ const HideMobile = styled.span`
     }
 `;
 
+const NewWide = styled.span`
+    display: none;
+    ${(p) => p.theme.media.wide} {
+        display: contents;
+    }
+`;
+
+const NewNarrow = styled.span`
+    display: contents;
+    ${(p) => p.theme.media.wide} {
+        display: none;
+    }
+`;
+
 const MobileBrand = styled(Link)`
     display: grid;
     place-items: center;
@@ -199,7 +213,10 @@ const Crumbs = styled.div`
         margin-right: 8px;
     }
     ol {
-        font-size: ${(p) => p.theme.fontSize.md};
+        font-size: 0.8125rem;
+    }
+    [aria-current="page"] {
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
     }
 `;
 
@@ -208,13 +225,13 @@ const MonthBox = styled.div`
     align-items: center;
     gap: 2px;
     min-width: 0;
-    padding: 2px;
-    border-radius: ${(p) => p.theme.radius.sm};
+    padding: 1px;
+    border-radius: ${(p) => p.theme.radius.md};
     border: 1px solid ${(p) => p.theme.colors.border};
     background: ${(p) => p.theme.colors.bgElevated};
     h2 {
         font-family: ${(p) => p.theme.fonts.sans};
-        font-size: ${(p) => p.theme.fontSize.md};
+        font-size: 0.8125rem;
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         letter-spacing: 0;
         min-width: 0;
@@ -223,7 +240,7 @@ const MonthBox = styled.div`
         text-overflow: ellipsis;
         text-align: center;
         ${(p) => p.theme.media.tablet} {
-            min-width: 150px;
+            min-width: 136px;
         }
     }
     .short {
@@ -246,7 +263,7 @@ const MonthBox = styled.div`
 const SearchForm = styled.form`
     position: relative;
     flex: 1;
-    max-width: 360px;
+    max-width: 320px;
     min-width: 160px;
     margin-left: auto;
     svg {
@@ -258,18 +275,19 @@ const SearchForm = styled.form`
     }
     input {
         width: 100%;
-        min-height: 36px;
-        padding: 0 64px 0 34px;
-        border-radius: ${(p) => p.theme.radius.sm};
+        min-height: 34px;
+        padding: 0 64px 0 32px;
+        border-radius: ${(p) => p.theme.radius.md};
         border: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgElevated};
-        font-size: ${(p) => p.theme.fontSize.md};
+        background: ${(p) => p.theme.colors.bgSurface};
+        font-size: 0.8125rem;
         transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast};
         &:hover {
             border-color: ${(p) => p.theme.colors.borderStrong};
         }
         &:focus {
             outline: none;
+            background: ${(p) => p.theme.colors.bgElevated};
             border-color: ${(p) => p.theme.colors.brand};
             box-shadow: ${(p) => p.theme.shadows.focus};
         }
@@ -287,7 +305,7 @@ const SearchForm = styled.form`
         padding: 2px 6px;
         border-radius: ${(p) => p.theme.radius.xs};
         border: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgSurface};
+        background: ${(p) => p.theme.colors.bgElevated};
         color: ${(p) => p.theme.colors.textMuted};
     }
 `;
@@ -326,7 +344,7 @@ const Content = styled.main`
         padding-right: 24px;
     }
     ${(p) => p.theme.media.desktop} {
-        padding: 32px 40px 56px;
+        padding: 28px 32px 56px;
     }
 `;
 
@@ -528,7 +546,7 @@ export function AppShell() {
             <SkipLink href="#conteudo">Pular para o conteúdo</SkipLink>
             <Side aria-label="Barra lateral">
                 <SideBrand to="/" $collapsed={collapsed} aria-label="Finanças by GCruz.DEV — ir para a Visão geral">
-                    {collapsed ? <BrandMark size={30} /> : <BrandLockup size={32} title={null} />}
+                    {collapsed ? <BrandMark size={28} /> : <BrandLockup size={28} title={null} />}
                 </SideBrand>
                 <NavScroll $collapsed={collapsed}>
                     <SidebarNav collapsed={collapsed} />
@@ -581,14 +599,22 @@ export function AppShell() {
                         <HideMobile>{hideToggle}</HideMobile>
                         <IconButton icon={Zap} size="sm" label="Captura rápida (Q)" onClick={openQuickCapture} />
                         <HideMobile>
-                            <ThemeToggle />
+                            <IconButton icon={CircleHelp} size="sm" label="Ajuda e atalhos" onClick={() => navigate("/configuracoes/sobre")} />
                         </HideMobile>
                         <Notifications />
+                        <HideMobile>
+                            <ThemeToggle />
+                        </HideMobile>
                         <OnlyDesktop>
                             <span className="divider" aria-hidden="true" />
-                            <Button variant="primary" size="sm" icon={Plus} onClick={() => openTransaction()} title="Nova transação (N)">
-                                Nova transação
-                            </Button>
+                            <NewWide>
+                                <Button variant="primary" size="sm" icon={Plus} onClick={() => openTransaction()} title="Nova transação (N)">
+                                    Nova transação
+                                </Button>
+                            </NewWide>
+                            <NewNarrow>
+                                <IconButton icon={Plus} size="sm" bordered label="Nova transação (N)" onClick={() => openTransaction()} />
+                            </NewNarrow>
                         </OnlyDesktop>
                     </TopActions>
                 </Top>

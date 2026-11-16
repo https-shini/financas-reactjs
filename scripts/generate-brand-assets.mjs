@@ -7,12 +7,13 @@ const out = new URL("../public/brand/", import.meta.url);
 mkdirSync(out, { recursive: true });
 
 const svg = (viewBox, title, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"><title>${title}</title>${body}</svg>\n`;
-const mark = `<path d="${SYMBOL_TILE}" fill="${BRAND_COLORS.tile}"/><path d="${SYMBOL_GLYPH}" fill="${BRAND_COLORS.glyph}"/>`;
+const grad = `<defs><linearGradient id="g" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${BRAND_COLORS.tile}"/><stop offset="1" stop-color="${BRAND_COLORS.tileEnd}"/></linearGradient></defs>`;
+const mark = `${grad}<path d="${SYMBOL_TILE}" fill="url(#g)"/><path d="${SYMBOL_GLYPH}" fill="${BRAND_COLORS.glyph}"/>`;
 const mono = (color) => `<path d="${SYMBOL_TILE}${SYMBOL_GLYPH}" fill="${color}" fill-rule="evenodd"/>`;
 // Lockup: o texto usa as fontes da marca (IBM Plex Sans / JetBrains Mono) com fallback do sistema.
 const lockup = (nameColor, suffixColor) =>
-    `${mark}<text x="60" y="24" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif" font-size="24" font-weight="600" fill="${nameColor}">${PRODUCT_NAME}</text>` +
-    `<text x="61" y="41" font-family="'JetBrains Mono',ui-monospace,monospace" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="${BRAND_COLORS.muted}">${SIGNATURE.prefix}<tspan fill="${suffixColor}">${SIGNATURE.suffix}</tspan></text>`;
+    `${mark}<text x="60" y="24" font-family="'Geist','Segoe UI',system-ui,sans-serif" font-size="24" font-weight="600" fill="${nameColor}">${PRODUCT_NAME}</text>` +
+    `<text x="61" y="41" font-family="'Geist Mono',ui-monospace,monospace" font-size="10.5" font-weight="600" letter-spacing="1.3" fill="${BRAND_COLORS.muted}">${SIGNATURE.prefix}<tspan fill="${suffixColor}">${SIGNATURE.suffix}</tspan></text>`;
 
 const T = `${PRODUCT_NAME} by GCruz.DEV`;
 const files = {

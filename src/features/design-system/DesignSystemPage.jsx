@@ -67,7 +67,7 @@ export default function DesignSystemPage() {
 
     return (
         <Stack $gap={6}>
-            <PageHeader title="Design System" description="Finanças by GCruz.DEV — componentes, tokens e identidade visual (Emerald Finance)" eyebrow="Sistema interno" />
+            <PageHeader title="Design System" description="Finanças by GCruz.DEV — componentes, tokens e identidade visual (linguagem Nexus)" eyebrow="Sistema interno" />
 
             {/* Marca */}
             <Card aria-labelledby="ds-brand">

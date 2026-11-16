@@ -7,15 +7,17 @@ import { STORE_KEY } from "../storage/repository";
 afterEach(() => window.history.pushState({}, "", "/"));
 
 describe("shell Finanças", () => {
-    it("sidebar com lockup da marca, grupos da especificação e item ativo", async () => {
+    it("sidebar com lockup da marca, seções do modelo, contador e item ativo", async () => {
         render(<App />);
         await screen.findByRole("heading", { level: 1, name: "Visão geral" });
         // A barra lateral só aparece no desktop (media query); no jsdom ela está oculta, por isso hidden: true.
         expect(screen.getByRole("link", { name: "Finanças by GCruz.DEV — ir para a Visão geral", hidden: true })).toHaveAttribute("href", "/");
         const nav = screen.getByRole("navigation", { name: "Navegação principal", hidden: true });
-        for (const g of ["Financeiro", "Planejamento", "Sistema"]) expect(within(nav).getByText(g, { selector: "p > span" })).toBeInTheDocument();
+        for (const g of ["Análise", "Financeiro", "Operações", "Ajuda"]) expect(within(nav).getByText(g, { selector: "p > span" })).toBeInTheDocument();
         expect(within(nav).getByRole("link", { name: "Visão geral", hidden: true })).toHaveAttribute("aria-current", "page");
         expect(document.title).toBe("Visão geral · Finanças");
+        // Contador de "A pagar e receber" (nenhuma pendência no perfil novo => sem contador).
+        expect(within(nav).getByRole("link", { name: "A pagar e receber", hidden: true })).toHaveAttribute("href", "/planejamento/vencimentos");
     });
 
     it("header: alternância de tema persiste a preferência (Escuro → Claro → Sistema)", async () => {
@@ -60,19 +62,30 @@ describe("shell Finanças", () => {
     it("página interna do Design System abre por rota própria, fora do menu", async () => {
         window.history.pushState({}, "", "/design-system");
         render(<App />);
-        expect(await screen.findByRole("heading", { level: 1, name: "Design System" })).toBeInTheDocument();
+        // Rota carregada sob demanda (lazy): sob carga da suíte inteira pode passar de 1 s.
+        expect(await screen.findByRole("heading", { level: 1, name: "Design System" }, { timeout: 5000 })).toBeInTheDocument();
         const nav = screen.getByRole("navigation", { name: "Navegação principal", hidden: true });
         expect(within(nav).queryByRole("link", { name: /Design System/, hidden: true })).toBeNull();
     });
 
-    it("páginas internas mostram sobretítulo do grupo e breadcrumbs Finanças / página no header", async () => {
+    it("páginas internas: título da página e breadcrumbs Finanças › página no header", async () => {
         window.history.pushState({}, "", "/planejamento/metas");
         render(<App />);
-        expect(await screen.findByText("Planejamento", { selector: "p" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { level: 1, name: "Planejamento" })).toBeInTheDocument();
         // A trilha fica no header, visível só em telas largas (media query) — por isso hidden: true.
         const crumbs = screen.getByRole("navigation", { name: "Trilha de navegação", hidden: true });
         expect(within(crumbs).getByRole("link", { name: "Finanças", hidden: true })).toHaveAttribute("href", "/");
         expect(within(crumbs).getByText("Metas financeiras")).toHaveAttribute("aria-current", "page");
+    });
+
+    it("dashboard: KPIs do mês e transações recentes com filtro", async () => {
+        const user = userEvent.setup();
+        render(<App />);
+        await screen.findByRole("heading", { level: 1, name: "Visão geral" });
+        for (const k of ["Entradas", "Saídas", "Taxa de poupança"]) expect(screen.getByRole("region", { name: k })).toBeInTheDocument();
+        const filter = screen.getByRole("radiogroup", { name: "Filtrar transações recentes" });
+        await user.click(within(filter).getByRole("radio", { name: "Saídas" }));
+        expect(within(filter).getByRole("radio", { name: "Saídas" })).toHaveAttribute("aria-checked", "true");
     });
 
     it("Transações: seleção mantém nome acessível completo e o botão Nova continua disponível", async () => {

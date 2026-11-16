@@ -73,14 +73,15 @@ describe.each([
     });
 });
 
-describe("paleta Emerald Finance", () => {
-    it("tema escuro usa as superfícies e textos da especificação", () => {
-        expect(darkTheme.colors).toMatchObject({ bg: "#07110F", bgSidebar: "#0D1915", bgElevated: "#12221C", bgSurface: "#193027", border: "#263B32", text: "#F0FDF4", textSecondary: "#A7C9B7", brand: "#34D399", income: "#34D399", expense: "#F87171", warning: "#FBBF24", info: "#818CF8" });
+describe("paleta Nexus", () => {
+    it("tema escuro usa as superfícies e textos do modelo", () => {
+        expect(darkTheme.colors).toMatchObject({ bg: "#0A0A0C", bgSidebar: "#111114", bgElevated: "#131317", bgSurface: "#18181D", border: "#25252B", text: "#EDEDEE", textSecondary: "#A1A1AA", brand: "#8B6BFF", income: "#34D39A", expense: "#FB7185", warning: "#F5B65B", info: "#60A5FA" });
     });
-    it("tema claro usa as superfícies e textos da especificação", () => {
-        expect(lightTheme.colors).toMatchObject({ bg: "#F7FAF8", bgElevated: "#FFFFFF", bgSurface: "#EFF5F1", bgHover: "#E4EEE8", border: "#DCE7E0", text: "#10251B", textSecondary: "#52665A", primary: "#047857", warning: "#B45309", info: "#4F46E5" });
+    it("tema claro usa as superfícies e textos do modelo", () => {
+        expect(lightTheme.colors).toMatchObject({ bg: "#FAFAF9", bgElevated: "#FFFFFF", bgSurface: "#F5F5F4", border: "#E7E7E4", text: "#0A0A0B", textSecondary: "#5B5B63", brand: "#6D4CFF" });
     });
-    it("ações principais usam Emerald 700 com texto branco nos dois temas", () => {
-        for (const t of [darkTheme, lightTheme]) expect(t.colors).toMatchObject({ primary: "#047857", onPrimary: "#FFFFFF" });
+    it("botão primário invertido: preto no claro, branco no escuro", () => {
+        expect(lightTheme.colors).toMatchObject({ primary: "#0A0A0B", onPrimary: "#FAFAFA" });
+        expect(darkTheme.colors).toMatchObject({ primary: "#FFFFFF", onPrimary: "#0A0A0B" });
     });
 });

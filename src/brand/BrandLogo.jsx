@@ -5,7 +5,7 @@ import { BRAND_COLORS, PRODUCT_NAME, SIGNATURE, SYMBOL_GLYPH, SYMBOL_TILE, SYMBO
 const a11y = (title, id) => (title ? { role: "img", "aria-labelledby": id } : { "aria-hidden": true, focusable: "false" });
 
 /**
- * Símbolo da marca (placa Emerald com o "F"). Funciona sozinho como favicon, ícone e avatar.
+ * Símbolo da marca (placa em gradiente violeta com o "F"). Funciona sozinho como favicon, ícone e avatar.
  * tone: "color" (padrão) | "mono" (recorte em currentColor, uma cor só).
  */
 export function BrandMark({ size = 32, tone = "color", title, className, style }) {
@@ -17,7 +17,13 @@ export function BrandMark({ size = 32, tone = "color", title, className, style }
                 <path d={`${SYMBOL_TILE}${SYMBOL_GLYPH}`} fill="currentColor" fillRule="evenodd" />
             ) : (
                 <>
-                    <path d={SYMBOL_TILE} fill={BRAND_COLORS.tile} />
+                    <defs>
+                        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stopColor={BRAND_COLORS.tile} />
+                            <stop offset="1" stopColor={BRAND_COLORS.tileEnd} />
+                        </linearGradient>
+                    </defs>
+                    <path d={SYMBOL_TILE} fill={`url(#${id}-g)`} />
                     <path d={SYMBOL_GLYPH} fill={BRAND_COLORS.glyph} />
                 </>
             )}
@@ -46,7 +52,7 @@ const Lockup = styled.span`
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         font-size: ${(p) => Math.max(8, Math.round(p.$size * 0.28))}px;
         letter-spacing: 0.12em;
-        color: ${(p) => (p.$tone === "onDark" ? BRAND_COLORS.muted : p.$tone === "onLight" ? "#52665A" : p.theme.colors.textMuted)};
+        color: ${(p) => (p.$tone === "onDark" ? BRAND_COLORS.muted : p.$tone === "onLight" ? "#5B5B63" : p.theme.colors.textMuted)};
     }
     .sig b {
         font-weight: inherit;

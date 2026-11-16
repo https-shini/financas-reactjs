@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Eyebrow } from "../ui/Typography";
-import { navContext, NAV_GROUPS } from "../../app/navigation";
 
 const Head = styled.div`
     display: flex;
@@ -10,22 +8,20 @@ const Head = styled.div`
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: ${(p) => p.theme.space(5)};
-    margin-top: ${(p) => p.theme.space(2)};
+    margin-bottom: 22px;
     h1 {
         font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize.xl};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
-        letter-spacing: ${(p) => p.theme.letterSpacing.tighter};
+        letter-spacing: ${(p) => p.theme.letterSpacing.tight};
         line-height: ${(p) => p.theme.lineHeight.tight};
-        margin-top: 8px;
         ${(p) => p.theme.media.tablet} {
-            font-size: ${(p) => p.theme.fontSize["2xl"]};
+            font-size: 1.625rem;
         }
     }
     .desc {
         color: ${(p) => p.theme.colors.textSecondary};
-        margin-top: 6px;
+        margin-top: 4px;
         font-size: ${(p) => p.theme.fontSize.md};
         max-width: 72ch;
     }
@@ -58,20 +54,14 @@ const Head = styled.div`
 `;
 
 /**
- * Cabeçalho de página: sobretítulo com o grupo de navegação ("— Financeiro"),
- * título (h1) em display, descrição e ações. Atualiza o título da aba.
- * A trilha (breadcrumbs) fica na barra superior.
+ * Cabeçalho de página (padrão Nexus): título (h1), descrição e ações alinhadas à direita.
+ * Sobretítulo opcional (`eyebrow`). A trilha (breadcrumbs) fica na barra superior. Atualiza o título da aba.
  */
-export function PageHeader({ title, description, actions, docTitle, eyebrow, group }) {
-    const location = useLocation();
-    const ctx = navContext(location);
+export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
     useEffect(() => {
         document.title = `${docTitle ?? title} · Finanças`;
     }, [title, docTitle]);
-    // `group` fixa o grupo do sobretítulo quando a página reúne seções de grupos diferentes
-    // (ex.: Planejamento contém Cartões e Vencimentos, que no menu ficam em "Financeiro").
-    const eyebrowGroup = (group && NAV_GROUPS.find((g) => g.id === group)) || ctx?.group;
-    const eyebrowText = eyebrow ?? eyebrowGroup?.label ?? null;
+    const eyebrowText = eyebrow ?? null;
     return (
         <Head>
             <div>

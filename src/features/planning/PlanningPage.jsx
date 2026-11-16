@@ -24,7 +24,7 @@ export default function PlanningPage() {
     ];
     return (
         <>
-            <PageHeader title="Planejamento" group="planning" description="Contas a pagar, orçamentos, metas, recorrências, cartões e simulações" />
+            <PageHeader title="Planejamento" description="Contas a pagar, orçamentos, metas, recorrências, cartões e simulações" />
             <RouteTabs tabs={tabs} label="Seções de planejamento" />
             <Routes>
                 <Route index element={<Navigate to="vencimentos" replace />} />

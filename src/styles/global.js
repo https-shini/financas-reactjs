@@ -27,7 +27,7 @@ const Global = createGlobalStyle`
     font-family: ${(p) => p.theme.fonts.sans};
     font-size: ${(p) => p.theme.fontSize.md};
     background-color: ${(p) => p.theme.colors.bg};
-    /* Brilho ambiente Emerald, discreto, fixo atrás do conteúdo */
+    /* Fundo ambiente opcional (desligado na linguagem Nexus: token ambient = none) */
     background-image: ${(p) => p.theme.colors.ambient};
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -71,7 +71,7 @@ const Global = createGlobalStyle`
   table, .num, [data-numeric] {
     font-variant-numeric: tabular-nums;
   }
-  /* Valores financeiros e indicadores em JetBrains Mono */
+  /* Valores financeiros e indicadores em Geist Mono */
   .num, [data-numeric], code, kbd {
     font-family: ${(p) => p.theme.fonts.mono};
   }

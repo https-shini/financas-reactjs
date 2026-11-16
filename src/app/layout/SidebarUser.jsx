@@ -12,12 +12,14 @@ const Card = styled(Link)`
     border-radius: ${(p) => p.theme.radius.md};
     text-decoration: none;
     color: ${(p) => p.theme.colors.text};
-    border: 1px solid ${(p) => p.theme.colors.border};
-    background: ${(p) => p.theme.colors.bgElevated};
-    transition: border-color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
+    transition: background ${(p) => p.theme.motion.fast};
     justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
     &:hover {
-        border-color: ${(p) => p.theme.colors.borderStrong};
+        background: ${(p) => p.theme.colors.bgSurface};
+    }
+    &:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: -2px;
     }
     .avatar {
         display: grid;
@@ -25,9 +27,8 @@ const Card = styled(Link)`
         width: 32px;
         height: 32px;
         border-radius: ${(p) => p.theme.radius.full};
-        background: ${(p) => p.theme.colors.primarySoft};
-        color: ${(p) => p.theme.colors.primaryText};
-        border: 1px solid ${(p) => p.theme.colors.border};
+        background: linear-gradient(135deg, ${(p) => p.theme.brand.violet}, ${(p) => p.theme.brand.violetLight});
+        color: #ffffff;
         flex-shrink: 0;
     }
     .txt {
@@ -36,8 +37,8 @@ const Card = styled(Link)`
         line-height: 1.35;
     }
     .name {
-        font-weight: ${(p) => p.theme.fontWeight.semibold};
-        font-size: ${(p) => p.theme.fontSize.sm};
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+        font-size: 0.8125rem;
     }
     .status {
         display: flex;

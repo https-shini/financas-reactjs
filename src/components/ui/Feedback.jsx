@@ -146,59 +146,68 @@ export function Tooltip({ content, children, label = "Mais informações", place
 const StatBox = styled.section`
     position: relative;
     display: grid;
-    gap: 6px;
+    gap: 10px;
     align-content: start;
-    padding: ${(p) => p.theme.space(5)};
+    padding: 16px 18px;
     background: ${(p) => p.theme.colors.bgElevated};
     border: 1px solid ${(p) => p.theme.colors.border};
     border-radius: ${(p) => p.theme.radius.lg};
     box-shadow: ${(p) => p.theme.shadows.card};
     min-width: 0;
+    transition: border-color ${(p) => p.theme.motion.fast};
+    &:hover {
+        border-color: ${(p) => p.theme.colors.borderStrong};
+    }
     ${(p) => p.theme.media.mobile} {
-        padding: ${(p) => p.theme.space(4)};
+        padding: 14px 16px;
     }
 `;
+
+// Tom do bloco de ícone: fundo suave + ícone na cor semântica (como os KPIs do modelo).
+const ICON_TONES = {
+    income: ["incomeSoft", "income"],
+    expense: ["expenseSoft", "expense"],
+    warning: ["warningSoft", "warning"],
+    primaryText: ["accentSoft", "accentText"],
+    accentText: ["accentSoft", "accentText"],
+    neutral: ["bgSurface", "textSecondary"],
+};
 
 const StatHead = styled.header`
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    min-height: 28px;
     color: ${(p) => p.theme.colors.textSecondary};
-    ${typeRole("caption")}
-    font-weight: 500;
+    font-size: 0.78125rem;
+    font-weight: ${(p) => p.theme.fontWeight.medium};
     .icon {
+        margin-left: auto;
         display: grid;
         place-items: center;
-        width: 30px;
-        height: 30px;
-        border-radius: ${(p) => p.theme.radius.sm};
-        background: ${(p) => p.theme.colors.bgSurface};
-        border: 1px solid ${(p) => p.theme.colors.border};
-        color: ${(p) => p.theme.colors[p.$iconTone] ?? p.theme.colors.primaryText};
-    }
-    .tip {
-        margin-left: auto;
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: ${(p) => p.theme.colors[(ICON_TONES[p.$iconTone] ?? ICON_TONES.neutral)[0]]};
+        color: ${(p) => p.theme.colors[(ICON_TONES[p.$iconTone] ?? ICON_TONES.neutral)[1]]};
     }
 `;
 
 /**
- * Cartão de indicador: rótulo, valor em destaque, variação e conteúdo complementar.
- * accent: barra superior com a cor de um token (brand, income, expense, accent).
+ * Cartão de indicador (KPI): rótulo + ajuda à esquerda, ícone em bloco suave à direita,
+ * valor em mono, variação e conteúdo complementar (ex.: minigráfico).
  */
-export function StatCard({ label, icon: Icon, iconTone = "primaryText", value, delta, hint, tooltip, accent, children, id, ...rest }) {
+export function StatCard({ label, icon: Icon, iconTone = "primaryText", value, delta, hint, tooltip, accent: _accent, children, id, ...rest }) {
     const titleId = useId();
     return (
-        <StatBox aria-labelledby={id ?? titleId} $accent={accent} {...rest}>
+        <StatBox aria-labelledby={id ?? titleId} {...rest}>
             <StatHead $iconTone={iconTone}>
+                <span id={id ?? titleId}>{label}</span>
+                {tooltip && <Tooltip content={tooltip} label={`Sobre: ${label}`} />}
                 {Icon && (
                     <span className="icon" aria-hidden="true">
-                        <Icon size={16} />
-                    </span>
-                )}
-                <span id={id ?? titleId}>{label}</span>
-                {tooltip && (
-                    <span className="tip">
-                        <Tooltip content={tooltip} label={`Sobre: ${label}`} />
+                        <Icon size={15} />
                     </span>
                 )}
             </StatHead>
@@ -416,9 +425,9 @@ const Crumbs = styled.nav`
         color: ${(p) => p.theme.colors.textMuted};
     }
     li + li::before {
-        content: "/";
+        content: "›";
         margin-right: 6px;
-        color: ${(p) => p.theme.colors.borderStrong};
+        color: ${(p) => p.theme.colors.textMuted};
     }
     a {
         color: ${(p) => p.theme.colors.textSecondary};

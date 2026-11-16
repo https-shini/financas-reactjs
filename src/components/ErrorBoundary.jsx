@@ -3,7 +3,7 @@ import { palette, radius, typography } from "../design/tokens";
 import { BrandMark } from "../brand/BrandLogo";
 
 // Renderizado fora do ThemeProvider (o app pode ter falhado): usa os tokens primitivos diretamente.
-const c = { text: palette.pine[975], secondary: palette.pine[600], surface: palette.pine[0], subtle: palette.pine[50], border: palette.pine[100], strong: palette.pine[300], primary: palette.emerald[700] };
+const c = { text: palette.zinc[990], secondary: palette.zinc[600], surface: palette.zinc[0], subtle: palette.zinc[50], border: palette.zinc[150], strong: palette.zinc[400], primary: palette.zinc[990] };
 
 const box = {
     maxWidth: 520,
@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component {
                     <button type="button" onClick={() => this.setState({ error: null })} style={btn}>
                         Tentar novamente
                     </button>
-                    <button type="button" onClick={() => window.location.reload()} style={{ ...btn, background: c.primary, color: palette.pine[0], borderColor: c.primary }}>
+                    <button type="button" onClick={() => window.location.reload()} style={{ ...btn, background: c.primary, color: palette.zinc[0], borderColor: c.primary }}>
                         Recarregar
                     </button>
                 </div>

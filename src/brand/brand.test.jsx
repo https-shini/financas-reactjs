@@ -28,11 +28,13 @@ describe("marca Finanças by GCruz.DEV", () => {
         expect(screen.getByRole("img", { name: "Símbolo" })).toBeInTheDocument();
     });
 
-    it("símbolo colorido usa a placa Emerald e o F; mono usa recorte em currentColor", () => {
+    it("símbolo colorido usa a placa em gradiente violeta e o F; mono usa recorte em currentColor", () => {
         const { container } = wrap(<BrandMark />);
         const paths = [...container.querySelectorAll("path")];
         expect(paths.map((p) => p.getAttribute("d"))).toEqual([SYMBOL_TILE, SYMBOL_GLYPH]);
-        expect(paths[0]).toHaveAttribute("fill", BRAND_COLORS.tile);
+        expect(paths[0].getAttribute("fill")).toMatch(/^url\(#/);
+        const stops = [...container.querySelectorAll("stop")].map((s) => s.getAttribute("stop-color"));
+        expect(stops).toEqual([BRAND_COLORS.tile, BRAND_COLORS.tileEnd]);
         const mono = wrap(<BrandMark tone="mono" />).container.querySelector("path");
         expect(mono).toHaveAttribute("fill", "currentColor");
         expect(mono).toHaveAttribute("fill-rule", "evenodd");
@@ -48,7 +50,7 @@ describe("marca Finanças by GCruz.DEV", () => {
     it("manifest e index.html usam o nome do produto", () => {
         const manifest = JSON.parse(readFileSync("public/manifest.webmanifest", "utf8"));
         expect(manifest.name).toBe("Finanças by GCruz.DEV");
-        expect(manifest.theme_color).toBe("#07110F");
+        expect(manifest.theme_color).toBe("#0A0A0C");
         expect(readFileSync("index.html", "utf8")).toMatch(/<title>Finanças/);
     });
 });

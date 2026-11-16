@@ -48,7 +48,7 @@ export const Heading = styled.h2`
     color: ${(p) => p.theme.colors.text};
 `;
 
-/** Valor financeiro em destaque: JetBrains Mono tabular, sem quebra. */
+/** Valor financeiro em destaque: Geist Mono tabular, sem quebra. */
 export const NumericDisplay = styled.span`
     ${typeRole("numeric")}
     font-variant-numeric: tabular-nums;
@@ -83,7 +83,7 @@ export const FieldLabel = styled.p`
     margin-bottom: ${(p) => p.theme.space(1.5)};
 `;
 
-/** Sobretítulo de página/seção: caixa alta em Emerald, precedido por um traço (ex.: "— Financeiro"). */
+/** Sobretítulo de página/seção: caixa alta na cor de destaque, precedido por um traço (ex.: "— Financeiro"). */
 export const Eyebrow = styled.p`
     ${typeRole("overline")}
     display: inline-flex;

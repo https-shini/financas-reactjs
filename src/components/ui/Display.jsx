@@ -5,15 +5,29 @@ import { iconFor } from "./icons";
 
 // ---------------- Amount ----------------
 
-// Valores monetários sempre em JetBrains Mono com algarismos tabulares (alinhamento financeiro).
+// Valores monetários sempre em Geist Mono com algarismos tabulares (alinhamento financeiro).
 const AmountText = styled.span`
     font-family: ${(p) => p.theme.fonts.mono};
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     font-weight: ${(p) => p.$weight ?? 600};
     color: ${(p) => (p.$tone ? p.theme.colors[p.$tone] : "inherit")};
-    letter-spacing: ${(p) => (p.$big ? "-0.03em" : "-0.01em")};
+    letter-spacing: ${(p) => (p.$big ? "-0.02em" : "-0.01em")};
+    /* Valores em destaque: símbolo da moeda menor e discreto (ex.: "R$" pequeno + número grande). */
+    .unit {
+        font-size: 0.54em;
+        font-weight: 500;
+        margin-right: 2px;
+        opacity: 0.6;
+        letter-spacing: 0;
+    }
 `;
+
+/** Separa o prefixo (sinal + símbolo da moeda) do número: "−R$ 1.234,00" → ["−R$ ", "1.234,00"]. */
+function splitUnit(text) {
+    const i = text.search(/\d/);
+    return i > 0 ? [text.slice(0, i), text.slice(i)] : ["", text];
+}
 
 /**
  * Valor monetário. type: "income" | "expense" | "transfer" | undefined.
@@ -42,9 +56,11 @@ export function Amount({ cents, type, sign = false, colored = true, private: isP
         tone = cents > 0 ? "income" : cents < 0 ? "expense" : undefined;
     }
     const text = money(value, { signDisplay: sign || type === "income" || type === "expense" ? "exceptZero" : "auto" }).replace("-", "−");
+    const [unit, number] = big ? splitUnit(text) : ["", text];
     return (
         <AmountText className={className} $tone={tone} $big={big} $weight={weight} aria-label={srLabel ? `${srLabel}: ${text}` : undefined}>
-            {text}
+            {unit && <span className="unit">{unit}</span>}
+            {number}
         </AmountText>
     );
 }
@@ -55,6 +71,7 @@ const tones = {
     neutral: css`
         background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.textSecondary};
+        box-shadow: inset 0 0 0 1px ${(p) => p.theme.colors.border};
     `,
     primary: css`
         background: ${(p) => p.theme.colors.primarySoft};
@@ -86,12 +103,12 @@ export const Badge = styled.span`
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 7px;
-    border-radius: ${(p) => p.theme.radius.xs};
-    font-family: ${(p) => p.theme.fonts.mono};
-    font-size: ${(p) => p.theme.fontSize.xs};
-    font-weight: 600;
-    line-height: 1.6;
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: ${(p) => p.theme.radius.full};
+    font-size: 0.71875rem;
+    font-weight: 500;
+    line-height: 1;
     white-space: nowrap;
     ${(p) => tones[p.$tone ?? "neutral"]}
 `;
@@ -254,7 +271,7 @@ const DeltaText = styled.span`
  * Variação percentual com seta e texto ("↑ 12% vs. mês anterior").
  * goodWhenUp: para despesas, subir é ruim.
  */
-export function Delta({ value, goodWhenUp = true, suffix = "vs. mês anterior" }) {
+export function Delta({ value, goodWhenUp = true, suffix = "vs. mês anterior", unit = "%" }) {
     if (value === null || value === undefined || !Number.isFinite(value)) {
         return <DeltaText>Sem base de comparação</DeltaText>;
     }
@@ -267,7 +284,8 @@ export function Delta({ value, goodWhenUp = true, suffix = "vs. mês anterior" }
         <DeltaText $tone={good ? "income" : "expense"}>
             <span aria-hidden="true">{up ? "↑" : "↓"}</span>
             <span className="sr-only">{up ? "Aumento de" : "Redução de"}</span>
-            {pct}% <span style={{ fontWeight: 500, color: "var(--v-color-text-secondary)" }}>{suffix}</span>
+            {pct}
+            {unit} <span style={{ fontWeight: 500, color: "var(--v-color-text-secondary)" }}>{suffix}</span>
         </DeltaText>
     );
 }

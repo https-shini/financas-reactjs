@@ -1,4 +1,4 @@
-// Finanças by GCruz.DEV — temas escuro e claro (tokens semânticos, paleta "Emerald Finance").
+// Finanças by GCruz.DEV — temas escuro e claro (tokens semânticos, linguagem visual "Nexus").
 // Componentes usam apenas estes nomes (theme.colors.text, theme.colors.primary...), nunca hex diretos.
 // Todas as combinações de texto foram verificadas para WCAG AA (ver src/design/contrast.test.js).
 import { brand, palette as p, typography, space, radius, borderWidth, opacity, motion, breakpoints, media, layout, zIndex } from "./tokens";
@@ -26,58 +26,58 @@ export const darkTheme = {
     ...shared,
     mode: "dark",
     colors: {
-        bg: p.pine[950], // #07110F — Background
-        bgSidebar: p.pine[900], // #0D1915 — Surface 1 (sidebar, header, navegação)
-        bgElevated: p.pine[880], // #12221C — Surface 2 (cards)
-        bgSurface: p.pine[870], // #193027 — Surface 3 (elementos elevados, áreas internas)
-        bgHover: p.pine[850],
-        bgGlass: "rgba(13, 25, 21, 0.86)",
-        bgInput: p.pine[900],
-        border: p.pine[800], // #263B32
-        borderStrong: p.pine[700], // contorno de campos (≥ 3:1)
-        text: p.pine[990], // #F0FDF4
-        textSecondary: p.pine[450], // #A7C9B7
-        textMuted: p.pine[400], // #839D8F (AA)
-        brand: p.emerald[400], // #34D399 — marca e destaques
-        primary: p.emerald[700], // botões (branco 5,48:1; spec #059669 = 3,77:1)
-        primaryHover: p.emerald[800],
-        primaryActive: p.emerald[900],
-        primaryText: p.emerald[400], // links e textos de destaque
-        primarySoft: "#0F2E24", // Emerald Surface — item ativo da navegação, badges
-        onPrimary: "#FFFFFF",
-        accent: p.indigo[400], // índigo — informação e visualizações complementares
-        accentText: p.indigo[400],
-        accentSoft: p.indigo[950],
-        onAccent: p.pine[950],
-        accentLedge: p.indigo[600],
-        indicator: p.emerald[400], // indicador do item ativo
-        income: p.emerald[400],
-        incomeSoft: "#0F2E24",
+        bg: p.zinc[950], // #0A0A0C
+        bgSidebar: p.zinc[930], // #111114 — sidebar e header
+        bgElevated: p.zinc[900], // #131317 — cards
+        bgSurface: p.zinc[880], // #18181D — áreas internas, item ativo
+        bgHover: p.zinc[870], // #1F1F25
+        bgGlass: "rgba(10, 10, 12, 0.82)",
+        bgInput: p.zinc[930],
+        border: p.zinc[850], // #25252B
+        borderStrong: p.zinc[700], // contorno de campos (≥ 3:1)
+        text: p.zinc[995], // #EDEDEE
+        textSecondary: p.zinc[800], // #A1A1AA
+        textMuted: p.zinc[750], // #8B8B93 (AA)
+        brand: p.violet[400], // #8B6BFF
+        primary: "#FFFFFF", // botão primário invertido
+        primaryHover: "#E7E7E7",
+        primaryActive: "#D4D4D4",
+        primaryText: p.violet[300], // links e destaques violeta
+        primarySoft: p.violet.soft, // fundo violeta suave
+        onPrimary: p.zinc[990],
+        accent: p.violet[400],
+        accentText: p.violet[300],
+        accentSoft: p.violet.soft,
+        onAccent: p.zinc[990],
+        accentLedge: p.violet[500],
+        indicator: p.violet[400], // ícone do item ativo
+        income: p.green[400],
+        incomeSoft: p.green.soft,
         expense: p.red[400],
-        expenseSoft: p.red[950],
+        expenseSoft: p.red.soft,
         warning: p.amber[400],
-        warningSoft: p.amber[950],
-        info: p.indigo[400],
-        infoSoft: p.indigo[950],
-        success: p.emerald[400],
+        warningSoft: p.amber.soft,
+        info: p.blue[400],
+        infoSoft: p.blue.soft,
+        success: p.green[400],
         error: p.red[400],
-        focus: p.emerald[400],
-        overlay: "rgba(2, 8, 6, 0.72)",
-        chartGrid: "#1B2E26",
-        chartAxis: p.pine[400],
-        transfer: p.pine[450],
-        chart: { income: p.emerald[400], expense: p.red[400], primary: p.emerald[400], accent: p.indigo[400], neutral: p.pine[400], area: "rgba(52, 211, 153, 0.14)" },
-        ambient: "radial-gradient(1100px 560px at 18% -14%, rgba(16, 185, 129, 0.09), transparent 62%)",
+        focus: p.violet[400],
+        overlay: "rgba(0, 0, 0, 0.55)",
+        chartGrid: "#222228",
+        chartAxis: p.zinc[750],
+        transfer: p.zinc[800],
+        chart: { income: p.green[400], expense: p.red[400], primary: p.violet[400], accent: p.violet[400], neutral: "#6E6E76", area: "rgba(139, 107, 255, 0.16)" },
+        ambient: "none",
     },
     shadows: {
-        sm: "none",
-        card: "none", // cards se separam por superfície e borda, sem sombra
-        md: "0 10px 28px rgba(0, 0, 0, 0.45)",
-        lg: "0 16px 40px rgba(0, 0, 0, 0.5)",
-        overlay: "0 24px 64px rgba(0, 0, 0, 0.6)",
+        sm: "0 1px 2px rgba(0, 0, 0, 0.4)",
+        card: "0 1px 2px rgba(0, 0, 0, 0.4)",
+        md: "0 6px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
+        lg: "0 20px 48px rgba(0, 0, 0, 0.55), 0 6px 14px rgba(0, 0, 0, 0.35)",
+        overlay: "0 20px 48px rgba(0, 0, 0, 0.55), 0 6px 14px rgba(0, 0, 0, 0.35)",
         base: "none",
-        focus: "0 0 0 3px rgba(52, 211, 153, 0.35)",
-        brand: "0 8px 20px rgba(4, 120, 87, 0.45)",
+        focus: "0 0 0 3px rgba(139, 107, 255, 0.3)",
+        brand: "0 6px 16px rgba(0, 0, 0, 0.45)",
         ledge: "none",
         ledgePressed: "none",
         ledgeNeutral: "none",
@@ -89,58 +89,58 @@ export const lightTheme = {
     ...shared,
     mode: "light",
     colors: {
-        bg: p.pine[25], // #F7FAF8
-        bgSidebar: p.pine[0],
-        bgElevated: p.pine[0], // cards
-        bgSurface: p.pine[50], // #EFF5F1
-        bgHover: p.pine[75], // #E4EEE8
-        bgGlass: "rgba(255, 255, 255, 0.9)",
-        bgInput: p.pine[0],
-        border: p.pine[100], // #DCE7E0
-        borderStrong: p.pine[300],
-        text: p.pine[975], // #10251B
-        textSecondary: p.pine[600], // #52665A
-        textMuted: p.pine[500], // #5E7166 (AA)
-        brand: p.emerald[600],
-        primary: p.emerald[700], // #047857
-        primaryHover: p.emerald[800],
-        primaryActive: p.emerald[900],
-        primaryText: p.emerald[700],
-        primarySoft: "#E3F6EC",
-        onPrimary: "#FFFFFF",
-        accent: p.indigo[600],
-        accentText: p.indigo[600],
-        accentSoft: p.indigo[50],
+        bg: p.zinc[25], // #FAFAF9
+        bgSidebar: p.zinc[0],
+        bgElevated: p.zinc[0], // cards
+        bgSurface: p.zinc[50], // #F5F5F4
+        bgHover: p.zinc[75],
+        bgGlass: "rgba(250, 250, 249, 0.85)",
+        bgInput: p.zinc[0],
+        border: p.zinc[150], // #E7E7E4
+        borderStrong: p.zinc[400],
+        text: p.zinc[990], // #0A0A0B
+        textSecondary: p.zinc[600], // #5B5B63
+        textMuted: p.zinc[500], // #6B6B73 (AA)
+        brand: p.violet[500], // #6D4CFF
+        primary: p.zinc[990], // botão primário invertido (preto)
+        primaryHover: "#1F1F23",
+        primaryActive: "#2A2A30",
+        primaryText: p.violet[600], // #5B3DF0
+        primarySoft: p.violet[50],
+        onPrimary: "#FAFAFA",
+        accent: p.violet[500],
+        accentText: p.violet[600],
+        accentSoft: p.violet[50],
         onAccent: "#FFFFFF",
-        accentLedge: p.indigo[600],
-        indicator: p.emerald[700],
-        income: p.emerald[700],
-        incomeSoft: "#E3F6EC",
-        expense: p.red[700], // #B91C1C (AA; spec #DC2626 = 4,37:1 em superfícies)
+        accentLedge: p.violet[600],
+        indicator: p.violet[500],
+        income: p.green[700], // AA (modelo #0F9D58 = 3,5:1)
+        incomeSoft: p.green[50],
+        expense: p.red[700],
         expenseSoft: p.red[50],
-        warning: p.amber[700],
+        warning: p.amber[700], // AA (modelo #B07B1A = 3,7:1)
         warningSoft: p.amber[50],
-        info: p.indigo[600],
-        infoSoft: p.indigo[50],
-        success: p.emerald[700],
+        info: p.blue[700], // AA (modelo #1F76E0 = 4,4:1)
+        infoSoft: p.blue[50],
+        success: p.green[700],
         error: p.red[700],
-        focus: p.emerald[700],
-        overlay: "rgba(16, 37, 27, 0.4)",
-        chartGrid: "#E3ECE6",
-        chartAxis: p.pine[500],
-        transfer: p.pine[600],
-        chart: { income: p.emerald[600], expense: p.red[600], primary: p.emerald[700], accent: p.indigo[600], neutral: p.pine[500], area: "rgba(4, 120, 87, 0.1)" },
-        ambient: "radial-gradient(1100px 560px at 18% -14%, rgba(16, 185, 129, 0.07), transparent 62%)",
+        focus: p.violet[500],
+        overlay: "rgba(15, 15, 17, 0.35)",
+        chartGrid: "#EDEDEB",
+        chartAxis: p.zinc[500],
+        transfer: p.zinc[600],
+        chart: { income: p.green[500], expense: p.red[500], primary: p.violet[500], accent: p.violet[500], neutral: "#9999A1", area: "rgba(109, 76, 255, 0.12)" },
+        ambient: "none",
     },
     shadows: {
-        sm: "none",
-        card: "none",
-        md: "0 8px 20px rgba(16, 37, 27, 0.08)",
-        lg: "0 14px 32px rgba(16, 37, 27, 0.12)",
-        overlay: "0 24px 64px rgba(16, 37, 27, 0.18)",
+        sm: "0 1px 2px rgba(15, 15, 17, 0.04), 0 1px 1px rgba(15, 15, 17, 0.03)",
+        card: "0 1px 2px rgba(15, 15, 17, 0.04), 0 1px 1px rgba(15, 15, 17, 0.03)",
+        md: "0 4px 12px rgba(15, 15, 17, 0.06), 0 1px 3px rgba(15, 15, 17, 0.04)",
+        lg: "0 12px 32px rgba(15, 15, 17, 0.1), 0 4px 12px rgba(15, 15, 17, 0.06)",
+        overlay: "0 12px 32px rgba(15, 15, 17, 0.1), 0 4px 12px rgba(15, 15, 17, 0.06)",
         base: "none",
-        focus: "0 0 0 3px rgba(4, 120, 87, 0.28)",
-        brand: "0 8px 20px rgba(4, 120, 87, 0.3)",
+        focus: "0 0 0 3px rgba(109, 76, 255, 0.2)",
+        brand: "0 4px 12px rgba(15, 15, 17, 0.15)",
         ledge: "none",
         ledgePressed: "none",
         ledgeNeutral: "none",

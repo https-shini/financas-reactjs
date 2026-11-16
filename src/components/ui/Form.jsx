@@ -66,9 +66,9 @@ export function Field({ label, hint, error, children, className, labelHidden = f
 
 export const controlStyles = css`
     width: 100%;
-    min-height: 40px;
+    min-height: 36px;
     padding: 0 12px;
-    border-radius: ${(p) => p.theme.radius.sm};
+    border-radius: ${(p) => p.theme.radius.md};
     border: 1px solid ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.borderStrong)};
     background: ${(p) => p.theme.colors.bgInput};
     @media (pointer: coarse) {
@@ -219,26 +219,29 @@ export const MoneyInput = forwardRef(function MoneyInput({ value, onChange, larg
     );
 });
 
-// Controle segmentado: trilho em superfície secundária, opção ativa elevada com borda.
+// Controle segmentado (padrão Nexus): trilho em superfície secundária, opção ativa elevada com sombra leve.
 const SegWrap = styled.div`
     display: grid;
     grid-template-columns: repeat(${(p) => p.$count}, 1fr);
     gap: 4px;
     padding: 4px;
-    border-radius: ${(p) => p.theme.radius.md};
+    padding: 2px;
+    gap: 2px;
+    border-radius: 8px;
     background: ${(p) => p.theme.colors.bgSurface};
     border: 1px solid ${(p) => p.theme.colors.border};
 `;
 
 const SegButton = styled.button`
-    min-height: 34px;
-    padding: 0 12px;
-    border-radius: ${(p) => p.theme.radius.sm};
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
     font-weight: 600;
     font-size: ${(p) => p.theme.fontSize.sm};
     color: ${(p) => (p["aria-checked"] ? p.theme.colors[p.$tone] ?? p.theme.colors.text : p.theme.colors.textSecondary)};
     background: ${(p) => (p["aria-checked"] ? p.theme.colors.bgElevated : "transparent")};
     border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.border : "transparent")};
+    box-shadow: ${(p) => (p["aria-checked"] ? "0 1px 2px rgba(15, 15, 17, 0.08)" : "none")};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &:hover {
         color: ${(p) => p.theme.colors.text};

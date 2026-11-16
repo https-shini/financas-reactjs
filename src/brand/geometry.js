@@ -1,14 +1,14 @@
 // Finanças by GCruz.DEV — geometria oficial da marca (fonte única para os componentes React e os SVG gerados).
 // Símbolo: um "F" modular — haste vertical e dois braços com pontas inclinadas para a frente
-// (movimento, crescimento), sobre uma placa Emerald. Construído em grade de 48 × 48.
+// (movimento, crescimento), sobre uma placa em gradiente violeta. Construído em grade de 48 × 48.
 
 export const BRAND_COLORS = {
-    tile: "#059669", // Emerald 600 — placa do símbolo
-    tileDeep: "#047857", // Emerald 700
+    tile: "#6D4CFF", // início do gradiente da placa (violeta)
+    tileEnd: "#B388FF", // fim do gradiente da placa
     glyph: "#FFFFFF",
-    ink: "#10251B", // texto sobre fundo claro
-    mist: "#F0FDF4", // texto sobre fundo escuro
-    muted: "#839D8F",
+    ink: "#0A0A0B", // texto sobre fundo claro
+    mist: "#EDEDEE", // texto sobre fundo escuro
+    muted: "#8B8B93",
     gcruzIndigo: "#818CF8", // ".DEV" — vínculo com a assinatura institucional GCruz
     gcruzIndigoLight: "#4F46E5",
 };

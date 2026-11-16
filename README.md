@@ -12,7 +12,7 @@
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-047857?style=for-the-badge)](https://financas.gcruz.dev.br)
+  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-6D4CFF?style=for-the-badge)](https://financas.gcruz.dev.br)
   [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
   [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
 
@@ -78,7 +78,7 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 ## Identidade visual e Design System
 
-A interface segue a especificação **Finanças by GCruz.DEV — Brand Identity & Design System**: paleta **Emerald Finance** (fundo `#07110F` no escuro e `#F7FAF8` no claro, ações em Emerald 700 `#047857`, destaques em `#34D399`), IBM Plex Sans na interface e JetBrains Mono nos valores financeiros, ícones Lucide, sidebar de 220 px (64 px recolhida) e header de 58 px no padrão do GCruz Lab Platform, com breadcrumbs, busca global (`Ctrl K`), alternância de tema e notificações. Paleta, ajustes de acessibilidade, tipografia, tokens, componentes e comparações de antes e depois estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
+A interface segue o modelo visual **Nexus Finanças**, aplicado à marca **Finanças by GCruz.DEV**: neutros zinco (fundo `#0A0A0C` no escuro e `#FAFAF9` no claro), um único acento violeta (`#6D4CFF` / `#8B6BFF`), botão primário invertido (preto no claro, branco no escuro), Geist e Geist Mono, cards de indicador com minigráfico, tabela de transações com badges de tipo, distribuição em donut, sidebar com seções Análise · Financeiro · Operações · Ajuda e header com breadcrumbs, busca global (`Ctrl K`), ajuda, notificações e tema. Paleta, ajustes de acessibilidade, tokens, componentes e comparações (modelo × implementação, antes × depois) estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
 
 - Tokens primitivos em `src/design/tokens.js` e semânticos em `src/design/themes.js`, também exportados como variáveis CSS `--v-*`.
 - Logo e ícones em `src/brand/` (componentes React) e `public/brand/` (SVG/PNG), gerados por `node scripts/generate-brand-assets.mjs`.
@@ -94,7 +94,7 @@ A interface segue a especificação **Finanças by GCruz.DEV — Brand Identity 
 | Gráficos | Recharts |
 | Regras e validação | JavaScript puro em `src/domain`, Zod (schema do armazenamento), date-fns |
 | Arquivos | SheetJS/xlsx 0.20.3 (CDN oficial), jsPDF + autotable, docx, file-saver — carregados sob demanda |
-| Fontes | IBM Plex Sans e JetBrains Mono (self-hosted via `@fontsource-variable/*`) |
+| Fontes | Geist e Geist Mono (self-hosted via `@fontsource-variable/*`) |
 | Build e testes | Vite 7, Vitest 4, Testing Library, ESLint 9 |
 
 ## Requisitos

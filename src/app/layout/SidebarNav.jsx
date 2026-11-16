@@ -2,25 +2,26 @@ import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { NAV_GROUPS, activeNavId } from "../navigation";
 import { typeRole } from "../../components/ui";
+import { useFinance } from "../../state/contexts";
+import { upcomingItems } from "../../domain/selectors";
 
 const Group = styled.div`
     display: grid;
     gap: 2px;
     & + & {
-        margin-top: ${(p) => p.theme.space(5)};
+        margin-top: ${(p) => p.theme.space(2)};
     }
 `;
 
 const GroupLabel = styled.p`
     ${typeRole("overline")}
-    font-family: ${(p) => p.theme.fonts.mono};
     text-transform: uppercase;
     color: ${(p) => p.theme.colors.textMuted};
-    padding: 0 12px 8px;
+    padding: 12px 10px 6px;
     ${(p) =>
         p.$collapsed &&
         css`
-            padding: 0 0 8px;
+            padding: 10px 0 6px;
             &::before {
                 content: "";
                 display: block;
@@ -38,11 +39,11 @@ const ItemLink = styled(Link)`
     gap: 10px;
     min-height: 36px;
     padding: 0 10px;
-    border-radius: ${(p) => p.theme.radius.sm};
+    border-radius: ${(p) => p.theme.radius.md};
     color: ${(p) => p.theme.colors.textSecondary};
     text-decoration: none;
     font-weight: ${(p) => p.theme.fontWeight.medium};
-    font-size: ${(p) => p.theme.fontSize.md};
+    font-size: 0.84375rem;
     white-space: nowrap;
     overflow: hidden;
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
@@ -57,8 +58,36 @@ const ItemLink = styled(Link)`
         color: ${(p) => p.theme.colors.textMuted};
         transition: color ${(p) => p.theme.motion.fast};
     }
-    &:hover {
+    .label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .count {
+        margin-left: auto;
+        min-width: 20px;
+        padding: 1px 6px;
+        border-radius: ${(p) => p.theme.radius.full};
         background: ${(p) => p.theme.colors.bgHover};
+        color: ${(p) => p.theme.colors.textSecondary};
+        font-size: ${(p) => p.theme.fontSize.xs};
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+    .count.alert {
+        background: ${(p) => p.theme.colors.expenseSoft};
+        color: ${(p) => p.theme.colors.expense};
+    }
+    .dot {
+        position: absolute;
+        top: 7px;
+        right: 9px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: ${(p) => p.theme.colors.expense};
+    }
+    &:hover {
+        background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.text};
         svg {
             color: ${(p) => p.theme.colors.text};
@@ -68,23 +97,13 @@ const ItemLink = styled(Link)`
         outline: 2px solid ${(p) => p.theme.colors.focus};
         outline-offset: -2px;
     }
-    /* Ativo: fundo Emerald Surface + indicador lateral Emerald (não depende só da cor: há o indicador e o peso). */
+    /* Ativo (padrão Nexus): superfície secundária, texto forte e ícone violeta (não depende só da cor). */
     &[aria-current="page"] {
-        background: ${(p) => p.theme.colors.primarySoft};
+        background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.text};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         svg {
             color: ${(p) => p.theme.colors.indicator};
-        }
-        &::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 8px;
-            bottom: 8px;
-            width: 3px;
-            border-radius: 0 3px 3px 0;
-            background: ${(p) => p.theme.colors.indicator};
         }
     }
     ${(p) => p.theme.media.coarse} {
@@ -96,6 +115,10 @@ const ItemLink = styled(Link)`
 export function SidebarNav({ collapsed = false, onNavigate, label = "Navegação principal" }) {
     const location = useLocation();
     const active = activeNavId(location);
+    const { store, today } = useFinance();
+    // Contador de "Contas a pagar e receber": atrasadas + próximos 7 dias (somente leitura).
+    const bills = upcomingItems(store, today, 7);
+    const counts = { bills: { n: bills.length, alert: bills.some((b) => b.overdue) } };
     return (
         <nav aria-label={label}>
             {NAV_GROUPS.map((g) => (
@@ -103,20 +126,32 @@ export function SidebarNav({ collapsed = false, onNavigate, label = "Navegação
                     <GroupLabel id={`nav-g-${g.id}-${label.length}`} $collapsed={collapsed}>
                         <span className={collapsed ? "sr-only" : undefined}>{g.label}</span>
                     </GroupLabel>
-                    {g.items.map((it) => (
-                        <ItemLink
-                            key={it.id}
-                            to={it.to}
-                            $collapsed={collapsed}
-                            aria-current={active === it.id ? "page" : undefined}
-                            aria-label={collapsed ? it.label : undefined}
-                            title={collapsed ? it.label : undefined}
-                            onClick={onNavigate}
-                        >
-                            <it.icon size={18} aria-hidden="true" />
-                            {!collapsed && it.label}
-                        </ItemLink>
-                    ))}
+                    {g.items.map((it) => {
+                        const c = it.badge ? counts[it.badge] : null;
+                        const countLabel = c?.n ? ` (${c.n} ${c.n === 1 ? "pendente" : "pendentes"}${c.alert ? ", há atrasadas" : ""})` : "";
+                        return (
+                            <ItemLink
+                                key={it.id}
+                                to={it.to}
+                                $collapsed={collapsed}
+                                aria-current={active === it.id ? "page" : undefined}
+                                aria-label={collapsed || countLabel ? `${it.label}${countLabel}` : undefined}
+                                title={collapsed ? it.label : undefined}
+                                onClick={onNavigate}
+                            >
+                                <it.icon size={18} aria-hidden="true" />
+                                {!collapsed && <span className="label">{it.label}</span>}
+                                {c?.n > 0 &&
+                                    (collapsed ? (
+                                        <span className="dot" aria-hidden="true" />
+                                    ) : (
+                                        <span className={`count${c.alert ? " alert" : ""}`} aria-hidden="true">
+                                            {c.n}
+                                        </span>
+                                    ))}
+                            </ItemLink>
+                        );
+                    })}
                 </Group>
             ))}
         </nav>

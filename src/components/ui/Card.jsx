@@ -29,14 +29,15 @@ const HeaderWrap = styled.header`
     h2,
     h3 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize.base};
+        font-family: ${(p) => p.theme.fonts.sans};
+        font-size: ${(p) => p.theme.fontSize.md};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
-        letter-spacing: ${(p) => p.theme.letterSpacing.snug};
+        letter-spacing: -0.005em;
         line-height: ${(p) => p.theme.lineHeight.snug};
     }
     p {
-        color: ${(p) => p.theme.colors.textMuted};
-        font-size: ${(p) => p.theme.fontSize.sm};
+        color: ${(p) => p.theme.colors.textSecondary};
+        font-size: 0.78125rem;
         margin-top: 2px;
     }
 `;

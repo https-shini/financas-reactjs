@@ -2,12 +2,13 @@ import { forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { Loader2 } from "lucide-react";
 
-// Botões planos (Functional Design): contraste por cor e borda, sem sombras. Pressionar reduz levemente a escala.
+// Botões no padrão Nexus: secundário em superfície com borda; primário invertido (preto no claro, branco no escuro).
 const variants = {
     primary: css`
         background: ${(p) => p.theme.colors.primary};
         color: ${(p) => p.theme.colors.onPrimary};
         border-color: ${(p) => p.theme.colors.primary};
+        box-shadow: 0 1px 2px rgba(15, 15, 17, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         &:hover:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryHover};
             border-color: ${(p) => p.theme.colors.primaryHover};
@@ -21,7 +22,7 @@ const variants = {
         color: ${(p) => p.theme.colors.text};
         border-color: ${(p) => p.theme.colors.border};
         &:hover:not(:disabled) {
-            background: ${(p) => p.theme.colors.bgHover};
+            background: ${(p) => p.theme.colors.bgSurface};
             border-color: ${(p) => p.theme.colors.borderStrong};
         }
     `,
@@ -62,17 +63,19 @@ const variants = {
 
 const sizes = {
     sm: css`
-        min-height: 34px;
-        padding: 0 12px;
-        font-size: ${(p) => p.theme.fontSize.md};
+        min-height: 32px;
+        padding: 0 10px;
+        gap: 6px;
+        font-size: 0.8125rem;
         @media (pointer: coarse) {
             min-height: 44px;
         }
     `,
     md: css`
-        min-height: 40px;
-        padding: 0 16px;
-        font-size: ${(p) => p.theme.fontSize.md};
+        min-height: 36px;
+        padding: 0 12px;
+        gap: 7px;
+        font-size: 0.8125rem;
         @media (pointer: coarse) {
             min-height: 44px;
         }
@@ -90,8 +93,8 @@ const StyledButton = styled.button`
     justify-content: center;
     gap: 8px;
     border: 1px solid transparent;
-    border-radius: ${(p) => p.theme.radius.sm};
-    font-weight: ${(p) => p.theme.fontWeight.semibold};
+    border-radius: ${(p) => p.theme.radius.md};
+    font-weight: ${(p) => p.theme.fontWeight.medium};
     line-height: 1;
     white-space: nowrap;
     user-select: none;
@@ -99,7 +102,7 @@ const StyledButton = styled.button`
         transform ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing};
     width: ${(p) => (p.$full ? "100%" : "auto")};
     &:active:not(:disabled) {
-        transform: scale(0.98);
+        transform: translateY(1px);
     }
     &:focus-visible {
         outline: 2px solid ${(p) => p.theme.colors.focus};
@@ -143,7 +146,7 @@ const StyledIconButton = styled.button`
     width: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
     height: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
     flex-shrink: 0;
-    border-radius: ${(p) => p.theme.radius.sm};
+    border-radius: ${(p) => p.theme.radius.md};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
     color: ${(p) => (p.$tone === "danger" ? p.theme.colors.expense : p.theme.colors.textSecondary)};
     border: 1px solid ${(p) => (p.$bordered ? p.theme.colors.border : "transparent")};
