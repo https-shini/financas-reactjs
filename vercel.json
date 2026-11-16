@@ -12,5 +12,8 @@
       "destination": "https://financas.gcruz.dev.br/:path*",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -1,8 +1,8 @@
 export const lightTheme = {
   colors: {
-    primary: "#dc2626",
-    primaryLight: "#ef4444",
-    primaryDark: "#991b1b",
+    primary: "#4f46e5",
+    primaryLight: "#6366f1",
+    primaryDark: "#4338ca",
     secondary: "#8b5cf6",
     bg: "#f8fafc",
     bgElevated: "#ffffff",
@@ -28,16 +28,16 @@ export const lightTheme = {
     lg: "1.25rem",
   },
   fonts: {
-    sans: "'Outfit', sans-serif",
-    display: "'Rajdhani', sans-serif",
+    sans: "'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    display: "'Inter Variable', system-ui, sans-serif",
   }
 };
 
 export const darkTheme = {
   colors: {
-    primary: "#dc2626",
-    primaryLight: "#ef4444",
-    primaryDark: "#991b1b",
+    primary: "#4f46e5",
+    primaryLight: "#6366f1",
+    primaryDark: "#4338ca",
     secondary: "#8b5cf6",
     bg: "#020617",
     bgElevated: "#0f172a",
@@ -63,7 +63,7 @@ export const darkTheme = {
     lg: "1.25rem",
   },
   fonts: {
-    sans: "'Outfit', sans-serif",
-    display: "'Rajdhani', sans-serif",
+    sans: "'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    display: "'Inter Variable', system-ui, sans-serif",
   }
 };

@@ -91,3 +91,9 @@ export const Th = styled.th`
   font-weight: 700;
   letter-spacing: 1px;
 `;
+
+export const Empty = styled.p`
+  padding: 32px 20px;
+  text-align: center;
+  color: ${props => props.theme.colors.textSecondary};
+`;

@@ -1,49 +1,48 @@
-import * as XLSX from 'xlsx';
-import DOMPurify from 'dompurify';
+// Importação simples (Fase 0). A importação completa com prévia fica em features/data.
+import { parseMoneyString } from "../domain/money";
+import { buildTransaction, cleanText } from "../domain/transactions";
 
-export const downloadTemplate = () => {
+export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
+
+export async function downloadTemplate() {
+    const XLSX = await import("xlsx");
     const data = [
-        { "Descrição": "Exemplo Salário", "Valor": 5000, "Tipo (Entrada/Saída)": "Entrada" },
-        { "Descrição": "Exemplo Aluguel", "Valor": 1200, "Tipo (Entrada/Saída)": "Saída" }
+        { Data: "05/11/2026", Descrição: "Salário", Valor: "5000,00", Tipo: "Receita", Categoria: "Salário" },
+        { Data: "06/11/2026", Descrição: "Aluguel", Valor: "1200,00", Tipo: "Despesa", Categoria: "Moradia" },
     ];
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Modelo");
-    XLSX.writeFile(workbook, "modelo_importacao.xlsx");
-};
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Modelo");
+    XLSX.writeFile(wb, "modelo_importacao.xlsx");
+}
 
-export const processImportFile = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-                const validatedData = jsonData.map(item => {
-                    const desc = DOMPurify.sanitize(String(item["Descrição"] || "Sem descrição"));
-                    const amount = parseFloat(item["Valor"]);
-                    const type = String(item["Tipo (Entrada/Saída)"]).toLowerCase();
-                    
-                    if (isNaN(amount)) return null;
-
-                    return {
-                        id: Math.round(Math.random() * 1000000),
-                        desc,
-                        amount: Math.abs(amount),
-                        expense: type === 'saída' || type === 'saida'
-                    };
-                }).filter(item => item !== null);
-
-                resolve(validatedData);
-            } catch (error) {
-                reject("Erro ao processar o arquivo. Verifique o formato.");
-            }
-        };
-        reader.onerror = () => reject("Erro na leitura do arquivo.");
-        reader.readAsArrayBuffer(file);
+export async function processImportFile(file, { today, accountId }) {
+    if (file.size > MAX_IMPORT_BYTES) throw new Error("Arquivo maior que 5 MB.");
+    const XLSX = await import("xlsx");
+    const wb = XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: "array" });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false, defval: "" });
+    const transactions = [];
+    const invalid = [];
+    rows.forEach((row, i) => {
+        const valueRaw = row["Valor"];
+        const cents = parseMoneyString(valueRaw);
+        if (cents === null || cents === 0) {
+            invalid.push(i + 2);
+            return;
+        }
+        const typeRaw = String(row["Tipo (Entrada/Saída)"] ?? row["Tipo"] ?? "").toLowerCase();
+        const isExpense = /sa[ií]da|despesa|d[eé]bito/.test(typeRaw) || (!typeRaw && cents < 0);
+        transactions.push(
+            buildTransaction({
+                type: isExpense ? "expense" : "income",
+                amountCents: Math.abs(cents),
+                description: cleanText(row["Descrição"]) || "Sem descrição",
+                date: today,
+                accountId,
+                categoryId: null,
+                status: "paid",
+            })
+        );
     });
-};
+    return { transactions, invalid };
+}
