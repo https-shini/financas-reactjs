@@ -12,7 +12,7 @@ src/
 │   ├── cards.js            faturas e limite de cartões
 │   ├── installments.js     parcelamento
 │   ├── recurrence.js       recorrências idempotentes
-│   ├── budgets.js · goals.js
+│   ├── budgets.js · goals.js  (limite zero com gasto = estourado)
 │   ├── projection.js       saldo projetado e "quanto posso gastar"
 │   ├── insights.js         insights por regras
 │   ├── intelligence.js     assinaturas, saúde financeira, simulador
@@ -35,7 +35,8 @@ src/
 - **Domínio separado da interface.** Todas as contas financeiras estão em `src/domain` e são testadas sem React. Dashboard, movimentações e relatórios chamam as mesmas funções.
 - **Operações puras.** Cada alteração é uma função `(store, ...args) => store` em `state/operations.js`. O provider aplica, persiste e reporta erros. Isso dispensa bibliotecas de estado e mantém o histórico de ações testável.
 - **Persistência resiliente.** O repositório valida com Zod, corrige problemas recuperáveis (IDs duplicados, referências quebradas), migra versões e entra em modo de recuperação quando os dados são ilegíveis, sem sobrescrever nada.
-- **Local-first.** Sem backend; o app funciona offline. Fontes self-hosted (`@fontsource-variable/inter`), sem requisições externas em tempo de execução.
+- **Local-first.** Sem backend; depois de carregado, o app não depende de servidor. Fontes self-hosted (`@fontsource-variable/inter`), sem requisições externas em tempo de execução.
+- **Segurança em produção.** `vercel.json` define CSP restritiva (somente a própria origem, sem `unsafe-eval`; o Zod roda em modo `jitless`), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` e `Permissions-Policy`. `npm run preview` aplica os mesmos cabeçalhos. Exportações CSV/XLSX passam por `utils/csv.js` (proteção contra injeção de fórmulas).
 - **Vite** substituiu o Create React App (descontinuado). O build continua em `build/` para manter o deploy existente.
 - **Dependências seguras.** `xlsx` vem da CDN oficial da SheetJS (0.20.3, com correções que não existem no npm); jsPDF 4, zod 4 e react-router 7 sem vulnerabilidades conhecidas (`npm audit`: 0). Bibliotecas de exportação são carregadas sob demanda.
 - **Design system próprio** com Styled Components e tokens com contraste WCAG AA verificado nos dois temas.

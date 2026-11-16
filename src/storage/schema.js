@@ -3,6 +3,9 @@ import { isValidISODate, isValidMonthKey } from "../domain/dates";
 import { MAX_CENTS } from "../domain/money";
 import { SCHEMA_VERSION } from "../domain/defaults";
 
+// Sem compilação JIT: o Zod não tenta usar `new Function`, compatível com a CSP sem 'unsafe-eval'.
+z.config({ jitless: true });
+
 const isoDate = z.string().refine(isValidISODate, { message: "Data inválida (esperado AAAA-MM-DD)" });
 const monthKey = z.string().refine(isValidMonthKey, { message: "Mês inválido (esperado AAAA-MM)" });
 const id = z.string().min(1).max(100);

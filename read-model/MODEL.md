@@ -72,6 +72,8 @@ Decisões adotadas onde o requisito era aberto:
 - Registros antigos (v1) sem data recebem a **data da migração** e status `paid`, na conta principal e sem categoria.
 - Resultado mensal inclui lançamentos pendentes do mês (competência); o saldo em contas não.
 - Ocorrências de recorrência com data passada são criadas como **pendentes** para o usuário confirmar.
+- Orçamento com limite zero em um mês e qualquer gasto conta como estourado (100%).
+- Resgates de metas não podem superar o valor acumulado.
 - "Quanto posso gastar hoje" = (saldo previsto no fim do mês − aportes de metas pendentes no mês) ÷ dias restantes.
 - Saúde financeira: 4 critérios de 25 pontos (poupança, orçamentos, reserva, despesas fixas); critérios sem dados não são avaliados e a nota é proporcional aos avaliados.
 
