@@ -65,21 +65,22 @@ const ItemLink = styled(Link)`
         }
     }
     &[aria-current="page"] {
-        background: ${(p) => p.theme.colors.primarySoft};
+        background: ${(p) => p.theme.colors.bgSurface};
+        box-shadow: inset 0 0 0 1px ${(p) => p.theme.colors.border}, ${(p) => p.theme.shadows.sm};
         color: ${(p) => p.theme.colors.text};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         svg {
-            color: ${(p) => p.theme.colors.brand};
+            color: ${(p) => p.theme.colors.indicator};
         }
         &::before {
             content: "";
             position: absolute;
             left: 0;
-            top: 8px;
-            bottom: 8px;
+            top: 9px;
+            bottom: 9px;
             width: 3px;
             border-radius: 0 3px 3px 0;
-            background: ${(p) => p.theme.colors.brand};
+            background: ${(p) => p.theme.colors.indicator};
         }
     }
     ${(p) => p.theme.media.coarse} {

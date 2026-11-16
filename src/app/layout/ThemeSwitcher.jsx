@@ -13,7 +13,7 @@ const Wrap = styled.div`
     grid-template-columns: ${(p) => (p.$vertical ? "1fr" : "repeat(3, 1fr)")};
     gap: 2px;
     padding: 3px;
-    border-radius: ${(p) => p.theme.radius.md};
+    border-radius: ${(p) => (p.$vertical ? p.theme.radius.lg : p.theme.radius.full)};
     background: ${(p) => p.theme.colors.bgSurface};
     border: 1px solid ${(p) => p.theme.colors.border};
 `;
@@ -22,7 +22,7 @@ const Opt = styled.button`
     display: grid;
     place-items: center;
     height: 32px;
-    border-radius: 8px;
+    border-radius: ${(p) => p.theme.radius.full};
     color: ${(p) => p.theme.colors.textMuted};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &:hover {
@@ -30,8 +30,8 @@ const Opt = styled.button`
     }
     &[aria-checked="true"] {
         background: ${(p) => p.theme.colors.bgElevated};
-        color: ${(p) => p.theme.colors.brand};
-        box-shadow: ${(p) => p.theme.shadows.sm};
+        color: ${(p) => p.theme.colors.indicator};
+        box-shadow: ${(p) => p.theme.shadows.ledgeNeutral};
     }
     ${(p) => p.theme.media.coarse} {
         height: 40px;

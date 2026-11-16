@@ -102,9 +102,10 @@ const IconBubble = styled.span`
     flex-shrink: 0;
     width: ${(p) => p.$size}px;
     height: ${(p) => p.$size}px;
-    border-radius: ${(p) => (p.$size > 32 ? "12px" : "10px")};
+    border-radius: ${(p) => (p.$size > 32 ? "12px" : p.$size > 24 ? "9px" : "7px")};
     color: ${(p) => p.$color};
     background: ${(p) => `${p.$color}1f`};
+    box-shadow: inset 0 0 0 1px ${(p) => `${p.$color}2e`};
 `;
 
 export function CategoryIcon({ category, size = 36 }) {
@@ -146,6 +147,7 @@ const Track = styled.div`
     height: ${(p) => p.$height}px;
     border-radius: 999px;
     background: ${(p) => p.theme.colors.bgSurface};
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, ${(p) => (p.theme.mode === "dark" ? 0.4 : 0.08)});
     overflow: hidden;
 `;
 
@@ -181,16 +183,17 @@ const EmptyWrap = styled.div`
     .icon {
         display: grid;
         place-items: center;
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        background: ${(p) => p.theme.colors.primarySoft};
-        color: ${(p) => p.theme.colors.primaryText};
-        margin-bottom: 4px;
+        width: 52px;
+        height: 52px;
+        border-radius: 15px;
+        background: ${(p) => p.theme.colors.primary};
+        color: ${(p) => p.theme.colors.onPrimary};
+        box-shadow: ${(p) => p.theme.shadows.ledge};
+        margin-bottom: 8px;
     }
     h3 {
         color: ${(p) => p.theme.colors.text};
-        font-size: ${(p) => p.theme.fontSize.md};
+        font-size: ${(p) => p.theme.fontSize.lg};
         font-weight: 600;
     }
     p {

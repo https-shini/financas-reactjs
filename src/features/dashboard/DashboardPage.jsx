@@ -381,7 +381,7 @@ function CashflowCard({ store, month, onPickMonth }) {
                                 {chart.tooltip()}
                                 <Bar dataKey="income" name="Receitas" fill={chart.colors.income} radius={chart.barRadius} maxBarSize={26} cursor="pointer" />
                                 <Bar dataKey="expense" name="Despesas" fill={chart.colors.expense} radius={chart.barRadius} maxBarSize={26} cursor="pointer" />
-                                <Line dataKey="result" name="Resultado" stroke={chart.colors.primary} strokeWidth={2.5} dot={{ r: 3, strokeWidth: 0, fill: chart.colors.primary }} activeDot={{ r: 5 }} type="monotone" />
+                                <Line dataKey="result" name="Resultado" stroke={chart.colors.accent} strokeWidth={2.5} dot={{ r: 3, strokeWidth: 0, fill: chart.colors.accent }} activeDot={{ r: 5 }} type="monotone" />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </ChartBox>
@@ -412,7 +412,7 @@ function CashflowCard({ store, month, onPickMonth }) {
                         items={[
                             { label: "Receitas", color: chart.colors.income },
                             { label: "Despesas", color: chart.colors.expense },
-                            { label: "Resultado", color: chart.colors.primary, line: true },
+                            { label: "Resultado", color: chart.colors.accent, line: true },
                         ]}
                     />
                 </>

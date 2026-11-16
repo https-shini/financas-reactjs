@@ -69,8 +69,9 @@ export const controlStyles = css`
     min-height: 44px;
     padding: 0 12px;
     border-radius: ${(p) => p.theme.radius.md};
-    border: 1px solid ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.border)};
-    background: ${(p) => p.theme.colors.bgElevated};
+    border: 1px solid ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.borderStrong)};
+    background: ${(p) => p.theme.colors.bgInput};
+    box-shadow: ${(p) => (p.theme.mode === "light" ? "inset 0 1px 2px rgba(17, 18, 29, 0.04)" : "none")};
     color: ${(p) => p.theme.colors.text};
     font-size: 16px; /* evita zoom automático no iOS */
     transition: border-color ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, box-shadow ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, background ${(p) => p.theme.motion.fast};
@@ -85,6 +86,7 @@ export const controlStyles = css`
         outline: none;
         border-color: ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.brand)};
         box-shadow: ${(p) => p.theme.shadows.focus};
+        background: ${(p) => p.theme.colors.bgElevated};
     }
     &:disabled {
         opacity: ${(p) => p.theme.opacity.disabled};
@@ -215,25 +217,27 @@ export const MoneyInput = forwardRef(function MoneyInput({ value, onChange, larg
     );
 });
 
+// Controle segmentado em pílula: trilho rebaixado, opção ativa elevada (com "degrau").
 const SegWrap = styled.div`
     display: grid;
     grid-template-columns: repeat(${(p) => p.$count}, 1fr);
     gap: 4px;
     padding: 4px;
-    border-radius: ${(p) => p.theme.radius.md};
+    border-radius: ${(p) => p.theme.radius.full};
     background: ${(p) => p.theme.colors.bgSurface};
     border: 1px solid ${(p) => p.theme.colors.border};
 `;
 
 const SegButton = styled.button`
-    min-height: 40px;
-    border-radius: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: ${(p) => p.theme.radius.full};
     font-weight: 600;
     font-size: ${(p) => p.theme.fontSize.sm};
     color: ${(p) => (p["aria-checked"] ? p.theme.colors[p.$tone] ?? p.theme.colors.text : p.theme.colors.textSecondary)};
     background: ${(p) => (p["aria-checked"] ? p.theme.colors.bgElevated : "transparent")};
-    box-shadow: ${(p) => (p["aria-checked"] ? p.theme.shadows.sm : "none")};
-    border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.border : "transparent")};
+    box-shadow: ${(p) => (p["aria-checked"] ? p.theme.shadows.ledgeNeutral : "none")};
+    border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.borderStrong : "transparent")};
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &:hover {
         color: ${(p) => p.theme.colors.text};
@@ -306,7 +310,8 @@ const SwitchLabel = styled.label`
         height: 18px;
         border-radius: 50%;
         background: #fff;
-        transition: transform ${(p) => p.theme.motion.fast};
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        transition: transform ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easingOut};
     }
     input:checked + .track {
         background: ${(p) => p.theme.colors.primary};

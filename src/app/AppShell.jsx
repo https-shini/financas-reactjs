@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { LayoutDashboard, ArrowLeftRight, Target, Plus, Search, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, Eye, EyeOff, Zap, Menu as MenuIcon } from "lucide-react";
-import { Button, IconButton, Drawer, ModalBody } from "../components/ui";
+import { Button, IconButton, Drawer, ModalBody, Breadcrumbs } from "../components/ui";
 import { useFinance, useFinanceActions } from "../state/contexts";
 import { useUI } from "./UIContext";
 import { addMonthsToKey, currentMonthKey, formatMonthLabel } from "../domain/dates";
@@ -47,8 +47,9 @@ const Side = styled.aside`
         top: 0;
         height: 100vh;
         border-right: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgElevated};
-        padding: 18px ${(p) => (p.$collapsed ? "12px" : "14px")} 14px;
+        background: ${(p) => p.theme.colors.bgGlass};
+        backdrop-filter: blur(18px);
+        padding: 20px ${(p) => (p.$collapsed ? "12px" : "14px")} 14px;
         gap: 18px;
     }
 `;
@@ -69,8 +70,10 @@ const NavScroll = styled.div`
     flex: 1;
     overflow-y: auto;
     margin: 0 -6px;
-    padding: 0 6px;
+    padding: 0 6px 16px;
     scrollbar-width: thin;
+    /* Esmaece a borda inferior quando a lista rola */
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
 `;
 
 const SideFooter = styled.div`
@@ -93,8 +96,8 @@ const Top = styled.header`
     gap: 8px;
     height: ${(p) => p.theme.layout.topbar};
     padding: 0 12px;
-    background: color-mix(in srgb, ${(p) => p.theme.colors.bg} 88%, transparent);
-    backdrop-filter: saturate(180%) blur(14px);
+    background: ${(p) => p.theme.colors.bgGlass};
+    backdrop-filter: saturate(160%) blur(16px);
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     ${(p) => p.theme.media.tablet} {
         padding: 0 16px;
@@ -116,15 +119,9 @@ const MobileBrand = styled(Link)`
     }
 `;
 
-const Context = styled.p`
+const Context = styled.div`
     display: none;
-    font-size: ${(p) => p.theme.fontSize.sm};
-    color: ${(p) => p.theme.colors.textMuted};
     white-space: nowrap;
-    span {
-        color: ${(p) => p.theme.colors.text};
-        font-weight: ${(p) => p.theme.fontWeight.medium};
-    }
     ${(p) => p.theme.media.wide} {
         display: block;
         margin-right: 12px;
@@ -138,10 +135,18 @@ const MonthBox = styled.div`
     align-items: center;
     gap: 2px;
     min-width: 0;
+    padding: 2px;
+    border-radius: ${(p) => p.theme.radius.full};
+    border: 1px solid ${(p) => p.theme.colors.border};
+    background: ${(p) => p.theme.colors.bgInput};
+    button {
+        border-radius: ${(p) => p.theme.radius.full};
+    }
     h2 {
         font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize.md};
-        font-weight: ${(p) => p.theme.fontWeight.bold};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
+        letter-spacing: ${(p) => p.theme.letterSpacing.snug};
         min-width: 0;
         white-space: nowrap;
         overflow: hidden;
@@ -188,9 +193,9 @@ const SearchForm = styled.form`
         width: 100%;
         min-height: 40px;
         padding: 0 40px 0 36px;
-        border-radius: ${(p) => p.theme.radius.md};
-        border: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgElevated};
+        border-radius: ${(p) => p.theme.radius.full};
+        border: 1px solid ${(p) => p.theme.colors.borderStrong};
+        background: ${(p) => p.theme.colors.bgInput};
         font-size: ${(p) => p.theme.fontSize.md};
         transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast};
         &:focus {
@@ -237,7 +242,7 @@ const Content = styled.main`
     width: 100%;
     max-width: ${(p) => p.theme.layout.content};
     margin: 0 auto;
-    padding: 20px 16px calc(${(p) => p.theme.layout.bottomNav} + 32px + env(safe-area-inset-bottom));
+    padding: 20px 16px calc(${(p) => p.theme.layout.bottomNav} + 44px + env(safe-area-inset-bottom));
     overflow-x: clip;
     &:focus {
         outline: none;
@@ -247,24 +252,27 @@ const Content = styled.main`
         padding-right: 24px;
     }
     ${(p) => p.theme.media.desktop} {
-        padding: 32px 36px 56px;
+        padding: 36px 40px 64px;
     }
 `;
 
+// Navegação inferior flutuante em pílula de vidro (celular).
 const Bottom = styled.nav`
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
     z-index: ${(p) => p.theme.z.nav};
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     align-items: center;
-    height: calc(${(p) => p.theme.layout.bottomNav} + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
-    background: color-mix(in srgb, ${(p) => p.theme.colors.bgElevated} 94%, transparent);
-    backdrop-filter: blur(14px);
-    border-top: 1px solid ${(p) => p.theme.colors.border};
+    height: ${(p) => p.theme.layout.bottomNav};
+    padding: 0 6px;
+    border-radius: 24px;
+    background: ${(p) => p.theme.colors.bgGlass};
+    backdrop-filter: saturate(160%) blur(18px);
+    border: 1px solid ${(p) => p.theme.colors.borderStrong};
+    box-shadow: ${(p) => p.theme.shadows.lg}, ${(p) => p.theme.shadows.sm};
     ${(p) => p.theme.media.desktop} {
         display: none;
     }
@@ -274,15 +282,22 @@ const BottomLink = styled(NavLink)`
     display: grid;
     justify-items: center;
     gap: 2px;
-    min-height: 56px;
+    min-height: 54px;
+    margin: 0 2px;
     align-content: center;
+    border-radius: 18px;
     font-size: 11px;
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
     text-decoration: none;
+    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &.active {
-        color: ${(p) => p.theme.colors.primaryText};
+        color: ${(p) => p.theme.colors.text};
+        background: ${(p) => p.theme.colors.bgSurface};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
+        svg {
+            color: ${(p) => p.theme.colors.indicator};
+        }
     }
 `;
 
@@ -304,14 +319,15 @@ const Fab = styled.button`
     place-items: center;
     width: 52px;
     height: 52px;
-    border-radius: 16px;
+    border-radius: 18px;
     background: ${(p) => p.theme.colors.primary};
     color: ${(p) => p.theme.colors.onPrimary};
     box-shadow: ${(p) => p.theme.shadows.brand};
-    transform: translateY(-10px);
-    transition: background ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
+    transform: translateY(-14px);
+    transition: background ${(p) => p.theme.motion.fast}, transform 90ms, box-shadow 90ms;
     &:active {
-        transform: translateY(-10px) scale(0.96);
+        transform: translateY(-11px);
+        box-shadow: ${(p) => p.theme.shadows.ledgePressed};
         background: ${(p) => p.theme.colors.primaryActive};
     }
 `;
@@ -403,7 +419,7 @@ export function AppShell() {
                     </MobileBrand>
                     {ctx && (
                         <Context>
-                            {ctx.group.label} / <span>{ctx.item.label}</span>
+                            <Breadcrumbs items={ctx.item.id === "dashboard" ? [{ label: "Dashboard" }] : [{ label: "Dashboard", to: "/" }, { label: ctx.group.label }, { label: ctx.item.label }]} />
                         </Context>
                     )}
                     <MonthSwitcher />

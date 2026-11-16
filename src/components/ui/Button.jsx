@@ -2,26 +2,35 @@ import { forwardRef } from "react";
 import styled, { css } from "styled-components";
 import { Loader2 } from "lucide-react";
 
+// Botões táteis: o primário tem um "degrau" inferior (ledge) que afunda ao pressionar.
 const variants = {
     primary: css`
         background: ${(p) => p.theme.colors.primary};
         color: ${(p) => p.theme.colors.onPrimary};
-        border-color: ${(p) => p.theme.colors.primary};
+        border-color: transparent;
+        box-shadow: ${(p) => p.theme.shadows.ledge};
+        margin-bottom: 3px;
         &:hover:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryHover};
-            border-color: ${(p) => p.theme.colors.primaryHover};
         }
         &:active:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryActive};
+            box-shadow: ${(p) => p.theme.shadows.ledgePressed};
+            transform: translateY(2px);
         }
     `,
     secondary: css`
         background: ${(p) => p.theme.colors.bgElevated};
         color: ${(p) => p.theme.colors.text};
-        border-color: ${(p) => p.theme.colors.border};
+        border-color: ${(p) => p.theme.colors.borderStrong};
+        box-shadow: ${(p) => p.theme.shadows.ledgeNeutral};
+        margin-bottom: 2px;
         &:hover:not(:disabled) {
-            background: ${(p) => p.theme.colors.bgHover};
-            border-color: ${(p) => p.theme.colors.borderStrong};
+            background: ${(p) => p.theme.colors.bgSurface};
+        }
+        &:active:not(:disabled) {
+            box-shadow: none;
+            transform: translateY(2px);
         }
     `,
     ghost: css`
@@ -34,11 +43,12 @@ const variants = {
         }
     `,
     danger: css`
-        background: ${(p) => p.theme.colors.expense};
-        color: #fff;
+        background: ${(p) => p.theme.colors.expenseSoft};
+        color: ${(p) => p.theme.colors.expense};
         border-color: ${(p) => p.theme.colors.expense};
         &:hover:not(:disabled) {
-            filter: brightness(0.95);
+            background: ${(p) => p.theme.colors.expense};
+            color: ${(p) => p.theme.colors.bg};
         }
     `,
     "danger-ghost": css`
@@ -47,6 +57,17 @@ const variants = {
         border-color: transparent;
         &:hover:not(:disabled) {
             background: ${(p) => p.theme.colors.expenseSoft};
+        }
+    `,
+    accent: css`
+        background: ${(p) => p.theme.colors.accent};
+        color: ${(p) => p.theme.colors.onAccent};
+        border-color: transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 0 ${(p) => p.theme.colors.indicator};
+        margin-bottom: 3px;
+        &:active:not(:disabled) {
+            box-shadow: none;
+            transform: translateY(3px);
         }
     `,
 };
@@ -79,15 +100,14 @@ const StyledButton = styled.button`
     gap: 8px;
     border: 1px solid transparent;
     border-radius: ${(p) => p.theme.radius.md};
-    font-weight: 600;
+    font-weight: 650;
+    letter-spacing: 0.005em;
     line-height: 1;
     white-space: nowrap;
     user-select: none;
-    transition: background ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, border-color ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
+    transition: background ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, border-color ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast},
+        transform 90ms ${(p) => p.theme.motion.easing}, box-shadow 90ms ${(p) => p.theme.motion.easing};
     width: ${(p) => (p.$full ? "100%" : "auto")};
-    &:active:not(:disabled) {
-        transform: scale(0.98);
-    }
     &:focus-visible {
         outline: 2px solid ${(p) => p.theme.colors.focus};
         outline-offset: 2px;

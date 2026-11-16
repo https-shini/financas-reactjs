@@ -16,7 +16,7 @@ const letters = (color) =>
 const svg = (viewBox, title, body, extra = "") =>
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"${extra}><title>${title}</title>${body}</svg>\n`;
 
-const { blue, violet, deepBlack, iceWhite, ink } = BRAND_COLORS;
+const { indigo: blue, aurum: violet, mist: iceWhite, ink } = BRAND_COLORS;
 const files = {
     "veldora-symbol.svg": svg(SYMBOL_VIEWBOX, "VELDORA", glyphs(blue, violet)),
     "veldora-symbol-mono-dark.svg": svg(SYMBOL_VIEWBOX, "VELDORA", glyphs(ink, ink, 0.55)),
@@ -25,7 +25,7 @@ const files = {
     "veldora-logo-on-light.svg": svg(HORIZONTAL_VIEWBOX, "VELDORA", `${glyphs(blue, violet)}<g transform="translate(${WORDMARK_OFFSET.x} ${WORDMARK_OFFSET.y})">${letters(ink)}</g>`),
     "veldora-logo-mono.svg": svg(HORIZONTAL_VIEWBOX, "VELDORA", `${glyphs(ink, ink, 0.55)}<g transform="translate(${WORDMARK_OFFSET.x} ${WORDMARK_OFFSET.y})">${letters(ink)}</g>`),
     "veldora-wordmark.svg": svg(`${-WORDMARK_STROKE / 2} ${-WORDMARK_STROKE / 2} ${WORDMARK_WIDTH + WORDMARK_STROKE} ${WORDMARK_HEIGHT + WORDMARK_STROKE}`, "VELDORA", letters(ink)),
-    "veldora-app-icon.svg": svg(APP_ICON_VIEWBOX, "VELDORA", `<rect width="64" height="64" rx="${APP_ICON_RADIUS}" fill="${deepBlack}"/><g transform="${APP_ICON_SYMBOL_TRANSFORM}">${glyphs(blue, violet)}</g>`),
+    "veldora-app-icon.svg": svg(APP_ICON_VIEWBOX, "VELDORA", `<rect width="64" height="64" rx="${APP_ICON_RADIUS}" fill="${BRAND_COLORS.indigoDeep}"/><rect width="64" height="60" rx="${APP_ICON_RADIUS}" fill="${blue}"/><g transform="${APP_ICON_SYMBOL_TRANSFORM}">${glyphs("#FFFFFF", violet)}</g>`),
 };
 for (const [name, content] of Object.entries(files)) writeFileSync(new URL(name, out), content);
 // Favicon vetorial na raiz (mesmo desenho do ícone do app).

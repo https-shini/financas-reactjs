@@ -152,6 +152,7 @@ const StatBox = styled.section`
     background: ${(p) => p.theme.colors.bgElevated};
     border: 1px solid ${(p) => p.theme.colors.border};
     border-radius: ${(p) => p.theme.radius.lg};
+    box-shadow: ${(p) => p.theme.shadows.card};
     min-width: 0;
     ${(p) =>
         p.$accent &&
@@ -164,7 +165,7 @@ const StatBox = styled.section`
                 top: 0;
                 height: 2px;
                 border-radius: 0 0 2px 2px;
-                background: ${p.theme.colors[p.$accent] ?? p.theme.colors.brand};
+                background: linear-gradient(90deg, ${p.theme.colors[p.$accent] ?? p.theme.colors.brand}, transparent 85%);
             }
         `}
     ${(p) => p.theme.media.mobile} {
@@ -182,10 +183,12 @@ const StatHead = styled.header`
     .icon {
         display: grid;
         place-items: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
         background: ${(p) => p.theme.colors.bgSurface};
+        border: 1px solid ${(p) => p.theme.colors.border};
+        box-shadow: ${(p) => p.theme.shadows.tile};
         color: ${(p) => p.theme.colors[p.$iconTone] ?? p.theme.colors.primaryText};
     }
     .tip {

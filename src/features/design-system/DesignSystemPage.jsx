@@ -67,14 +67,14 @@ export default function DesignSystemPage() {
 
     return (
         <Stack $gap={6}>
-            <PageHeader title="Design System" description="VELDORA — componentes, tokens e identidade visual" breadcrumbs={false} />
+            <PageHeader title="Design System" description="VELDORA — componentes, tokens e identidade visual" eyebrow="Sistema interno" />
 
             {/* Marca */}
             <Card aria-labelledby="ds-brand">
                 <CardHeader id="ds-brand" title="Identidade" subtitle={`${TAGLINE} · ${SLOGAN.pt}`} />
                 <Grid>
                     <Span $desktop={6}>
-                        <Swatch $bg={brand.deepBlack}>
+                        <Swatch $bg={brand.night}>
                             <VeldoraLogo height={32} tone="onDark" title="VELDORA sobre fundo escuro" />
                         </Swatch>
                     </Span>
@@ -119,7 +119,7 @@ export default function DesignSystemPage() {
 
             {/* Tipografia */}
             <Card aria-labelledby="ds-type">
-                <CardHeader id="ds-type" title="Tipografia" subtitle="Manrope (display) · Inter (texto) · numerais tabulares" />
+                <CardHeader id="ds-type" title="Tipografia" subtitle="Space Grotesk (display e números) · Inter (texto) · numerais tabulares" />
                 <Stack $gap={3}>
                     <Text as="p" $variant="display">
                         Display 40
@@ -154,6 +154,7 @@ export default function DesignSystemPage() {
                                 </Button>
                                 <Button>Secundário</Button>
                                 <Button variant="ghost">Ghost</Button>
+                                <Button variant="accent">Destaque</Button>
                                 <Button variant="danger" icon={Trash2}>
                                     Excluir
                                 </Button>

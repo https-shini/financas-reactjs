@@ -38,11 +38,13 @@ describe("shell VELDORA", () => {
         expect(within(nav).queryByRole("link", { name: /Design System/, hidden: true })).toBeNull();
     });
 
-    it("páginas internas mostram breadcrumbs automáticos", async () => {
+    it("páginas internas mostram sobretítulo do grupo e breadcrumbs na barra superior", async () => {
         window.history.pushState({}, "", "/planejamento/metas");
         render(<App />);
-        const crumbs = await screen.findByRole("navigation", { name: "Trilha de navegação" });
-        expect(within(crumbs).getByRole("link", { name: "Dashboard" })).toBeInTheDocument();
+        expect(await screen.findByText("03 · Planejamento")).toBeInTheDocument();
+        // A trilha fica na barra superior, visível só em telas largas (media query) — por isso hidden: true.
+        const crumbs = screen.getByRole("navigation", { name: "Trilha de navegação", hidden: true });
+        expect(within(crumbs).getByRole("link", { name: "Dashboard", hidden: true })).toBeInTheDocument();
         expect(within(crumbs).getByText("Metas")).toHaveAttribute("aria-current", "page");
     });
 });

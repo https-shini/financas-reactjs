@@ -7,5 +7,5 @@ export { Amount, Badge, CategoryIcon, CategoryChip, Progress, levelTone, EmptySt
 export { Menu } from "./Menu";
 export { Tabs, RouteTabs } from "./Tabs";
 export { iconFor, CATEGORY_ICON_COMPONENTS } from "./icons";
-export { Text, Heading, NumericDisplay, Overline, Subheading, FieldLabel, typeRole } from "./Typography";
+export { Text, Heading, NumericDisplay, Overline, Subheading, FieldLabel, Eyebrow, typeRole } from "./Typography";
 export { Spinner, Alert, Tooltip, StatCard, DataTable, Pagination, Breadcrumbs } from "./Feedback";

@@ -37,23 +37,31 @@ describe.each([
 
     it("indicador de foco e séries de gráfico >= 3:1 (elementos gráficos)", () => {
         expect(contrast(c.focus, c.bg)).toBeGreaterThanOrEqual(3);
-        for (const k of ["income", "expense", "primary"]) expect(contrast(c.chart[k], c.bgElevated), `chart.${k}`).toBeGreaterThanOrEqual(3);
+        for (const k of ["income", "expense", "primary", "accent"]) expect(contrast(c.chart[k], c.bgElevated), `chart.${k}`).toBeGreaterThanOrEqual(3);
+    });
+
+    it("indicador de item ativo (ouro) >= 3:1 sobre as superfícies", () => {
+        for (const bg of [c.bg, c.bgElevated, c.bgSurface]) expect(contrast(c.indicator, bg)).toBeGreaterThanOrEqual(3);
+    });
+
+    it("texto sobre o destaque Aurum >= 4,5:1", () => {
+        expect(contrast(c.onAccent, c.accent)).toBeGreaterThanOrEqual(4.5);
     });
 
     it("exporta CSS variables para cores, raios e movimento", () => {
         const vars = themeToCssVars(theme);
-        expect(vars["--v-color-brand"]).toBe("#397BFF");
+        expect(vars["--v-color-brand"]).toBe("#625DF5");
         expect(vars["--v-color-bg"]).toBe(c.bg);
-        expect(vars["--v-radius-lg"]).toBe("16px");
+        expect(vars["--v-radius-lg"]).toBe("18px");
         expect(vars["--v-chart-income"]).toBe(c.chart.income);
     });
 });
 
 describe("paleta oficial", () => {
     it("tema escuro usa exatamente as cores da marca", () => {
-        expect(darkTheme.colors).toMatchObject({ bg: "#10131C", bgElevated: "#171E2B", bgSurface: "#1D2636", text: "#F5F7FF", textMuted: "#8792A5", brand: "#397BFF", accent: "#9277F5", income: "#21C98B", expense: "#F06B78", warning: "#E9B45B" });
+        expect(darkTheme.colors).toMatchObject({ bg: "#0B0B14", bgElevated: "#13141F", bgSurface: "#1B1C2B", text: "#F6F6FB", textMuted: "#9396B2", brand: "#625DF5", accent: "#F2C35B", income: "#2BD49A", expense: "#FB7185", warning: "#FFB067" });
     });
     it("tema claro usa as superfícies e o texto definidos", () => {
-        expect(lightTheme.colors).toMatchObject({ bg: "#F5F7FF", bgElevated: "#FFFFFF", bgSurface: "#EEF2F8", text: "#151B29", brand: "#397BFF" });
+        expect(lightTheme.colors).toMatchObject({ bg: "#F6F6FB", bgElevated: "#FFFFFF", bgSurface: "#EEEEF6", text: "#11121D", brand: "#625DF5" });
     });
 });

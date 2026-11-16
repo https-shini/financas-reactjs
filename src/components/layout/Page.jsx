@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { Breadcrumbs } from "../ui/Feedback";
-import { navContext } from "../../app/navigation";
+import { Eyebrow } from "../ui/Typography";
+import { navContext, NAV_GROUPS } from "../../app/navigation";
 
 const Head = styled.div`
     display: flex;
@@ -11,21 +11,23 @@ const Head = styled.div`
     gap: 12px;
     flex-wrap: wrap;
     margin-bottom: ${(p) => p.theme.space(5)};
+    margin-top: ${(p) => p.theme.space(2)};
     h1 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize["2xl"]};
+        font-size: ${(p) => p.theme.fontSize["3xl"]};
         font-weight: ${(p) => p.theme.fontWeight.bold};
-        letter-spacing: ${(p) => p.theme.letterSpacing.tight};
+        letter-spacing: ${(p) => p.theme.letterSpacing.tighter};
         line-height: ${(p) => p.theme.lineHeight.tight};
-        margin-top: 6px;
+        margin-top: 10px;
         ${(p) => p.theme.media.desktop} {
-            font-size: 1.75rem;
+            font-size: ${(p) => p.theme.fontSize["4xl"]};
         }
     }
     .desc {
         color: ${(p) => p.theme.colors.textSecondary};
-        margin-top: 6px;
-        font-size: ${(p) => p.theme.fontSize.md};
+        margin-top: 8px;
+        font-size: ${(p) => p.theme.fontSize.base};
+        max-width: 64ch;
     }
     .actions {
         display: flex;
@@ -34,18 +36,23 @@ const Head = styled.div`
     }
 `;
 
-/** Cabeçalho de página: trilha (breadcrumbs) automática, título (h1), descrição e ações. Atualiza o título da aba. */
-export function PageHeader({ title, description, actions, docTitle, breadcrumbs = true }) {
+/**
+ * Cabeçalho de página: sobretítulo numerado do grupo de navegação ("— 02 · Financeiro"),
+ * título (h1) em display, descrição e ações. Atualiza o título da aba.
+ * A trilha (breadcrumbs) fica na barra superior.
+ */
+export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
     const location = useLocation();
     const ctx = navContext(location);
     useEffect(() => {
         document.title = `${docTitle ?? title} · VELDORA`;
     }, [title, docTitle]);
-    const crumbs = breadcrumbs && ctx && ctx.item.id !== "dashboard" ? [{ label: "Dashboard", to: "/" }, { label: ctx.group.label }, { label: ctx.item.label }] : null;
+    const groupIndex = ctx ? NAV_GROUPS.indexOf(ctx.group) + 1 : 0;
+    const eyebrowText = eyebrow ?? (ctx ? `${String(groupIndex).padStart(2, "0")} · ${ctx.group.label}` : null);
     return (
         <Head>
             <div>
-                {crumbs && <Breadcrumbs items={crumbs} />}
+                {eyebrowText && <Eyebrow>{eyebrowText}</Eyebrow>}
                 <h1>{title}</h1>
                 {description && <p className="desc">{description}</p>}
             </div>

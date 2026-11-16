@@ -17,17 +17,18 @@ import {
 
 /**
  * tone:
- *  - "color": símbolo azul + faceta violeta; wordmark herda a cor do texto (funciona nos dois temas)
+ *  - "color": símbolo índigo + faceta Aurum; wordmark herda a cor do texto (funciona nos dois temas)
  *  - "onDark" / "onLight": wordmark fixo em Ice White / Ink
  *  - "mono": tudo em currentColor (uma cor só)
  */
 function symbolFills(tone) {
     if (tone === "mono") return { body: "currentColor", facet: "currentColor", facetOpacity: 0.55 };
-    return { body: BRAND_COLORS.blue, facet: BRAND_COLORS.violet, facetOpacity: 1 };
+    if (tone === "onBrand") return { body: "#FFFFFF", facet: BRAND_COLORS.aurum, facetOpacity: 1 };
+    return { body: BRAND_COLORS.indigo, facet: BRAND_COLORS.aurum, facetOpacity: 1 };
 }
 
 function wordColor(tone) {
-    if (tone === "onDark") return BRAND_COLORS.iceWhite;
+    if (tone === "onDark") return BRAND_COLORS.mist;
     if (tone === "onLight") return BRAND_COLORS.ink;
     return "currentColor";
 }
@@ -100,15 +101,16 @@ export function VeldoraLogo({ height = 32, tone = "color", title = "VELDORA", cl
     );
 }
 
-/** Ícone do aplicativo (símbolo sobre quadrado Deep Black). */
+/** Ícone do aplicativo: V branco com faceta Aurum sobre bloco Indigo com "degrau" tátil. */
 export function VeldoraAppIcon({ size = 64, title, className, style }) {
     const id = useId();
     return (
         <svg width={size} height={size} viewBox={APP_ICON_VIEWBOX} className={className} style={style} {...a11y(title, id)}>
             {title && <title id={id}>{title}</title>}
-            <rect width="64" height="64" rx={APP_ICON_RADIUS} fill={BRAND_COLORS.deepBlack} />
+            <rect width="64" height="64" rx={APP_ICON_RADIUS} fill={BRAND_COLORS.indigoDeep} />
+            <rect width="64" height="60" rx={APP_ICON_RADIUS} fill={BRAND_COLORS.indigo} />
             <g transform={APP_ICON_SYMBOL_TRANSFORM}>
-                <Glyphs tone="color" />
+                <Glyphs tone="onBrand" />
             </g>
         </svg>
     );

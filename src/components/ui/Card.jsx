@@ -4,7 +4,7 @@ export const Card = styled.section`
     background: ${(p) => p.theme.colors.bgElevated};
     border: 1px solid ${(p) => p.theme.colors.border};
     border-radius: ${(p) => p.theme.radius.lg};
-    box-shadow: ${(p) => p.theme.shadows.sm};
+    box-shadow: ${(p) => p.theme.shadows.card};
     padding: ${(p) => (p.$flush ? "0" : p.theme.space(5))};
     transition: border-color ${(p) => p.theme.motion.base} ${(p) => p.theme.motion.easing}, background ${(p) => p.theme.motion.base};
     min-width: 0;
@@ -24,8 +24,8 @@ const HeaderWrap = styled.header`
     h2,
     h3 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize.md};
-        font-weight: ${(p) => p.theme.fontWeight.bold};
+        font-size: ${(p) => p.theme.fontSize.lg};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
         letter-spacing: ${(p) => p.theme.letterSpacing.snug};
         line-height: ${(p) => p.theme.lineHeight.snug};
     }

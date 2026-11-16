@@ -1,19 +1,20 @@
 // VELDORA — geometria oficial da marca (fonte única para componentes React e arquivos SVG gerados).
 // Símbolo: um "V" angular cujo braço direito sobe acima do esquerdo (movimento, evolução),
-// com uma faceta violeta (inteligência). Construído em grade de 48 × 48.
+// com uma faceta em ouro Aurum (inteligência, valor). Construído em grade de 48 × 48.
 
 export const BRAND_COLORS = {
-    blue: "#397BFF",
-    violet: "#9277F5",
-    deepBlack: "#10131C",
-    iceWhite: "#F5F7FF",
-    ink: "#151B29",
+    indigo: "#625DF5",
+    indigoDeep: "#2B288C",
+    aurum: "#F2C35B",
+    night: "#0B0B14",
+    mist: "#F6F6FB",
+    ink: "#11121D",
 };
 
 export const SYMBOL_VIEWBOX = "0 0 48 48";
 /** Corpo do V. */
 export const SYMBOL_BODY = "M3 8h9.5L24 33.5 36.5 4H46L29 44h-9.6z";
-/** Faceta do braço direito (acento violeta). */
+/** Faceta do braço direito (acento Aurum). */
 export const SYMBOL_FACET = "M36.5 4H46L33.6 33.2l-4.9-11.5z";
 
 /**
@@ -37,10 +38,10 @@ export const WORDMARK_LETTERS = [
 export const HORIZONTAL_VIEWBOX = "0 0 208 48";
 export const WORDMARK_OFFSET = { x: 60, y: 14 };
 
-/** Ícone do app: símbolo centralizado em um quadrado arredondado Deep Black. */
+/** Ícone do app: V branco com faceta Aurum sobre um bloco Indigo (com "degrau" tátil). */
 export const APP_ICON_VIEWBOX = "0 0 64 64";
 export const APP_ICON_RADIUS = 15;
-export const APP_ICON_SYMBOL_TRANSFORM = "translate(9 10) scale(0.96)";
+export const APP_ICON_SYMBOL_TRANSFORM = "translate(10 9) scale(0.92)";
 
 export const SLOGAN = { en: "Your money. Your vision. Your future.", pt: "Seu dinheiro. Sua visão. Seu futuro." };
 export const TAGLINE = "Smart Financial Platform";

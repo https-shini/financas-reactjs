@@ -3,7 +3,7 @@ import { palette, radius, typography } from "../design/tokens";
 import { VeldoraLogo } from "../brand/VeldoraLogo";
 
 // Renderizado fora do ThemeProvider (o app pode ter falhado): usa os tokens primitivos diretamente.
-const c = { text: palette.ink[975], secondary: palette.ink[600], surface: palette.ink[0], subtle: palette.ink[50], border: palette.ink[100], strong: palette.ink[200], primary: palette.blue[600] };
+const c = { text: palette.ink[975], secondary: palette.ink[600], surface: palette.ink[0], subtle: palette.ink[50], border: palette.ink[100], strong: palette.ink[200], primary: palette.indigo[600] };
 
 const box = {
     maxWidth: 520,

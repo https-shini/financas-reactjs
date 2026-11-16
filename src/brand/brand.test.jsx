@@ -32,7 +32,7 @@ describe("marca VELDORA", () => {
     it("favicon gerado usa a mesma geometria e cores oficiais (sem imagens externas)", () => {
         const svg = readFileSync("public/favicon.svg", "utf8");
         expect(svg).toContain(SYMBOL_BODY);
-        expect(svg.toUpperCase()).toContain(BRAND_COLORS.blue.toUpperCase());
+        expect(svg.toUpperCase()).toContain(BRAND_COLORS.indigo.toUpperCase());
         expect(svg).not.toMatch(/<image|href="http/);
     });
 });

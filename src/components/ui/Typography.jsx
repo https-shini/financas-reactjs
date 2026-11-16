@@ -48,7 +48,7 @@ export const Heading = styled.h2`
     color: ${(p) => p.theme.colors.text};
 `;
 
-/** Valor financeiro em destaque: tabular, Manrope, sem quebra. */
+/** Valor financeiro em destaque: tabular, Space Grotesk, sem quebra. */
 export const NumericDisplay = styled.span`
     ${typeRole("numeric")}
     font-variant-numeric: tabular-nums;
@@ -81,4 +81,21 @@ export const FieldLabel = styled.p`
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textSecondary};
     margin-bottom: ${(p) => p.theme.space(1.5)};
+`;
+
+/** Sobretítulo de página/seção: caixa alta em Aurum, precedido por um traço (ex.: "— 02 · Financeiro"). */
+export const Eyebrow = styled.p`
+    ${typeRole("overline")}
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    color: ${(p) => p.theme.colors.accentText};
+    &::before {
+        content: "";
+        width: 18px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+    }
 `;

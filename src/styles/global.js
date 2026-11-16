@@ -28,6 +28,10 @@ const Global = createGlobalStyle`
     font-size: ${(p) => p.theme.fontSize.md};
     font-feature-settings: "cv11", "ss01";
     background-color: ${(p) => p.theme.colors.bg};
+    /* Brilho ambiente (índigo + Aurum) fixo atrás do conteúdo */
+    background-image: ${(p) => p.theme.colors.ambient};
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     color: ${(p) => p.theme.colors.text};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -40,8 +44,9 @@ const Global = createGlobalStyle`
 
   h1, h2, h3, h4 {
     font-family: ${(p) => p.theme.fonts.display};
+    font-weight: ${(p) => p.theme.fontWeight.bold};
     line-height: ${(p) => p.theme.lineHeight.snug};
-    letter-spacing: ${(p) => p.theme.letterSpacing.snug};
+    letter-spacing: ${(p) => p.theme.letterSpacing.tight};
     color: ${(p) => p.theme.colors.text};
   }
 
@@ -74,7 +79,8 @@ const Global = createGlobalStyle`
   }
 
   ::selection {
-    background: ${(p) => p.theme.colors.primarySoft};
+    background: ${(p) => p.theme.colors.primary};
+    color: ${(p) => p.theme.colors.onPrimary};
   }
 
   ::-webkit-scrollbar {

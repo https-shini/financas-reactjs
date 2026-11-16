@@ -18,6 +18,8 @@ const Backdrop = styled.div`
     inset: 0;
     z-index: ${(p) => p.theme.z.overlay};
     background: ${(p) => p.theme.colors.overlay};
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,8 +99,9 @@ const Header = styled.header`
     padding: 16px 20px 8px;
     h2 {
         font-family: ${(p) => p.theme.fonts.display};
-        font-size: ${(p) => p.theme.fontSize.lg};
+        font-size: ${(p) => p.theme.fontSize.xl};
         font-weight: ${(p) => p.theme.fontWeight.bold};
+        letter-spacing: ${(p) => p.theme.letterSpacing.tight};
     }
     p {
         font-size: ${(p) => p.theme.fontSize.sm};

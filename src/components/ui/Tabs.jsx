@@ -1,13 +1,14 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 
+// Abas em pílula (inspiradas em filtros de catálogo): inativas contornadas, ativa preenchida em Aurum.
 const Bar = styled.div`
     display: flex;
-    gap: 4px;
+    gap: 8px;
     overflow-x: auto;
     scrollbar-width: none;
-    border-bottom: 1px solid ${(p) => p.theme.colors.border};
-    margin-bottom: ${(p) => p.theme.space(5)};
+    padding: 2px 2px 6px;
+    margin: -2px -2px ${(p) => p.theme.space(5)};
     &::-webkit-scrollbar {
         display: none;
     }
@@ -17,36 +18,35 @@ const TabStyle = styled.button`
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    min-height: 44px;
-    padding: 0 12px;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px;
     white-space: nowrap;
-    font-weight: 500;
-    font-size: ${(p) => p.theme.fontSize.md};
+    font-weight: 600;
+    font-size: ${(p) => p.theme.fontSize.sm};
     color: ${(p) => p.theme.colors.textSecondary};
     text-decoration: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: ${(p) => p.theme.radius.full};
+    border: 1px solid ${(p) => p.theme.colors.borderStrong};
+    background: ${(p) => p.theme.colors.bgInput};
+    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast}, border-color ${(p) => p.theme.motion.fast}, transform 90ms;
     &:hover {
         color: ${(p) => p.theme.colors.text};
-        background: ${(p) => p.theme.colors.bgHover};
+        border-color: ${(p) => p.theme.colors.textMuted};
+    }
+    &:active {
+        transform: translateY(1px);
     }
     &[aria-selected="true"],
     &.active {
-        color: ${(p) => p.theme.colors.text};
-        font-weight: 600;
+        color: ${(p) => p.theme.colors.onAccent};
+        background: ${(p) => p.theme.colors.accent};
+        border-color: transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 0 ${(p) => p.theme.colors.indicator};
     }
-    &[aria-selected="true"]::after,
-    &.active::after {
-        content: "";
-        position: absolute;
-        left: 8px;
-        right: 8px;
-        bottom: -1px;
-        height: 2px;
-        border-radius: 2px;
-        background: ${(p) => p.theme.colors.brand};
+    @media (pointer: coarse) {
+        min-height: 44px;
     }
-    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
 `;
 
 /** Abas como rotas (navegação). tabs: [{ to, label, icon, badge }] */

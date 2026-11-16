@@ -12,7 +12,7 @@
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-397BFF?style=for-the-badge)](https://financas.gcruz.dev.br)
+  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-625DF5?style=for-the-badge)](https://financas.gcruz.dev.br)
   [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
   [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
 
@@ -78,7 +78,7 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 ## Identidade visual e Design System
 
-A interface usa a identidade **VELDORA**: símbolo em V geométrico, azul elétrico `#397BFF` como cor de marca, violeta `#9277F5` para recursos inteligentes, tema escuro por padrão e tema claro completo. A marca, a paleta (com as variantes acessíveis), a tipografia, os tokens, os componentes e as regras de uso estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
+A interface usa a identidade **VELDORA** na direção visual **Nocturne**, inspirada no Cinelux e no Fluxer: noite com matiz índigo, índigo `#625DF5` para ações (botões táteis com degrau), ouro Aurum `#F2C35B` para destaques e item ativo, abas e filtros em pílula, títulos editoriais em Space Grotesk e barra inferior flutuante no celular. A auditoria das referências, a paleta (com as variantes acessíveis), a tipografia, os tokens, os componentes e as comparações de antes e depois estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
 
 - Tokens primitivos em `src/design/tokens.js` e semânticos em `src/design/themes.js`, também exportados como variáveis CSS `--v-*`.
 - Logo e ícones em `src/brand/` (componentes React) e `public/brand/` (SVG/PNG), gerados por `node scripts/generate-brand-assets.mjs`.
@@ -94,7 +94,7 @@ A interface usa a identidade **VELDORA**: símbolo em V geométrico, azul elétr
 | Gráficos | Recharts |
 | Regras e validação | JavaScript puro em `src/domain`, Zod (schema do armazenamento), date-fns |
 | Arquivos | SheetJS/xlsx 0.20.3 (CDN oficial), jsPDF + autotable, docx, file-saver — carregados sob demanda |
-| Fontes | Inter e Manrope (self-hosted via `@fontsource-variable/*`) |
+| Fontes | Inter e Space Grotesk (self-hosted via `@fontsource-variable/*`) |
 | Build e testes | Vite 7, Vitest 4, Testing Library, ESLint 9 |
 
 ## Requisitos
