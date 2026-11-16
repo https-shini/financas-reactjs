@@ -55,6 +55,42 @@ const Global = createGlobalStyle`
     border: 0;
   }
 
+  h1, h2, h3, h4 {
+    line-height: 1.25;
+  }
+
+  ::selection {
+    background: ${(props) => props.theme.colors.primarySoft};
+  }
+
+  .only-mobile {
+    ${(props) => props.theme.media.desktop} {
+      display: none !important;
+    }
+  }
+
+  .hide-mobile {
+    ${(props) => props.theme.media.mobile} {
+      display: none !important;
+    }
+  }
+
+  /* Toasts acima da navegação inferior no celular e com a tipografia do app */
+  .Toastify__toast-container {
+    z-index: ${(props) => props.theme.z.toast};
+  }
+  .Toastify__toast {
+    font-family: ${(props) => props.theme.fonts.sans};
+    font-size: ${(props) => props.theme.fontSize.md};
+    border-radius: ${(props) => props.theme.radius.md};
+    border: 1px solid ${(props) => props.theme.colors.border};
+  }
+  ${(props) => props.theme.media.belowDesktop} {
+    .Toastify__toast-container--bottom-right {
+      bottom: calc(${(props) => props.theme.layout.bottomNav} + 12px + env(safe-area-inset-bottom));
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

@@ -45,9 +45,9 @@ describe("numberToCents", () => {
 
 describe("formatMoney", () => {
     it("formata em BRL", () => {
-        expect(formatMoney(123456)).toBe("R$ 1.234,56");
-        expect(formatMoney(-500)).toBe("-R$ 5,00");
-        expect(formatMoney(500, { signDisplay: "always" })).toBe("+R$ 5,00");
+        expect(formatMoney(123456)).toBe("R$\u00a01.234,56");
+        expect(formatMoney(-500)).toBe("-R$\u00a05,00");
+        expect(formatMoney(500, { signDisplay: "always" })).toBe("+R$\u00a05,00");
     });
 });
 
