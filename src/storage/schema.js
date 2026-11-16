@@ -115,6 +115,7 @@ export const settingsSchema = z.object({
     sidebarCollapsed: z.boolean().default(false),
     hideBalances: z.boolean().default(false),
     aiConsent: z.boolean().default(false),
+    dismissedSuggestions: z.array(z.string().max(200)).max(500).default([]),
 });
 
 export const storeSchema = z.object({

@@ -80,6 +80,7 @@ export const DEFAULT_SETTINGS = {
     sidebarCollapsed: false,
     hideBalances: false,
     aiConsent: false,
+    dismissedSuggestions: [],
 };
 
 export function createEmptyStore() {
