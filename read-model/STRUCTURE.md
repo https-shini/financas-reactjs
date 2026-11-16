@@ -1,77 +1,47 @@
-# Decisões arquiteturais e Estrutura do projeto
+# Estrutura do projeto e decisões arquiteturais
 
-## Requisitos para rodar o projeto
+## Estrutura
 
-- Node.js: É necessário ter o Node.js instalado no ambiente de desenvolvimento.
-- npm: O npm é utilizado para instalar as dependências do projeto.
-- Conexão com a Internet: Para utilizar o Chat Web, é necessário uma conexão ativa com a internet.
-- Navegador Web Moderno: O Chat Web é acessado através de um navegador web moderno que suporte as tecnologias HTML5, CSS3 e WebSocket.
+```
+src/
+├── domain/        Regras de negócio puras e testadas (sem React)
+│   ├── money.js            centavos, parse e formatação
+│   ├── dates.js            datas locais "YYYY-MM-DD"
+│   ├── transactions.js     validação, criação, efeitos no saldo
+│   ├── selectors.js        saldos, resumos, categorias, filtros, vencimentos
+│   ├── cards.js            faturas e limite de cartões
+│   ├── installments.js     parcelamento
+│   ├── recurrence.js       recorrências idempotentes
+│   ├── budgets.js · goals.js
+│   ├── projection.js       saldo projetado e "quanto posso gastar"
+│   ├── insights.js         insights por regras
+│   ├── intelligence.js     assinaturas, saúde financeira, simulador
+│   ├── importer.js         CSV/OFX/planilhas, mapeamento, duplicados
+│   └── quickCapture.js     "Mercado 85,90 ontem"
+├── storage/       schema (Zod), migrações, repositório, backup
+├── state/         FinanceProvider + operações puras (store => store) + contextos
+├── components/
+│   ├── ui/        design system (Button, Card, MoneyInput, Modal/BottomSheet, Amount, Progress…)
+│   └── layout/    PageHeader e grade responsiva
+├── app/           AppShell (sidebar, topbar, navegação inferior), tema, UIContext, alertas
+├── features/      dashboard, transactions, planning, reports, settings, data, recovery
+├── hooks/         useFormat, useMediaQuery, useHotkeys
+├── styles/        tokens (theme.js) e estilos globais
+└── utils/         exportação (Excel, CSV, PDF, Word, relatórios)
+```
 
-## Setup de ambiente:
+## Decisões
 
-Para configurar o ambiente de desenvolvimento e executar o projeto, siga estas etapas:
+- **Domínio separado da interface.** Todas as contas financeiras estão em `src/domain` e são testadas sem React. Dashboard, movimentações e relatórios chamam as mesmas funções.
+- **Operações puras.** Cada alteração é uma função `(store, ...args) => store` em `state/operations.js`. O provider aplica, persiste e reporta erros. Isso dispensa bibliotecas de estado e mantém o histórico de ações testável.
+- **Persistência resiliente.** O repositório valida com Zod, corrige problemas recuperáveis (IDs duplicados, referências quebradas), migra versões e entra em modo de recuperação quando os dados são ilegíveis, sem sobrescrever nada.
+- **Local-first.** Sem backend; o app funciona offline. Fontes self-hosted (`@fontsource-variable/inter`), sem requisições externas em tempo de execução.
+- **Vite** substituiu o Create React App (descontinuado). O build continua em `build/` para manter o deploy existente.
+- **Dependências seguras.** `xlsx` vem da CDN oficial da SheetJS (0.20.3, com correções que não existem no npm); jsPDF 4, zod 4 e react-router 7 sem vulnerabilidades conhecidas (`npm audit`: 0). Bibliotecas de exportação são carregadas sob demanda.
+- **Design system próprio** com Styled Components e tokens com contraste WCAG AA verificado nos dois temas.
+- **Acessibilidade**: landmarks, link "pular para o conteúdo", foco visível, rótulos associados, `aria-label` obrigatório em botões de ícone, diálogos com foco preso e Esc, tabelas alternativas para gráficos, `prefers-reduced-motion`, `lang="pt-BR"`, alvos de toque de 44 px.
+- **Responsividade**: < 640 px celular (navegação inferior, bottom sheets), 640–1024 px tablet (grade de 2 colunas), > 1024 px desktop (sidebar recolhível, grade de 12 colunas).
 
-1. Instalação do Node.js:
-   - Certifique-se de ter o Node.js instalado em sua máquina. É recomendado usar a versão LTS (Long-Term Support). Você pode baixá-lo em [Node.js LTS](https://nodejs.org/en).
+## Testes e CI
 
-2. Instalação do Yarn:
-   - Utilize o Yarn como gerenciador de pacotes. Se ainda não tiver o Yarn instalado, você pode instalá-lo seguindo as instruções em [Yarn 1.x](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable).
-
-3. Clone do Projeto:
-   - Abra o terminal e clone o projeto para o seu ambiente local executando o seguinte comando:
-     ```
-     git clone https://github.com/https-shini/web-chat
-     ```
-
-4. Instalação de Dependências:
-   - Navegue até o diretório do projeto clonado e instale as dependências executando o comando:
-     ```
-     yarn
-     ```
-
-## Como rodar na sua máquina?
-
-Após configurar o ambiente, execute o projeto da seguinte maneira:
-
-1. Inicie o Servidor de Desenvolvimento:
-   - No terminal, execute o comando:
-     ```
-     yarn dev
-     ```
-
-2. Acesse o Projeto:
-   - Abra o navegador e acesse o projeto localmente. Por padrão, o servidor de desenvolvimento geralmente é executado em `http://localhost:3000`.
-
-3. Pronto 🎉
-   - Agora você pode explorar e interagir com o projeto em sua máquina localmente.
-
-Essas instruções garantem que você tenha o ambiente configurado corretamente e possa executar o projeto sem problemas em sua máquina local.
-
-<br>
-
-## Decisões Arquiteturais:
-
-- O Chat Web segue uma arquitetura cliente-servidor, onde o frontend é responsável pela interface do usuário e o backend gerencia a lógica de negócios e a comunicação com o servidor WebSocket. <br>
-- WebSocket: O uso do protocolo WebSocket permite uma comunicação bidirecional em tempo real entre clientes e servidor, facilitando a troca instantânea de mensagens.
-
-## Estrutura do projeto
-
-- Frontend: <br>
-   - HTML: Responsável pela estruturação do conteúdo da página, incluindo formulários de entrada e exibição de mensagens. <br>
-   - CSS: Estilização e design responsivo da interface do usuário para garantir uma experiência visualmente agradável e consistente em diferentes dispositivos. <br>
-   - JavaScript: Adição de interatividade à página, manipulando eventos do usuário e interagindo com o backend para enviar e receber mensagens em tempo real. <br>
-
-<br>
-
-- Backend: <br> 
-   - Node.js: Utilizado como plataforma de tempo de execução do JavaScript no servidor, permitindo a implementação do servidor WebSocket. <br> 
-   - WebSocket (ws): Criação de um servidor WebSocket para lidar com conexões de clientes, recebendo e transmitindo mensagens entre eles. <br> 
-   - dotenv: Utilizado para carregar variáveis de ambiente do arquivo .env, facilitando a configuração do ambiente de desenvolvimento. <br>
-
-<br>
-
-> **Informações Importantes sobre a Aplicação** <br>
-A aplicação suporta comunicação em tempo real entre os usuários através do protocolo WebSocket. <br>
-Os usuários podem ingressar na aplicação fornecendo um nome de usuário no formulário de login. <br>
-As mensagens enviadas por um usuário são instantaneamente exibidas para todos os outros participantes do chat. <br>
-O frontend é responsivo e foi projetado para ser compatível com diferentes dispositivos e tamanhos de tela. <br>
+`npm test` executa os testes de domínio, armazenamento, operações e interface. O workflow `.github/workflows/ci.yml` roda lint, testes e build em cada push e pull request.

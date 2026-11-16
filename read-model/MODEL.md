@@ -1,57 +1,92 @@
-<h1 align="center"> Documentação aprofundada </h1>
+# Modelo de dados, regras de negócio e backup
 
-<p align="center">
-  <a href="#decisões-arquiteturais">Decisões Arquiteturais</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#estrutura-do-projeto">Estrutura do projeto</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#funcionamento">Funcionamento</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/https-shini/financas-reactjs">Voltar</a>
-</p>
+## Armazenamento
 
-<br>
+| Chave do localStorage | Conteúdo |
+| --- | --- |
+| `financas:store` | Store atual (schema v2), validado com Zod a cada carregamento |
+| `financas:backup:<data>:<motivo>` | Cópias de segurança automáticas (as 3 mais recentes) |
+| `financas:corrupted:<data>` | Cópia bruta de dados que falharam na leitura |
+| `transactions`, `theme` | Dados da v1 — **mantidos intactos** após a migração |
 
-## Decisões Arquiteturais:
+Toda leitura e gravação passa por `src/storage/repository.js`. Erros de gravação (cota cheia, armazenamento bloqueado) são exibidos ao usuário; nunca são silenciados.
 
-- O sistema de controle de finanças segue uma arquitetura cliente-servidor, onde o frontend é responsável pela interface do usuário e o backend gerencia a lógica de negócios e a comunicação com o servidor WebSocket.
-- WebSocket: O uso do protocolo WebSocket permite uma comunicação bidirecional em tempo real entre clientes e servidor, facilitando a troca instantânea de mensagens.
+## Store (schema v2)
 
-<br>
+```js
+{
+  schemaVersion: 2,
+  transactions: Transaction[],
+  categories: Category[],
+  accounts: Account[],      // contas e cartões (type: "credit")
+  budgets: Budget[],
+  goals: Goal[],
+  recurrences: Recurrence[],
+  settings: { theme, locale, currency, onboardingDone, lastBackupAt, sidebarCollapsed, hideBalances, aiConsent, dismissedSuggestions },
+  meta: { migrations: [], legacyRejected?: [] }
+}
+```
 
-## Estrutura do projeto
+### Transaction
 
-➜ **Frontend:**
+```js
+{
+  id: string,                        // crypto.randomUUID()
+  type: "income" | "expense" | "transfer",
+  amountCents: number,               // inteiro positivo; o tipo define o sinal
+  description: string,
+  date: "YYYY-MM-DD",                // data local, sem fuso
+  categoryId: string | null,         // sempre null em transferências
+  accountId: string,                 // origem (ou conta/cartão do lançamento)
+  toAccountId?: string,              // destino (somente transferências)
+  status: "paid" | "pending",
+  notes?: string,
+  recurrenceId?: string, occurrenceDate?: "YYYY-MM-DD",
+  installment?: { group: string, n: number, of: number, totalCents?: number },
+  invoiceRef?: { cardId: string, month: "YYYY-MM" },   // pagamento de fatura
+  createdAt: string, updatedAt: string
+}
+```
 
-1. **HTML (index.html):**
-   - O arquivo HTML é responsável pela estruturação do conteúdo da página. Ele define os elementos como formulários de entrada de usuário, áreas de exibição de relatórios financeiros e botões de interação.
+Account: `{ id, name, type: checking|savings|cash|investment|other|credit, color, initialBalanceCents, archived, limitCents?, closingDay?, dueDay?, paymentAccountId? }`
+Budget: `{ id, categoryId, limitCents, overrides: { "YYYY-MM": cents } }`
+Goal: `{ id, name, kind, targetCents, deadline, color, contributions: [{ id, date, amountCents, note? }], archived }`
+Recurrence: `{ id, type, amountCents, description, categoryId, accountId, frequency: daily|weekly|monthly|yearly, interval, startDate, endDate, active, skippedDates[] }`
 
-2. **CSS (style.css):**
-   - O arquivo CSS é responsável pela estilização e design da interface do usuário. Ele define as cores, fontes, layouts e estilos visuais que tornam a aplicação atraente e fácil de usar.
+## Regras de negócio (implementadas em `src/domain`, com testes)
 
-3. **JavaScript (script.js):**
-   - O arquivo JavaScript é responsável por adicionar interatividade à página. Ele manipula eventos do usuário, como cliques em botões e preenchimento de formulários, e se comunica com o backend para enviar e receber dados relacionados às finanças.
+1. Receitas aumentam o saldo; despesas diminuem.
+2. Transferências movem dinheiro entre contas e **não** contam como receita/despesa; o consolidado não muda.
+3. **Saldo realizado** = saldo inicial + lançamentos `paid` com data até hoje. Pendentes e lançamentos futuros ficam de fora.
+4. Lançamentos futuros e pendentes entram nas **projeções** (`projection.js`), assim como recorrências ainda não geradas e faturas de cartão.
+5. **Cartão de crédito**: compra = despesa no cartão (conta na data da compra); estorno = receita no cartão; pagamento de fatura = transferência conta → cartão com `invoiceRef`. Assim o pagamento **não duplica** a despesa. Compras após o dia de fechamento vão para a fatura seguinte.
+6. **Parcelamento**: N transações ligadas por `installment.group`; o resto dos centavos vai para as primeiras parcelas. Na edição em grupo, parcelas já pagas (ou de faturas pagas) mantêm o valor.
+7. **Recorrências**: ocorrências pendentes geradas até o fim do mês seguinte, de forma **idempotente** pela chave `(recurrenceId, occurrenceDate)`. Ocorrências excluídas vão para `skippedDates` e não voltam. Editar a série altera apenas pendentes a partir de hoje; mudar a periodicidade regenera os pendentes futuros.
+8. Valores sempre em **centavos inteiros**; `parseMoneyString` aceita formatos brasileiros e internacionais sem usar float.
+9. Toda exclusão tem **desfazer** ou **confirmação**.
+10. Toda importação tem **prévia**; linhas inválidas são listadas com o motivo (nunca descartadas em silêncio) e podem ser baixadas.
+11. Toda restauração **valida** o arquivo e cria uma cópia de segurança dos dados atuais antes de substituir.
+12. Relatórios e dashboard usam as mesmas funções de `selectors.js` (competência = data do lançamento).
 
-<br>
+Decisões adotadas onde o requisito era aberto:
+- Registros antigos (v1) sem data recebem a **data da migração** e status `paid`, na conta principal e sem categoria.
+- Resultado mensal inclui lançamentos pendentes do mês (competência); o saldo em contas não.
+- Ocorrências de recorrência com data passada são criadas como **pendentes** para o usuário confirmar.
+- "Quanto posso gastar hoje" = (saldo previsto no fim do mês − aportes de metas pendentes no mês) ÷ dias restantes.
+- Saúde financeira: 4 critérios de 25 pontos (poupança, orçamentos, reserva, despesas fixas); critérios sem dados não são avaliados e a nota é proporcional aos avaliados.
 
-➜ **Backend:**
+## Histórico de migrações
 
-1. **Node.js (server.js):**
-   - O arquivo `server.js` é o principal arquivo do backend, que utiliza o Node.js como plataforma de tempo de execução do JavaScript no servidor. Ele inicializa e configura o servidor WebSocket para lidar com conexões de clientes, recebe e envia mensagens entre os clientes conectados e gerencia a lógica de negócios da aplicação.
+| Versão | Mudança |
+| --- | --- |
+| v1 → v2 | `transactions` (`{id, desc, amount, expense}`) vira o store v2. Valores → centavos; IDs aleatórios de 0–1000 (que colidiam) → UUID; descrições com `&amp;`/`&lt;` gravadas pelo DOMPurify são decodificadas; registros sem valor válido são preservados em `meta.legacyRejected`; tema antigo é mantido. Antes de migrar, uma cópia é salva em `financas:backup:*:pre-migracao-v1`. |
 
-2. **WebSocket (ws):**
-   - O WebSocket é um protocolo de comunicação bidirecional que permite a troca de mensagens em tempo real entre o cliente e o servidor. No contexto deste projeto, o servidor WebSocket é responsável por receber mensagens dos clientes e retransmiti-las para todos os outros clientes conectados, garantindo que todas as mensagens sejam distribuídas em tempo real para todos os participantes do chat.
+Versões futuras devem adicionar uma função em `src/storage/migrations.js` e um teste em `src/storage/storage.test.js`. Dados de versão mais nova que o app abrem a tela de recuperação em vez de serem sobrescritos.
 
-<br>
+## Backup
 
-## **Funcionamento:**
+Arquivo JSON: `{ app: "financas-reactjs", kind: "backup", backupVersion: 1, schemaVersion: 2, exportedAt, data: Store }`. A restauração aceita também um store cru e a lista exportada pela v1.
 
-- O usuário acessa a aplicação e é apresentado com a interface de controle de finanças.
-- Ele pode interagir com os diferentes elementos da interface, como formulários de adição de transações, filtros de visualização de relatórios e configurações de conta.
-- As informações inseridas pelo usuário são enviadas para o backend através de requisições HTTP ou WebSocket, dependendo da necessidade.
-- O backend processa as solicitações, atualiza o estado da aplicação e envia as respostas de volta para o frontend.
-- O frontend atualiza dinamicamente a interface do usuário para refletir as mudanças no estado da aplicação, garantindo uma experiência de usuário responsiva e fluida.
+## Limitações que dependem de backend
 
-<br>
-
-> **Informações Importantes sobre a Aplicação** <br>
-A aplicação de controle de finanças suporta interações em tempo real entre o usuário e o servidor, facilitadas pelo uso do protocolo WebSocket. <br>
-Os usuários podem gerenciar suas finanças, adicionar novas transações, visualizar relatórios e configurar suas contas de forma conveniente e intuitiva. <br>
-O frontend é responsivo e foi projetado para oferecer uma experiência consistente em diferentes dispositivos e tamanhos de tela.
+Sincronização entre dispositivos, backup automático na nuvem, contas de usuário, notificações fora do app (e-mail/push), Open Finance e assistente com IA. O assistente só será integrado com servidor seguro e consentimento explícito (`settings.aiConsent`); hoje nenhum dado sai do navegador.
