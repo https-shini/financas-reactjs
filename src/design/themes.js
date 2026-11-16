@@ -49,6 +49,7 @@ export const darkTheme = {
         accentText: p.aurum[500],
         accentSoft: p.aurum[950],
         onAccent: p.ink[975],
+        accentLedge: p.aurum[700], // "degrau" sob botões/abas preenchidos em ouro
         indicator: p.aurum[500], // item ativo (navegação, abas)
         income: p.emerald[500],
         incomeSoft: p.emerald[950],
@@ -112,6 +113,7 @@ export const lightTheme = {
         accentText: p.aurum[800],
         accentSoft: p.aurum[50],
         onAccent: p.ink[975],
+        accentLedge: p.aurum[700],
         indicator: p.aurum[700],
         income: p.emerald[800],
         incomeSoft: p.emerald[50],

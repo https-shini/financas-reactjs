@@ -11,6 +11,9 @@ export const Card = styled.section`
     ${(p) => p.theme.media.mobile} {
         padding: ${(p) => (p.$flush ? "0" : p.theme.space(4))};
     }
+    @media (max-width: 374px) {
+        padding: ${(p) => (p.$flush ? "0" : p.theme.space(3))};
+    }
 `;
 
 const HeaderWrap = styled.header`
@@ -18,6 +21,8 @@ const HeaderWrap = styled.header`
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    /* Em telas estreitas, as ações descem para a linha de baixo em vez de espremer o título. */
+    flex-wrap: wrap;
     margin-bottom: ${(p) => p.theme.space(4)};
     padding: ${(p) => (p.$flush ? p.theme.space(4, 5, 0) : 0)};
     min-height: 32px;
@@ -39,7 +44,7 @@ const HeaderWrap = styled.header`
 export function CardHeader({ title, subtitle, actions, as: Heading = "h2", id, flush }) {
     return (
         <HeaderWrap $flush={flush}>
-            <div style={{ minWidth: 0 }}>
+            <div style={{ minWidth: 0, flex: "1 1 200px" }}>
                 <Heading id={id}>{title}</Heading>
                 {subtitle && <p>{subtitle}</p>}
             </div>

@@ -34,6 +34,27 @@ const Head = styled.div`
         gap: 8px;
         flex-wrap: wrap;
     }
+    /* Celular: ações ocupam a linha inteira em colunas iguais (sem quebrar em duas linhas). */
+    ${(p) => p.theme.media.mobile} {
+        > div:first-child {
+            width: 100%;
+        }
+        .actions {
+            width: 100%;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(0, 1fr);
+        }
+        .actions > *,
+        .actions > div > button[aria-haspopup] {
+            width: 100%;
+            min-width: 0;
+        }
+        .actions button {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    }
 `;
 
 /**
@@ -41,14 +62,17 @@ const Head = styled.div`
  * título (h1) em display, descrição e ações. Atualiza o título da aba.
  * A trilha (breadcrumbs) fica na barra superior.
  */
-export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
+export function PageHeader({ title, description, actions, docTitle, eyebrow, group }) {
     const location = useLocation();
     const ctx = navContext(location);
     useEffect(() => {
         document.title = `${docTitle ?? title} · VELDORA`;
     }, [title, docTitle]);
-    const groupIndex = ctx ? NAV_GROUPS.indexOf(ctx.group) + 1 : 0;
-    const eyebrowText = eyebrow ?? (ctx ? `${String(groupIndex).padStart(2, "0")} · ${ctx.group.label}` : null);
+    // `group` fixa o grupo do sobretítulo quando a página reúne seções de grupos diferentes
+    // (ex.: Planejamento contém Cartões e Vencimentos, que no menu ficam em "Financeiro").
+    const eyebrowGroup = (group && NAV_GROUPS.find((g) => g.id === group)) || ctx?.group;
+    const groupIndex = eyebrowGroup ? NAV_GROUPS.indexOf(eyebrowGroup) + 1 : 0;
+    const eyebrowText = eyebrow ?? (eyebrowGroup ? `${String(groupIndex).padStart(2, "0")} · ${eyebrowGroup.label}` : null);
     return (
         <Head>
             <div>

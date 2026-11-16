@@ -47,4 +47,16 @@ describe("shell VELDORA", () => {
         expect(within(crumbs).getByRole("link", { name: "Dashboard", hidden: true })).toBeInTheDocument();
         expect(within(crumbs).getByText("Metas")).toHaveAttribute("aria-current", "page");
     });
+    it("Movimentações: seleção mantém nome acessível completo e o botão Nova continua disponível", async () => {
+        const user = userEvent.setup();
+        window.history.pushState({}, "", "/movimentacoes");
+        render(<App />);
+        await screen.findByRole("heading", { level: 1, name: "Movimentações" });
+        // "Nova" fica oculto só no celular (o botão flutuante "+" assume a ação); continua no DOM.
+        expect(screen.getByRole("button", { name: "Nova", hidden: true })).toHaveClass("hide-mobile");
+        const toggle = screen.getByRole("button", { name: "Selecionar" });
+        await user.click(toggle);
+        // No celular o rótulo visível encurta para "Cancelar", mas o nome acessível é o completo.
+        expect(screen.getByRole("button", { name: "Cancelar seleção" })).toHaveAttribute("aria-pressed", "true");
+    });
 });

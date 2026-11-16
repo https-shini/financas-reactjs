@@ -105,6 +105,11 @@ const Top = styled.header`
     ${(p) => p.theme.media.desktop} {
         padding: 0 28px;
     }
+    /* Telas estreitas: menos respiro para o mês não ser truncado (alvos de toque continuam com 44 px). */
+    @media (max-width: 374px) {
+        gap: 2px;
+        padding: 0 6px;
+    }
 `;
 
 const MobileBrand = styled(Link)`
@@ -115,6 +120,10 @@ const MobileBrand = styled(Link)`
     border-radius: ${(p) => p.theme.radius.md};
     flex-shrink: 0;
     ${(p) => p.theme.media.desktop} {
+        display: none;
+    }
+    /* Em 320 px o símbolo cede espaço ao mês; a marca continua no menu (drawer). */
+    @media (max-width: 349px) {
         display: none;
     }
 `;
@@ -263,11 +272,24 @@ const Bottom = styled.nav`
     right: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom));
     z-index: ${(p) => p.theme.z.nav};
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    /* Itens com largura proporcional ao rótulo: cabe em telas de 320 px sem cortar "Menu". */
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 2px;
     height: ${(p) => p.theme.layout.bottomNav};
     padding: 0 6px;
+    > * {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    @media (max-width: 374px) {
+        left: 6px;
+        right: 6px;
+        gap: 0;
+        padding: 0 3px;
+        letter-spacing: -0.01em;
+    }
     border-radius: 24px;
     background: ${(p) => p.theme.colors.bgGlass};
     backdrop-filter: saturate(160%) blur(18px);
@@ -286,10 +308,17 @@ const BottomLink = styled(NavLink)`
     margin: 0 2px;
     align-content: center;
     border-radius: 18px;
+    padding: 0 6px;
     font-size: 11px;
+    white-space: nowrap;
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
     text-decoration: none;
+    @media (max-width: 374px) {
+        font-size: 10px;
+        padding: 0 3px;
+        margin: 0;
+    }
     transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
     &.active {
         color: ${(p) => p.theme.colors.text};
@@ -305,16 +334,27 @@ const BottomButton = styled.button`
     display: grid;
     justify-items: center;
     gap: 2px;
-    min-height: 56px;
-    width: 100%;
+    min-height: 54px;
+    padding: 0 6px;
+    border-radius: 18px;
     align-content: center;
+    white-space: nowrap;
     font-size: 11px;
+    @media (max-width: 374px) {
+        font-size: 10px;
+    }
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
 `;
 
 const Fab = styled.button`
     justify-self: center;
+    flex: 0 0 52px !important;
+    @media (max-width: 374px) {
+        flex-basis: 48px !important;
+        width: 48px;
+        height: 48px;
+    }
     display: grid;
     place-items: center;
     width: 52px;

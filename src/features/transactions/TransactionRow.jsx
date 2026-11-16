@@ -10,6 +10,10 @@ const Li = styled.li`
     gap: 8px;
     padding: 0 8px 0 0;
     border-radius: ${(p) => p.theme.radius.md};
+    @media (max-width: 374px) {
+        gap: 2px;
+        padding-right: 0;
+    }
     &:hover {
         background: ${(p) => p.theme.colors.bgHover};
     }
@@ -26,6 +30,11 @@ const Main = styled.button`
     padding: 8px;
     text-align: left;
     border-radius: ${(p) => p.theme.radius.md};
+    /* Telas muito estreitas: mais espaço para a descrição. */
+    @media (max-width: 374px) {
+        gap: 8px;
+        padding: 8px 4px;
+    }
 `;
 
 const Texts = styled.span`

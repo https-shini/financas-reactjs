@@ -40,8 +40,20 @@ describe.each([
         for (const k of ["income", "expense", "primary", "accent"]) expect(contrast(c.chart[k], c.bgElevated), `chart.${k}`).toBeGreaterThanOrEqual(3);
     });
 
-    it("indicador de item ativo (ouro) >= 3:1 sobre as superfícies", () => {
-        for (const bg of [c.bg, c.bgElevated, c.bgSurface]) expect(contrast(c.indicator, bg)).toBeGreaterThanOrEqual(3);
+    it("indicador de item ativo (ouro) >= 3:1 sobre as superfícies, inclusive no hover", () => {
+        for (const [name, bg] of Object.entries({ bg: c.bg, bgElevated: c.bgElevated, bgSurface: c.bgSurface, bgHover: c.bgHover })) {
+            expect(contrast(c.indicator, bg), `indicator sobre ${name}`).toBeGreaterThanOrEqual(3);
+        }
+    });
+
+    it("ouro em texto e gráfico (accentText, chart.accent) mantém AA nas superfícies", () => {
+        for (const bg of [c.bg, c.bgElevated, c.bgSurface, c.bgHover]) expect(contrast(c.accentText, bg)).toBeGreaterThanOrEqual(4.5);
+        for (const bg of [c.bg, c.bgElevated, c.bgSurface]) expect(contrast(c.chart.accent, bg)).toBeGreaterThanOrEqual(3);
+    });
+
+    it("degrau (accentLedge) de botões/abas em ouro é visível contra o preenchimento", () => {
+        // O degrau é decorativo (o estado ativo também é comunicado por preenchimento e aria), mas não pode sumir.
+        expect(contrast(c.accentLedge, c.accent)).toBeGreaterThanOrEqual(2);
     });
 
     it("texto sobre o destaque Aurum >= 4,5:1", () => {

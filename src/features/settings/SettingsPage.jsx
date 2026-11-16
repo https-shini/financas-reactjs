@@ -856,7 +856,7 @@ function AboutSection() {
 export default function SettingsPage() {
     return (
         <>
-            <PageHeader title="Configurações" description="Preferências, cadastros e seus dados" />
+            <PageHeader title="Configurações" group="system" description="Preferências, cadastros e seus dados" />
             <RouteTabs tabs={TABS} label="Seções de configurações" />
             <Routes>
                 <Route index element={<Navigate to="aparencia" replace />} />

@@ -63,7 +63,7 @@ const variants = {
         background: ${(p) => p.theme.colors.accent};
         color: ${(p) => p.theme.colors.onAccent};
         border-color: transparent;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 0 ${(p) => p.theme.colors.indicator};
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 0 ${(p) => p.theme.colors.accentLedge};
         margin-bottom: 3px;
         &:active:not(:disabled) {
             box-shadow: none;

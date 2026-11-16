@@ -55,7 +55,12 @@ const MobileFilterRow = styled.div`
         display: none;
     }
     > * {
-        flex: 1;
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    /* O seletor de ordenação precisa de mais espaço que o botão de filtros. */
+    > *:first-child {
+        flex-grow: 1.5;
     }
 `;
 
@@ -354,14 +359,22 @@ export default function TransactionsPage() {
                         <Button
                             icon={CheckSquare}
                             aria-pressed={selecting}
+                            aria-label={selecting ? "Cancelar seleção" : "Selecionar"}
                             onClick={() => {
                                 setSelecting((v) => !v);
                                 setSelected(new Set());
                             }}
                         >
-                            {selecting ? "Cancelar seleção" : "Selecionar"}
+                            {selecting ? (
+                                <>
+                                    Cancelar<span className="hide-mobile">&nbsp;seleção</span>
+                                </>
+                            ) : (
+                                "Selecionar"
+                            )}
                         </Button>
-                        <Button variant="primary" icon={Plus} onClick={() => openTransaction()}>
+                        {/* No celular o botão flutuante "+" da navegação inferior já cria transações. */}
+                        <Button variant="primary" icon={Plus} onClick={() => openTransaction()} className="hide-mobile">
                             Nova
                         </Button>
                     </>

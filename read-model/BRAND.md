@@ -67,7 +67,7 @@ Os componentes React são `VeldoraLogo` (`tone`: `color`, `onDark`, `onLight`, `
 | Escala | Tons principais |
 | --- | --- |
 | `indigo` | 50 `#EEEEFF` · 300 `#A5A8FF` · **500 `#625DF5` (marca)** · 600 `#544FE6` (botão) · 700 `#4B46DB` (hover) · 800 `#433FCF` (ativo) · 850 `#3F3CC4` (texto claro) · 900 `#2B288C` (degrau) · 950 `#1E1F45` |
-| `aurum` | 50 `#FDF4DD` · **500 `#F2C35B` (destaque)** · 700 `#A87A08` (indicador no claro) · 800 `#7A5A00` (texto no claro) · 950 `#2A2416` |
+| `aurum` | 50 `#FDF4DD` · **500 `#F2C35B` (destaque)** · 700 `#AD7212` (indicador e degrau no claro, "ouro profundo") · 800 `#8A5600` (texto no claro) · 950 `#2A2416` |
 | `emerald` | 500 `#2BD49A` · 600 `#0F9F6E` · 800 `#087A55` |
 | `coral` | 500 `#FB7185` · 600 `#E5485F` · 800 `#B8243F` |
 | `ember` | 500 `#FFB067` · 800 `#8F4A00` |
@@ -81,8 +81,9 @@ Os componentes React são `VeldoraLogo` (`tone`: `color`, `onDark`, `onLight`, `
 | `bgGlass` / `bgInput` | vidro 72% / branco 3,5% | branco 78% / branco | Barras flutuantes / campos |
 | `text` / `textSecondary` / `textMuted` | `#F6F6FB` / `#B4B6CC` / `#9396B2` | `#11121D` / `#4A4C66` / `#5A5D7C` | Texto |
 | `brand` / `primary*` / `primaryText` | `#625DF5` / `#544FE6`… / `#A5A8FF` | idem / `#3F3CC4` | Marca, botões, links |
-| `accent` / `accentText` / `onAccent` | `#F2C35B` / `#F2C35B` / `#11121D` | `#F2C35B` / `#7A5A00` / `#11121D` | Destaque, sobretítulos |
-| `indicator` | `#F2C35B` | `#A87A08` | Item ativo (nav, abas, ícones) |
+| `accent` / `accentText` / `onAccent` | `#F2C35B` / `#F2C35B` / `#11121D` | `#F2C35B` / `#8A5600` / `#11121D` | Destaque, sobretítulos |
+| `accentLedge` | `#AD7212` | `#AD7212` | Degrau de botões/abas preenchidos em ouro |
+| `indicator` | `#F2C35B` | `#AD7212` | Item ativo (sidebar, barra inferior, seletor de tema) |
 | `income` / `expense` / `warning` | `#2BD49A` / `#FB7185` / `#FFB067` | `#087A55` / `#B8243F` / `#8F4A00` | Valores e estados |
 | `chart.*` | income, expense, primary (índigo), **accent (ouro = Resultado)**, neutral, area | tons 600/700 | Gráficos |
 | `ambient` | gradientes índigo + ouro | idem, mais suaves | Fundo do `body` |
@@ -95,9 +96,11 @@ Verificada automaticamente em [`src/design/contrast.test.js`](../src/design/cont
 - branco sobre `primary`, `primaryHover` e `primaryActive` ≥ 4,5:1 (5,5 a 7:1);
 - `onAccent` sobre ouro ≥ 4,5:1 (11:1);
 - texto de badges sobre fundos suaves ≥ 4,5:1;
-- foco, **indicador ativo** e séries de gráfico ≥ **3:1**.
+- foco, **indicador ativo** (inclusive sobre `bgHover`) e séries de gráfico ≥ **3:1**;
+- `accentText` ≥ 4,5:1 também sobre `bgHover`; `chart.accent` ≥ 3:1;
+- `accentLedge` ≥ 2:1 contra o ouro de preenchimento (o degrau é decorativo, mas não pode sumir).
 
-No tema claro, o ouro "puro" (1,7:1 sobre branco) nunca é usado como texto ou indicador. Nesses casos entram `accentText` `#7A5A00` e `indicator` `#A87A08`. Cor nunca é o único sinal: valores têm +/−, variações têm seta, status têm rótulo.
+No tema claro, o ouro "puro" (1,7:1 sobre branco) nunca é usado como texto ou indicador. Nesses casos entram `accentText` `#8A5600` e `indicator` `#AD7212`. Os dois têm matiz de 37°, levemente puxado para o âmbar, e por isso parecem ouro envelhecido em vez de mostarda. Cor nunca é o único sinal: valores têm +/−, variações têm seta, status têm rótulo.
 
 ## 5. Tipografia
 
@@ -165,3 +168,32 @@ Todos consomem os mesmos tokens (`theme.*` no styled-components ou variáveis `-
 <img src="./img/antes-depois-cartoes-claro.png" alt="Cartões no tema claro: antes e depois" width="100%"/>
 <img src="./img/antes-depois-relatorios-escuro.png" alt="Relatórios no tema escuro: antes e depois" width="100%"/>
 <img src="./img/antes-depois-mobile.png" alt="Dashboard no celular: antes e depois" width="60%"/>
+
+## 10. Refinamentos finais (qualidade e responsividade)
+
+| Problema | Correção |
+| --- | --- |
+| Movimentações no celular: as três ações quebravam em duas linhas | Em telas < 640 px, as ações do `PageHeader` ocupam a linha inteira em colunas iguais. O "Nova" fica oculto no celular porque o botão flutuante "+" já cria transações. Ao selecionar, o rótulo visível encurta para "Cancelar", mas o nome acessível continua "Cancelar seleção". Os alvos de toque mantêm 44 px. |
+| Barra inferior cortava "Menu" em 320 px | Os itens agora têm largura proporcional ao rótulo (flex), e abaixo de 375 px o espaçamento e o texto ficam mais compactos, com o FAB em 48 px. Nada é cortado de 320 a 1023 px. |
+| Mês da barra superior truncado ("Nov …") em 320 a 360 px | Espaçamento menor abaixo de 375 px. Abaixo de 350 px o símbolo sai da topbar (a marca continua no menu). |
+| Aba ativa fora da área visível no celular (Cartões, Metas, Categorias) | O trilho de abas rola sozinho até a aba ativa, sem rolar a página, e esmaece as bordas quando há abas escondidas. |
+| Títulos de card espremidos pelas ações ("Contas a pagar e a receber" em três linhas) | O `CardHeader` passa as ações para a linha de baixo quando falta espaço. |
+| Sobretítulo contradizia o H1 ("02 · Financeiro" acima de "Planejamento") | `PageHeader` aceita `group`. Planejamento e Configurações fixam o próprio grupo, e os breadcrumbs continuam seguindo o menu. |
+| Ouro do tema claro com aspecto mostarda | Indicador `#AD7212` e texto `#8A5600`, mais quentes e com mais contraste. |
+| Degrau dourado invisível no tema escuro (indicador = preenchimento) | Novo token `accentLedge`. |
+| Linhas de transação muito apertadas em 320 px | Espaçamento interno menor abaixo de 375 px, nas linhas e nos cards. |
+
+<img src="./img/ajustes-movimentacoes-mobile-390.png" alt="Movimentações no celular (390 px): antes e depois" width="48%"/> <img src="./img/ajustes-movimentacoes-mobile-320.png" alt="Movimentações no celular (320 px): antes e depois" width="40%"/>
+<img src="./img/ajustes-abas-mobile.png" alt="Aba ativa visível no celular: antes e depois" width="60%"/>
+<img src="./img/ajustes-ouro-tema-claro.png" alt="Ouro e sobretítulo no tema claro: antes e depois" width="100%"/>
+
+### Como validar
+
+- **Páginas:** 18 páginas (as 17 do app mais `/design-system`) × 4 cenários (desktop 1440 e iPhone 13, temas claro e escuro). Também nas larguras 320, 360, 768 e 1024. Verificações automáticas: rolagem horizontal, elementos fora da tela, texto cortado em botões, títulos e no mês, aba ativa escondida, botões sobrepostos, um único H1 e console sem erros ou avisos.
+- **Estados:** vazios (perfil novo), erros de validação no cadastro, folha de filtros, modal "Novo cartão" e drawer do menu.
+
+### Limitações conhecidas
+
+- Em 320 px, descrições longas de transações aparecem com reticências e os detalhes (categoria, conta) quebram em mais linhas. O conteúdo continua acessível ao abrir a transação.
+- Em 1024 px, a busca da topbar fica estreita e o placeholder aparece cortado. A busca funciona normalmente, e o atalho `/` continua disponível.
+- O breadcrumb da topbar só aparece a partir de 1280 px. Abaixo disso, o sobretítulo e o item ativo do menu dão o contexto.
