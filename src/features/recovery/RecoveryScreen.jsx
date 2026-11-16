@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { downloadText, parseBackupText } from "../../storage/backup";
 import { createEmptyStore } from "../../domain/defaults";
+import { VeldoraLogo } from "../../brand/VeldoraLogo";
 
 const REASONS = {
     "invalid-json": "Os dados salvos no navegador estão corrompidos e não puderam ser lidos.",
@@ -44,6 +45,9 @@ export function RecoveryScreen() {
     return (
         <Wrap>
             <Card role="alertdialog" aria-labelledby="recovery-title" aria-describedby="recovery-desc">
+                <div style={{ marginBottom: 20 }}>
+                    <VeldoraLogo height={24} />
+                </div>
                 <h1 id="recovery-title">Recuperação de dados</h1>
                 <p id="recovery-desc">{REASONS[recovery?.reason] ?? "Não foi possível carregar seus dados."}</p>
                 {recovery?.message && <Detail>{recovery.message}</Detail>}
@@ -135,7 +139,8 @@ const Card = styled.section`
     padding: 24px;
     line-height: 1.5;
     h1 {
-        font-size: 1.375rem;
+        font-family: ${(p) => p.theme.fonts.display};
+        font-size: ${(p) => p.theme.fontSize.xl};
         margin: 0 0 8px;
     }
     p {
@@ -189,7 +194,7 @@ const Button = styled.button`
     font-weight: 600;
     border: 1px solid ${(p) => (p.$primary ? p.theme.colors.primary : p.$danger ? p.theme.colors.error : p.theme.colors.border)};
     background: ${(p) => (p.$primary ? p.theme.colors.primary : p.$danger ? p.theme.colors.error : "transparent")};
-    color: ${(p) => (p.$primary || p.$danger ? "#fff" : p.theme.colors.text)};
+    color: ${(p) => (p.$primary || p.$danger ? p.theme.colors.onPrimary : p.theme.colors.text)};
     &:focus-visible {
         outline: 2px solid ${(p) => p.theme.colors.primary};
         outline-offset: 2px;

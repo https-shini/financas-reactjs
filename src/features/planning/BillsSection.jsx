@@ -1,9 +1,10 @@
+import { NEUTRAL_COLOR } from "../../design/tokens";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import { CalendarClock, CheckCircle2, Pencil, Receipt } from "lucide-react";
-import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Select, Muted } from "../../components/ui";
+import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Select, Muted, Subheading } from "../../components/ui";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
 import { upcomingItems } from "../../domain/selectors";
@@ -82,7 +83,7 @@ export function BillsSection() {
                     {it.kind === "invoice" ? (
                         <CategoryIcon category={{ icon: "Receipt", color: it.card.color }} />
                     ) : (
-                        <CategoryIcon category={store.categories.find((c) => c.id === it.tx.categoryId) ?? { icon: "Tag", color: "#64748b" }} />
+                        <CategoryIcon category={store.categories.find((c) => c.id === it.tx.categoryId) ?? { icon: "Tag", color: NEUTRAL_COLOR }} />
                     )}
                     <span className="grow">
                         <span>{it.description}</span>
@@ -151,17 +152,17 @@ export function BillsSection() {
                 <>
                     {overdue.length > 0 && (
                         <section aria-labelledby="ov-h">
-                            <h3 id="ov-h" style={{ fontSize: "0.8125rem", margin: "4px 8px", color: "inherit" }}>
+                            <Subheading id="ov-h">
                                 Atrasados
-                            </h3>
+                            </Subheading>
                             {renderList(overdue)}
                         </section>
                     )}
                     {next.length > 0 && (
                         <section aria-labelledby="nx-h">
-                            <h3 id="nx-h" style={{ fontSize: "0.8125rem", margin: "12px 8px 4px" }}>
+                            <Subheading id="nx-h">
                                 Próximos
-                            </h3>
+                            </Subheading>
                             {renderList(next)}
                         </section>
                     )}

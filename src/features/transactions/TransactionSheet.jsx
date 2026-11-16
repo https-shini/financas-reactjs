@@ -17,8 +17,7 @@ import {
     Switch,
     CategoryIcon,
     FormGrid,
-    Badge,
-} from "../../components/ui";
+    Badge, FieldLabel } from "../../components/ui";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
 import { buildTransaction, duplicateInput, validateTransactionInput, DESCRIPTION_MAX } from "../../domain/transactions";
@@ -355,9 +354,9 @@ export function TransactionSheet({ open, onClose, mode = "create", tx, defaults 
 
                         {form.type !== "transfer" && (
                             <div role="group" aria-labelledby="cat-label">
-                                <p id="cat-label" style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>
+                                <FieldLabel id="cat-label">
                                     Categoria
-                                </p>
+                                </FieldLabel>
                                 <CatGrid>
                                     {quickCats.map((c) => (
                                         <CatButton key={c.id} type="button" aria-pressed={form.categoryId === c.id} onClick={() => set({ categoryId: form.categoryId === c.id ? null : c.id })}>
@@ -438,7 +437,7 @@ export function TransactionSheet({ open, onClose, mode = "create", tx, defaults 
                         </FormGrid>
 
                         {onCard && form.type !== "transfer" ? (
-                            <p style={{ fontSize: "0.8125rem", opacity: 0.8 }}>
+                            <p style={{ fontSize: "var(--v-font-size-sm)", color: "var(--v-color-text-secondary)" }}>
                                 Compras no cartão entram na fatura e são pagas quando a fatura é paga.
                             </p>
                         ) : (

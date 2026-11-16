@@ -10,7 +10,7 @@ describe("aplicação", () => {
     it("migra dados da versão antiga e mostra o painel", async () => {
         localStorage.setItem("transactions", JSON.stringify([{ id: 1, desc: "Salário", amount: "5000", expense: false }, { id: 1, desc: "P&atilde;o &amp; caf&eacute;", amount: "10.5", expense: true }]));
         render(<App />);
-        expect(await screen.findByRole("heading", { level: 1, name: "Início" })).toBeInTheDocument();
+        expect(await screen.findByRole("heading", { level: 1, name: "Dashboard" })).toBeInTheDocument();
         await waitFor(() => expect(readStore().transactions).toHaveLength(2));
         expect(readStore().transactions.map((t) => t.amountCents)).toEqual([500000, 1050]);
         expect(localStorage.getItem("transactions")).not.toBeNull();
@@ -19,7 +19,7 @@ describe("aplicação", () => {
     it("cria uma transação pelo painel de cadastro (valor com máscara, Enter salva)", async () => {
         const user = userEvent.setup();
         render(<App />);
-        await screen.findByRole("heading", { level: 1, name: "Início" });
+        await screen.findByRole("heading", { level: 1, name: "Dashboard" });
         await user.click(screen.getAllByRole("button", { name: /Nova transação/ })[0]);
         const dialog = await screen.findByRole("dialog", { name: "Nova transação" });
         const amount = within(dialog).getByLabelText("Valor");
@@ -34,7 +34,7 @@ describe("aplicação", () => {
     it("não salva com campos inválidos e mostra os erros", async () => {
         const user = userEvent.setup();
         render(<App />);
-        await screen.findByRole("heading", { level: 1, name: "Início" });
+        await screen.findByRole("heading", { level: 1, name: "Dashboard" });
         await user.click(screen.getAllByRole("button", { name: /Nova transação/ })[0]);
         const dialog = await screen.findByRole("dialog", { name: "Nova transação" });
         await user.click(within(dialog).getByRole("button", { name: "Salvar" }));

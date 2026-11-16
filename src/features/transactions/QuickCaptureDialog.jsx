@@ -83,7 +83,7 @@ export function QuickCaptureDialog({ open, onClose }) {
                         </Preview>
                     )}
                     {parsed?.notes.length > 0 && (
-                        <p role="status" style={{ marginTop: 8, fontSize: "0.8125rem" }}>
+                        <p role="status" style={{ marginTop: 8, fontSize: "var(--v-font-size-sm)" }}>
                             {parsed.notes.join(" ")}
                         </p>
                     )}

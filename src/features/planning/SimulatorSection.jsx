@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import styled, { useTheme } from "styled-components";
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import styled from "styled-components";
+import { ResponsiveContainer, LineChart, Line } from "recharts";
+import { useChartTheme, ChartLegend } from "../../components/charts/chartTheme";
 import { Calculator, RotateCcw } from "lucide-react";
 import { Card, CardHeader, Button, Amount, EmptyState, Field, MoneyInput, Switch, CategoryIcon, Muted, Badge } from "../../components/ui";
 import { Grid, Span, Row, Stack } from "../../components/layout/Page";
@@ -51,8 +52,8 @@ const EMPTY = { cuts: {}, budgets: {}, extraIncomeCents: 0, contributionCents: 0
 /** Simulador "e se": projeta 6 e 12 meses sem alterar os dados reais. */
 export function SimulatorSection() {
     const { store, today } = useFinance();
-    const theme = useTheme();
-    const { money, hideBalances } = useFormat();
+    const chart = useChartTheme();
+    const { money } = useFormat();
     const baseline = useMemo(() => simulatorBaseline(store, today), [store, today]);
     const [scenario, setScenario] = useState(EMPTY);
     const result = useMemo(() => (baseline ? simulate(baseline, scenario, today) : null), [baseline, scenario, today]);
@@ -91,7 +92,7 @@ export function SimulatorSection() {
                                     <CutRow key={c.id}>
                                         <CategoryIcon category={c.category} size={28} />
                                         <label>
-                                            <span style={{ fontSize: "0.8125rem", display: "block" }}>
+                                            <span style={{ fontSize: "var(--v-font-size-sm)", display: "block" }}>
                                                 {c.category.name} · <Amount cents={c.monthlyCents} private colored={false} weight={400} />/mês
                                             </span>
                                             <input
@@ -155,16 +156,21 @@ export function SimulatorSection() {
                     <div style={{ width: "100%", height: 260, marginTop: 16 }} aria-hidden="true">
                         <ResponsiveContainer>
                             <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                                <CartesianGrid vertical={false} stroke={theme.colors.chartGrid} />
-                                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: theme.colors.chartAxis, fontSize: 12 }} />
-                                <YAxis width={56} tickLine={false} axisLine={false} tick={{ fill: theme.colors.chartAxis, fontSize: 12 }} tickFormatter={(v) => (hideBalances ? "•••" : Intl.NumberFormat("pt-BR", { notation: "compact" }).format(v))} />
-                                <Tooltip contentStyle={{ background: theme.colors.bgElevated, border: `1px solid ${theme.colors.border}`, borderRadius: 10, color: theme.colors.text }} formatter={(v, n) => [hideBalances ? "••••" : money(Math.round(v * 100)), n]} />
-                                <Legend />
-                                <Line dataKey="base" name="Atual" stroke={theme.colors.chartAxis} strokeDasharray="4 4" dot={false} strokeWidth={2} />
-                                <Line dataKey="total" name="Simulado (caixa + investido)" stroke={theme.colors.primaryText} dot={false} strokeWidth={2} />
+                                {chart.grid}
+                                {chart.xAxis({ dataKey: "label" })}
+                                {chart.yAxis()}
+                                {chart.tooltip()}
+                                <Line dataKey="base" name="Atual" stroke={chart.colors.neutral} strokeDasharray="4 4" dot={false} strokeWidth={2} />
+                                <Line dataKey="total" name="Simulado (caixa + investido)" stroke={chart.colors.accent} dot={false} strokeWidth={2.5} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
+                    <ChartLegend
+                        items={[
+                            { label: "Atual", color: chart.colors.neutral, line: true },
+                            { label: "Simulado (caixa + investido)", color: chart.colors.accent, line: true },
+                        ]}
+                    />
                     <p className="sr-only">
                         Diferença em 6 meses: {money(diff6)}. Em 12 meses: {money(diff12)}.
                     </p>

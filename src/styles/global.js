@@ -1,6 +1,17 @@
 import { createGlobalStyle } from "styled-components";
+import { themeToCssVars } from "../design/themes";
+
+const cssVars = (theme) =>
+    Object.entries(themeToCssVars(theme))
+        .map(([k, v]) => `${k}: ${v};`)
+        .join("\n");
 
 const Global = createGlobalStyle`
+  :root {
+    ${(p) => cssVars(p.theme)}
+    color-scheme: ${(p) => p.theme.mode};
+  }
+
   *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -9,16 +20,29 @@ const Global = createGlobalStyle`
 
   html {
     -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    font-family: ${(props) => props.theme.fonts.sans};
-    background-color: ${(props) => props.theme.colors.bg};
-    color: ${(props) => props.theme.colors.text};
+    font-family: ${(p) => p.theme.fonts.sans};
+    font-size: ${(p) => p.theme.fontSize.md};
+    font-feature-settings: "cv11", "ss01";
+    background-color: ${(p) => p.theme.colors.bg};
+    color: ${(p) => p.theme.colors.text};
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     overflow-x: hidden;
-    line-height: 1.5;
+    line-height: ${(p) => p.theme.lineHeight.normal};
+    /* Transição suave ao trocar de tema */
+    transition: background-color ${(p) => p.theme.motion.base} ${(p) => p.theme.motion.easing}, color ${(p) => p.theme.motion.base} ${(p) => p.theme.motion.easing};
+  }
+
+  h1, h2, h3, h4 {
+    font-family: ${(p) => p.theme.fonts.display};
+    line-height: ${(p) => p.theme.lineHeight.snug};
+    letter-spacing: ${(p) => p.theme.letterSpacing.snug};
+    color: ${(p) => p.theme.colors.text};
   }
 
   button {
@@ -35,12 +59,32 @@ const Global = createGlobalStyle`
   }
 
   a {
-    color: inherit;
+    color: ${(p) => p.theme.colors.primaryText};
+    text-underline-offset: 3px;
+  }
+
+  /* Valores numéricos e tabelas: algarismos tabulares, alinhados */
+  table, .num, [data-numeric] {
+    font-variant-numeric: tabular-nums;
   }
 
   :focus-visible {
-    outline: 2px solid ${(props) => props.theme.colors.focus ?? props.theme.colors.primary};
+    outline: 2px solid ${(p) => p.theme.colors.focus};
     outline-offset: 2px;
+  }
+
+  ::selection {
+    background: ${(p) => p.theme.colors.primarySoft};
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${(p) => p.theme.colors.borderStrong};
+    border-radius: 10px;
+    border: 3px solid ${(p) => p.theme.colors.bg};
   }
 
   .sr-only {
@@ -55,39 +99,44 @@ const Global = createGlobalStyle`
     border: 0;
   }
 
-  h1, h2, h3, h4 {
-    line-height: 1.25;
-  }
-
-  ::selection {
-    background: ${(props) => props.theme.colors.primarySoft};
-  }
-
   .only-mobile {
-    ${(props) => props.theme.media.desktop} {
+    ${(p) => p.theme.media.desktop} {
       display: none !important;
     }
   }
 
   .hide-mobile {
-    ${(props) => props.theme.media.mobile} {
+    ${(p) => p.theme.media.mobile} {
       display: none !important;
     }
   }
 
-  /* Toasts acima da navegação inferior no celular e com a tipografia do app */
+  /* Toasts com a identidade VELDORA */
+  :root {
+    --toastify-color-light: ${(p) => p.theme.colors.bgElevated};
+    --toastify-color-dark: ${(p) => p.theme.colors.bgElevated};
+    --toastify-text-color-light: ${(p) => p.theme.colors.text};
+    --toastify-text-color-dark: ${(p) => p.theme.colors.text};
+    --toastify-color-info: ${(p) => p.theme.colors.brand};
+    --toastify-color-success: ${(p) => p.theme.colors.success};
+    --toastify-color-warning: ${(p) => p.theme.colors.warning};
+    --toastify-color-error: ${(p) => p.theme.colors.error};
+    --toastify-color-progress-light: ${(p) => p.theme.colors.brand};
+    --toastify-color-progress-dark: ${(p) => p.theme.colors.brand};
+    --toastify-font-family: ${(p) => p.theme.fonts.sans};
+  }
   .Toastify__toast-container {
-    z-index: ${(props) => props.theme.z.toast};
+    z-index: ${(p) => p.theme.z.toast};
   }
   .Toastify__toast {
-    font-family: ${(props) => props.theme.fonts.sans};
-    font-size: ${(props) => props.theme.fontSize.md};
-    border-radius: ${(props) => props.theme.radius.md};
-    border: 1px solid ${(props) => props.theme.colors.border};
+    font-size: ${(p) => p.theme.fontSize.md};
+    border-radius: ${(p) => p.theme.radius.md};
+    border: 1px solid ${(p) => p.theme.colors.border};
+    box-shadow: ${(p) => p.theme.shadows.lg};
   }
-  ${(props) => props.theme.media.belowDesktop} {
+  ${(p) => p.theme.media.belowDesktop} {
     .Toastify__toast-container--bottom-right {
-      bottom: calc(${(props) => props.theme.layout.bottomNav} + 12px + env(safe-area-inset-bottom));
+      bottom: calc(${(p) => p.theme.layout.bottomNav} + 12px + env(safe-area-inset-bottom));
     }
   }
 

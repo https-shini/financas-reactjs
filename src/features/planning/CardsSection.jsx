@@ -383,7 +383,7 @@ export function CardsSection() {
                             <Row $wrap $gap={6} style={{ marginBottom: 12 }}>
                                 <div>
                                     <Muted>Total</Muted>
-                                    <div style={{ fontSize: "1.25rem" }}>
+                                    <div style={{ fontSize: "var(--v-font-size-xl)" }}>
                                         <Amount cents={invoice.totalCents} private colored={false} weight={700} />
                                     </div>
                                 </div>

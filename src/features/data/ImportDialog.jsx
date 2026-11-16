@@ -190,7 +190,7 @@ export function ImportDialog({ open, onClose }) {
                             Baixar planilha modelo
                         </Button>
                         {error && (
-                            <p role="alert" style={{ color: "var(--error, #c42443)" }}>
+                            <p role="alert" style={{ color: "var(--v-color-error)" }}>
                                 {error}
                             </p>
                         )}

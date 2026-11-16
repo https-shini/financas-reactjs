@@ -578,11 +578,11 @@ function FiltersDialog({ open, onClose, store, filters, periodo, onApply }) {
                         </Select>
                         {per === "custom" && (
                         <Row $gap={2}>
-                            <label style={{ flex: 1, display: "grid", gap: 4, fontSize: "0.8125rem" }}>
+                            <label style={{ flex: 1, display: "grid", gap: 4, fontSize: "var(--v-font-size-sm)" }}>
                                 De
                                 <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
                             </label>
-                            <label style={{ flex: 1, display: "grid", gap: 4, fontSize: "0.8125rem" }}>
+                            <label style={{ flex: 1, display: "grid", gap: 4, fontSize: "var(--v-font-size-sm)" }}>
                                 Até
                                 <Input type="date" value={end} min={start || undefined} onChange={(e) => setEnd(e.target.value)} />
                             </label>

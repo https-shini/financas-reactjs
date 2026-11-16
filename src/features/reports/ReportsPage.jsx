@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { toast } from "react-toastify";
-import { ResponsiveContainer, BarChart, Bar, LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, LineChart, Line, AreaChart, Area, ReferenceLine } from "recharts";
 import { CalendarDays, CalendarRange, GitCompare, TrendingUp, HeartPulse, Download, AlertTriangle, BarChart3 } from "lucide-react";
 import { Card, CardHeader, Button, Amount, Badge, EmptyState, Menu, RouteTabs, Select, Input, CategoryIcon, Progress, levelTone, Muted, Delta } from "../../components/ui";
 import { PageHeader, Grid, Span, Row, Stack } from "../../components/layout/Page";
 import { useFinance } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
 import { useFormat } from "../../hooks/useFormat";
+import { useChartTheme } from "../../components/charts/chartTheme";
 import { categoryBreakdown, firstMonthWithData, monthComparison, monthlySeries, netWorthSeries, periodSummary, topExpenses, indexById } from "../../domain/selectors";
 import { budgetStatus } from "../../domain/budgets";
 import { projectCashBalance } from "../../domain/projection";
@@ -34,9 +35,15 @@ const Table = styled.table`
         white-space: normal;
     }
     thead th {
-        font-weight: 600;
-        color: ${(p) => p.theme.colors.textSecondary};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
+        color: ${(p) => p.theme.colors.textMuted};
         font-size: ${(p) => p.theme.fontSize.xs};
+        letter-spacing: ${(p) => p.theme.letterSpacing.wide};
+        text-transform: uppercase;
+        background: ${(p) => p.theme.colors.bgSurface};
+    }
+    tbody tr:hover {
+        background: ${(p) => p.theme.colors.bgHover};
     }
     tfoot td {
         font-weight: 700;
@@ -73,15 +80,10 @@ const ChartBox = styled.div`
     height: ${(p) => p.$h ?? 280}px;
 `;
 
+/** Adapta o tema de gráficos compartilhado (src/components/charts/chartTheme.jsx). */
 function useChartProps() {
-    const theme = useTheme();
-    const { money, hideBalances } = useFormat();
-    return {
-        theme,
-        grid: <CartesianGrid vertical={false} stroke={theme.colors.chartGrid} />,
-        yAxis: <YAxis width={60} tickLine={false} axisLine={false} tick={{ fill: theme.colors.chartAxis, fontSize: 12 }} tickFormatter={(v) => (hideBalances ? "•••" : Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(v))} />,
-        tooltip: <Tooltip cursor={{ fill: theme.colors.bgHover }} contentStyle={{ background: theme.colors.bgElevated, border: `1px solid ${theme.colors.border}`, borderRadius: 10, color: theme.colors.text }} formatter={(v, n) => [hideBalances ? "••••" : money(Math.round(v * 100)), n]} />,
-    };
+    const c = useChartTheme();
+    return { ...c, yAxis: c.yAxis({ width: 60 }), tooltip: c.tooltip() };
 }
 
 function ExportMenu({ onExport }) {
@@ -272,7 +274,7 @@ function MonthlyReport() {
                             <Stack $gap={3}>
                                 {budgets.map((b) => (
                                     <div key={b.budget.id}>
-                                        <Row $justify="space-between" style={{ fontSize: "0.875rem", marginBottom: 4 }}>
+                                        <Row $justify="space-between" style={{ fontSize: "var(--v-font-size-sm)", marginBottom: 4 }}>
                                             <span>{b.category.name}</span>
                                             <span>
                                                 <Amount cents={b.spentCents} private colored={false} weight={500} /> / <Amount cents={b.limitCents} private colored={false} weight={400} /> ({Math.round(b.pct)}%)
@@ -388,11 +390,11 @@ function AnnualReport() {
                             <ResponsiveContainer>
                                 <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                                     {chart.grid}
-                                    <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: chart.theme.colors.chartAxis, fontSize: 12 }} />
+                                    {chart.xAxis({ dataKey: "label" })}
                                     {chart.yAxis}
                                     {chart.tooltip}
-                                    <Bar dataKey="Receitas" fill={chart.theme.colors.income} radius={[4, 4, 0, 0]} maxBarSize={18} />
-                                    <Bar dataKey="Despesas" fill={chart.theme.colors.expense} radius={[4, 4, 0, 0]} maxBarSize={18} />
+                                    <Bar dataKey="Receitas" fill={chart.colors.income} radius={chart.barRadius} maxBarSize={18} />
+                                    <Bar dataKey="Despesas" fill={chart.colors.expense} radius={chart.barRadius} maxBarSize={18} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </ChartBox>
@@ -435,10 +437,10 @@ function AnnualReport() {
                                 <ResponsiveContainer>
                                     <AreaChart data={nw.map((r) => ({ label: formatMonthLabel(r.month, "short").split(" ")[0], Patrimônio: r.balanceCents / 100 }))} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                                         {chart.grid}
-                                        <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: chart.theme.colors.chartAxis, fontSize: 12 }} />
+                                        {chart.xAxis({ dataKey: "label" })}
                                         {chart.yAxis}
                                         {chart.tooltip}
-                                        <Area dataKey="Patrimônio" stroke={chart.theme.colors.primaryText} fill={chart.theme.colors.primarySoft} strokeWidth={2} type="monotone" />
+                                        <Area dataKey="Patrimônio" stroke={chart.colors.primary} fill={chart.colors.area} strokeWidth={2.5} type="monotone" />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </ChartBox>
@@ -570,7 +572,7 @@ function CompareReport() {
                             </tbody>
                         </Table>
                     </Scroll>
-                    <h3 style={{ fontSize: "0.9375rem", margin: "20px 0 8px" }}>Despesas por categoria</h3>
+                    <h3 style={{ fontSize: "var(--v-font-size-md)", margin: "20px 0 8px" }}>Despesas por categoria</h3>
                     <Scroll>
                         <Table>
                             <thead>
@@ -662,11 +664,11 @@ function ProjectionReport() {
                     <ResponsiveContainer>
                         <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                             {chart.grid}
-                            <XAxis dataKey="label" tickLine={false} axisLine={false} interval={days > 30 ? 13 : 4} tick={{ fill: chart.theme.colors.chartAxis, fontSize: 12 }} />
+                            {chart.xAxis({ dataKey: "label", interval: days > 30 ? 13 : 4 })}
                             {chart.yAxis}
                             {chart.tooltip}
-                            <ReferenceLine y={0} stroke={chart.theme.colors.expense} strokeDasharray="4 4" />
-                            <Line dataKey="Saldo" stroke={chart.theme.colors.primaryText} dot={false} strokeWidth={2} type="stepAfter" />
+                            <ReferenceLine y={0} stroke={chart.colors.expense} strokeDasharray="4 4" />
+                            <Line dataKey="Saldo" stroke={chart.colors.primary} dot={false} strokeWidth={2.5} type="stepAfter" />
                         </LineChart>
                     </ResponsiveContainer>
                 </ChartBox>
@@ -727,9 +729,9 @@ function HealthReport() {
                 <Card aria-labelledby="h-t">
                     <CardHeader id="h-t" title="Saúde financeira" subtitle={`Base: ${h.months.map((m) => formatMonthLabel(m, "short")).join(", ")}`} />
                     <div style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: "3.5rem", fontWeight: 700, lineHeight: 1 }} aria-label={`Pontuação ${h.score} de 100`}>
+                    <p style={{ fontSize: "var(--v-font-size-4xl)", fontWeight: 700, lineHeight: 1 }} aria-label={`Pontuação ${h.score} de 100`}>
                         {h.score}
-                        <span style={{ fontSize: "1rem", opacity: 0.6 }}>/100</span>
+                        <span style={{ fontSize: "var(--v-font-size-base)", color: "var(--v-color-text-secondary)" }}>/100</span>
                     </p>
                     <div style={{ margin: "12px 0" }}>
                         <Badge $tone={h.level.tone}>{h.level.label}</Badge>

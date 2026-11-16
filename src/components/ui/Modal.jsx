@@ -11,6 +11,7 @@ let openCount = 0;
 const fadeIn = keyframes`from { opacity: 0 } to { opacity: 1 }`;
 const rise = keyframes`from { opacity: 0; transform: translateY(12px) scale(0.99) } to { opacity: 1; transform: none }`;
 const slideUp = keyframes`from { transform: translateY(100%) } to { transform: none }`;
+const slideIn = keyframes`from { transform: translateX(-100%) } to { transform: none }`;
 
 const Backdrop = styled.div`
     position: fixed;
@@ -29,6 +30,13 @@ const Backdrop = styled.div`
                 align-items: flex-end;
                 padding: 0;
             }
+        `}
+    ${(p) =>
+        p.$drawer &&
+        css`
+            align-items: stretch;
+            justify-content: flex-start;
+            padding: 0;
         `}
 `;
 
@@ -68,6 +76,17 @@ const Panel = styled.div`
                 }
             }
         `}
+    ${(p) =>
+        p.$drawer &&
+        css`
+            max-width: min(320px, 86vw);
+            max-height: none;
+            height: 100%;
+            border-radius: 0 ${p.theme.radius.xl} ${p.theme.radius.xl} 0;
+            border-left: 0;
+            animation: ${slideIn} ${p.theme.motion.slow} ${p.theme.motion.easingOut};
+            padding-bottom: env(safe-area-inset-bottom);
+        `}
 `;
 
 const Header = styled.header`
@@ -77,8 +96,9 @@ const Header = styled.header`
     gap: 12px;
     padding: 16px 20px 8px;
     h2 {
+        font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize.lg};
-        font-weight: 600;
+        font-weight: ${(p) => p.theme.fontWeight.bold};
     }
     p {
         font-size: ${(p) => p.theme.fontSize.sm};
@@ -161,9 +181,11 @@ export function Modal({ open, onClose, title, description, children, size = "md"
 
     if (!open) return null;
     const sheet = variant === "sheet";
+    const drawer = variant === "drawer";
     return createPortal(
         <Backdrop
             $sheet={sheet}
+            $drawer={drawer}
             onMouseDown={(e) => {
                 if (closeOnBackdrop && e.target === e.currentTarget) onClose?.();
             }}
@@ -178,6 +200,7 @@ export function Modal({ open, onClose, title, description, children, size = "md"
                 tabIndex={-1}
                 $size={size}
                 $sheet={sheet}
+                $drawer={drawer}
             >
                 <Header>
                     <div>
@@ -196,4 +219,9 @@ export function Modal({ open, onClose, title, description, children, size = "md"
 /** Bottom sheet: diálogo ancorado embaixo no celular e centralizado no desktop. */
 export function BottomSheet(props) {
     return <Modal variant="sheet" {...props} />;
+}
+
+/** Drawer: painel lateral (usado na navegação móvel). */
+export function Drawer(props) {
+    return <Modal variant="drawer" {...props} />;
 }

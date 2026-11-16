@@ -1,6 +1,10 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24&height=120&section=header"/>
 
-<h1 align="center">💰 Finanças</h1>
+<p align="center"><img src="./public/brand/veldora-logo-on-dark.svg" alt="VELDORA" height="56"/></p>
+
+<h1 align="center">VELDORA</h1>
+
+<p align="center"><b>Smart Financial Platform</b> · <i>Seu dinheiro. Sua visão. Seu futuro.</i></p>
 
 <p align="center">
   Controle financeiro pessoal <b>local-first</b>: receitas, despesas, contas, cartões, parcelas, recorrências, orçamentos, metas, relatórios e projeções — no seu navegador, sem servidor.
@@ -8,25 +12,25 @@
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-4f46e5?style=for-the-badge)](https://financas.gcruz.dev.br)
+  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-397BFF?style=for-the-badge)](https://financas.gcruz.dev.br)
   [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
   [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
 
 </div>
 
 <div align="center">
-  <img src="./read-model/img/v2-dashboard-escuro.png" alt="Painel inicial no tema escuro" width="100%"/>
+  <img src="./read-model/img/veldora-dashboard-escuro.png" alt="Dashboard VELDORA no tema escuro" width="100%"/>
 </div>
 
 ---
 
 ## Sumário
 
-[Descrição](#descrição) · [Funcionalidades](#funcionalidades) · [Tecnologias](#tecnologias) · [Requisitos](#requisitos) · [Instalação e execução](#instalação-e-execução) · [Testes](#testes) · [Build](#build) · [Deploy](#deploy-vercel) · [Estrutura](#estrutura-do-projeto) · [Seus dados: backup e segurança](#seus-dados-backup-e-segurança) · [Limitações conhecidas](#limitações-conhecidas)
+[Descrição](#descrição) · [Identidade visual](#identidade-visual-e-design-system) · [Funcionalidades](#funcionalidades) · [Tecnologias](#tecnologias) · [Requisitos](#requisitos) · [Instalação e execução](#instalação-e-execução) · [Testes](#testes) · [Build](#build) · [Deploy](#deploy-vercel) · [Estrutura](#estrutura-do-projeto) · [Seus dados: backup e segurança](#seus-dados-backup-e-segurança) · [Limitações conhecidas](#limitações-conhecidas)
 
 ## Descrição
 
-O **Finanças** é uma aplicação React para gestão financeira pessoal. Todos os números vêm dos seus lançamentos, com regras explícitas e testadas:
+O **VELDORA** (antigo *Finanças*) é uma aplicação React para gestão financeira pessoal. Todos os números vêm dos seus lançamentos, com regras explícitas e testadas:
 
 - valores guardados em **centavos inteiros** (sem erros de arredondamento de ponto flutuante);
 - **transferências** movem dinheiro entre contas sem contar como receita ou despesa;
@@ -66,11 +70,20 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 | Tema claro | Celular | Cadastro no celular |
 | --- | --- | --- |
-| <img src="./read-model/img/v2-dashboard-claro.png" alt="Painel no tema claro" width="420"/> | <img src="./read-model/img/v2-mobile.png" alt="Painel no celular" width="200"/> | <img src="./read-model/img/v2-mobile-cadastro.png" alt="Cadastro no celular" width="200"/> |
+| <img src="./read-model/img/veldora-dashboard-claro.png" alt="Dashboard no tema claro" width="420"/> | <img src="./read-model/img/veldora-mobile.png" alt="Dashboard no celular" width="200"/> | <img src="./read-model/img/v2-mobile-cadastro.png" alt="Cadastro no celular" width="200"/> |
 
 | Movimentações | Cartões e faturas | Saúde financeira |
 | --- | --- | --- |
 | <img src="./read-model/img/v2-movimentacoes.png" alt="Movimentações" width="300"/> | <img src="./read-model/img/v2-cartoes.png" alt="Cartões" width="300"/> | <img src="./read-model/img/v2-saude.png" alt="Saúde financeira" width="300"/> |
+
+## Identidade visual e Design System
+
+A interface usa a identidade **VELDORA**: símbolo em V geométrico, azul elétrico `#397BFF` como cor de marca, violeta `#9277F5` para recursos inteligentes, tema escuro por padrão e tema claro completo. A marca, a paleta (com as variantes acessíveis), a tipografia, os tokens, os componentes e as regras de uso estão em **[read-model/BRAND.md](./read-model/BRAND.md)**.
+
+- Tokens primitivos em `src/design/tokens.js` e semânticos em `src/design/themes.js`, também exportados como variáveis CSS `--v-*`.
+- Logo e ícones em `src/brand/` (componentes React) e `public/brand/` (SVG/PNG), gerados por `node scripts/generate-brand-assets.mjs`.
+- Página interna de demonstração em **`/design-system`** (link em Configurações › Sobre).
+- O contraste WCAG AA de todos os pares texto/fundo é verificado por teste automatizado.
 
 ## Tecnologias
 
@@ -81,7 +94,7 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 | Gráficos | Recharts |
 | Regras e validação | JavaScript puro em `src/domain`, Zod (schema do armazenamento), date-fns |
 | Arquivos | SheetJS/xlsx 0.20.3 (CDN oficial), jsPDF + autotable, docx, file-saver — carregados sob demanda |
-| Fonte | Inter (self-hosted via `@fontsource-variable/inter`) |
+| Fontes | Inter e Manrope (self-hosted via `@fontsource-variable/*`) |
 | Build e testes | Vite 7, Vitest 4, Testing Library, ESLint 9 |
 
 ## Requisitos
@@ -118,7 +131,7 @@ O app abre em `http://localhost:3000`.
 npm test
 ```
 
-Os testes ficam ao lado do código (`*.test.js`/`*.test.jsx`) e cobrem: dinheiro e arredondamento, datas, transações, saldos e transferências, cartões e faturas, parcelas, recorrências, orçamentos, metas, projeções, insights, saúde financeira, simulador, captura rápida, importação (CSV/XLSX/OFX), proteção de CSV, migração de dados antigos, armazenamento corrompido ou cheio, backup e restauração, e fluxos da interface. Há também um teste de invariante com 2.000 operações aleatórias que confirma que nenhuma operação cria ou duplica dinheiro.
+Os testes ficam ao lado do código (`*.test.js`/`*.test.jsx`) e cobrem: dinheiro e arredondamento, datas, transações, saldos e transferências, cartões e faturas, parcelas, recorrências, orçamentos, metas, projeções, insights, saúde financeira, simulador, captura rápida, importação (CSV/XLSX/OFX), proteção de CSV, migração de dados antigos, armazenamento corrompido ou cheio, backup e restauração, e fluxos da interface, além de contraste WCAG AA dos tokens, marca (logo e favicon), navegação agrupada, breadcrumbs, seletor de tema e componentes do design system. Há também um teste de invariante com 2.000 operações aleatórias que confirma que nenhuma operação cria ou duplica dinheiro.
 
 O CI (`.github/workflows/ci.yml`) roda lint, testes e build a cada push e pull request.
 
@@ -164,15 +177,17 @@ src/
 │                recorrências, orçamentos, metas, projeção, insights, importação, captura rápida)
 ├── storage/     schema Zod, migrações, repositório (localStorage) e backup
 ├── state/       FinanceProvider e operações puras (store → store)
-├── components/  design system (ui/) e layout
-├── app/         shell (menu lateral, barra superior, navegação inferior), tema, contexto de UI
-├── features/    dashboard, transactions, planning, reports, settings, data, recovery
+├── brand/       logo VELDORA (geometria única + componentes React)
+├── design/      tokens primitivos, temas claro/escuro e teste de contraste
+├── components/  design system (ui/), gráficos (charts/) e layout
+├── app/         shell (sidebar, topbar, navegação inferior), navegação agrupada, tema, contexto de UI
+├── features/    dashboard, transactions, planning, reports, settings, data, recovery, design-system
 ├── hooks/       formatação, media queries, atalhos de teclado
-├── styles/      tokens de tema e estilos globais
+├── styles/      estilos globais (variáveis CSS a partir dos tokens)
 └── utils/       exportação (CSV com proteção, Excel, PDF, Word, relatórios)
 ```
 
-Detalhes: [modelo de dados, regras e migrações](./read-model/MODEL.md) · [estrutura e decisões](./read-model/STRUCTURE.md) · [como contribuir](./read-model/CONTRIBUTING.md).
+Detalhes: [marca e design system](./read-model/BRAND.md) · [modelo de dados, regras e migrações](./read-model/MODEL.md) · [estrutura e decisões](./read-model/STRUCTURE.md) · [como contribuir](./read-model/CONTRIBUTING.md).
 
 ## Seus dados: backup e segurança
 

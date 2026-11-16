@@ -19,6 +19,7 @@ const TransactionsPage = lazy(() => import("./features/transactions/Transactions
 const PlanningPage = lazy(() => import("./features/planning/PlanningPage"));
 const ReportsPage = lazy(() => import("./features/reports/ReportsPage"));
 const SettingsPage = lazy(() => import("./features/settings/SettingsPage"));
+const DesignSystemPage = lazy(() => import("./features/design-system/DesignSystemPage"));
 
 function PageFallback() {
     return (
@@ -58,6 +59,7 @@ function Root() {
                             <Route path="planejamento/*" element={page(PlanningPage)} />
                             <Route path="relatorios/*" element={page(ReportsPage)} />
                             <Route path="configuracoes/*" element={page(SettingsPage)} />
+                            <Route path="design-system" element={page(DesignSystemPage)} />
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Route>
                     </Routes>

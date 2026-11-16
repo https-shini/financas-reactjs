@@ -44,8 +44,9 @@ const TabStyle = styled.button`
         bottom: -1px;
         height: 2px;
         border-radius: 2px;
-        background: ${(p) => p.theme.colors.primary};
+        background: ${(p) => p.theme.colors.brand};
     }
+    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
 `;
 
 /** Abas como rotas (navegação). tabs: [{ to, label, icon, badge }] */

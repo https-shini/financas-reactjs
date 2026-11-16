@@ -9,6 +9,10 @@ const variants = {
         border-color: ${(p) => p.theme.colors.primary};
         &:hover:not(:disabled) {
             background: ${(p) => p.theme.colors.primaryHover};
+            border-color: ${(p) => p.theme.colors.primaryHover};
+        }
+        &:active:not(:disabled) {
+            background: ${(p) => p.theme.colors.primaryActive};
         }
     `,
     secondary: css`
@@ -79,12 +83,19 @@ const StyledButton = styled.button`
     line-height: 1;
     white-space: nowrap;
     user-select: none;
-    transition: background ${(p) => p.theme.motion.fast}, border-color ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
+    transition: background ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, border-color ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
     width: ${(p) => (p.$full ? "100%" : "auto")};
+    &:active:not(:disabled) {
+        transform: scale(0.98);
+    }
+    &:focus-visible {
+        outline: 2px solid ${(p) => p.theme.colors.focus};
+        outline-offset: 2px;
+    }
     ${(p) => variants[p.$variant] ?? variants.secondary}
     ${(p) => sizes[p.$size] ?? sizes.md}
     &:disabled {
-        opacity: 0.55;
+        opacity: ${(p) => p.theme.opacity.disabled};
         cursor: not-allowed;
     }
     svg {
@@ -120,6 +131,7 @@ const StyledIconButton = styled.button`
     height: ${(p) => (p.$size === "sm" ? "36px" : "44px")};
     flex-shrink: 0;
     border-radius: ${(p) => p.theme.radius.md};
+    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast}, transform ${(p) => p.theme.motion.fast};
     color: ${(p) => (p.$tone === "danger" ? p.theme.colors.expense : p.theme.colors.textSecondary)};
     border: 1px solid ${(p) => (p.$bordered ? p.theme.colors.border : "transparent")};
     background: ${(p) => (p.$bordered ? p.theme.colors.bgElevated : "transparent")};
@@ -128,8 +140,11 @@ const StyledIconButton = styled.button`
         background: ${(p) => (p.$tone === "danger" ? p.theme.colors.expenseSoft : p.theme.colors.bgHover)};
         color: ${(p) => (p.$tone === "danger" ? p.theme.colors.expense : p.theme.colors.text)};
     }
+    &:active:not(:disabled) {
+        transform: scale(0.96);
+    }
     &:disabled {
-        opacity: 0.5;
+        opacity: ${(p) => p.theme.opacity.disabled};
         cursor: not-allowed;
     }
     @media (pointer: coarse) {

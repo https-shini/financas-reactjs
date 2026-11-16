@@ -20,13 +20,18 @@ src/
 │   └── quickCapture.js     "Mercado 85,90 ontem"
 ├── storage/       schema (Zod), migrações, repositório, backup
 ├── state/         FinanceProvider + operações puras (store => store) + contextos
+├── brand/         geometria do logo VELDORA (fonte única) + VeldoraLogo/Symbol/AppIcon
+├── design/        tokens.js (primitivos), themes.js (claro/escuro + variáveis CSS), contrast.test.js
 ├── components/
-│   ├── ui/        design system (Button, Card, MoneyInput, Modal/BottomSheet, Amount, Progress…)
-│   └── layout/    PageHeader e grade responsiva
-├── app/           AppShell (sidebar, topbar, navegação inferior), tema, UIContext, alertas
-├── features/      dashboard, transactions, planning, reports, settings, data, recovery
+│   ├── ui/        design system (Button, Card, Form, Modal/Drawer, Feedback: StatCard, DataTable,
+│   │              Tooltip, Alert, Pagination, Breadcrumbs; Typography)
+│   ├── charts/    useChartTheme + ChartLegend (eixos, grade, tooltip BRL por tema)
+│   └── layout/    PageHeader (breadcrumbs automáticos) e grade responsiva
+├── app/           AppShell, navigation.js (grupos, item ativo), layout/ (SidebarNav, ThemeSwitcher,
+│                  WorkspaceCard), tema, UIContext, alertas
+├── features/      dashboard, transactions, planning, reports, settings, data, recovery, design-system
 ├── hooks/         useFormat, useMediaQuery, useHotkeys
-├── styles/        tokens (theme.js) e estilos globais
+├── styles/        estilos globais (theme.js reexporta src/design/themes.js)
 └── utils/         exportação (Excel, CSV, PDF, Word, relatórios)
 ```
 
@@ -35,8 +40,10 @@ src/
 - **Domínio separado da interface.** Todas as contas financeiras estão em `src/domain` e são testadas sem React. Dashboard, movimentações e relatórios chamam as mesmas funções.
 - **Operações puras.** Cada alteração é uma função `(store, ...args) => store` em `state/operations.js`. O provider aplica, persiste e reporta erros. Isso dispensa bibliotecas de estado e mantém o histórico de ações testável.
 - **Persistência resiliente.** O repositório valida com Zod, corrige problemas recuperáveis (IDs duplicados, referências quebradas), migra versões e entra em modo de recuperação quando os dados são ilegíveis, sem sobrescrever nada.
-- **Local-first.** Sem backend; depois de carregado, o app não depende de servidor. Fontes self-hosted (`@fontsource-variable/inter`), sem requisições externas em tempo de execução.
+- **Local-first.** Sem backend; depois de carregado, o app não depende de servidor. Fontes self-hosted (`@fontsource-variable/inter` e `@fontsource-variable/manrope`), sem requisições externas em tempo de execução.
 - **Segurança em produção.** `vercel.json` define CSP restritiva (somente a própria origem, sem `unsafe-eval`; o Zod roda em modo `jitless`), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` e `Permissions-Policy`. `npm run preview` aplica os mesmos cabeçalhos. Exportações CSV/XLSX passam por `utils/csv.js` (proteção contra injeção de fórmulas).
+- **Design system em duas camadas.** Tokens primitivos → tokens semânticos por tema. Componentes só usam nomes semânticos; o contraste AA de cada par é garantido por teste. Detalhes em [BRAND.md](./BRAND.md).
+- **Marca sem dependências externas.** Logo, favicon e ícones são SVG gerados a partir de `src/brand/geometry.js` (`node scripts/generate-brand-assets.mjs`).
 - **Vite** substituiu o Create React App (descontinuado). O build continua em `build/` para manter o deploy existente.
 - **Dependências seguras.** `xlsx` vem da CDN oficial da SheetJS (0.20.3, com correções que não existem no npm); jsPDF 4, zod 4 e react-router 7 sem vulnerabilidades conhecidas (`npm audit`: 0). Bibliotecas de exportação são carregadas sob demanda.
 - **Design system próprio** com Styled Components e tokens com contraste WCAG AA verificado nos dois temas.

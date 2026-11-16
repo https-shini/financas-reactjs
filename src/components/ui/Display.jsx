@@ -1,3 +1,4 @@
+import { NEUTRAL_COLOR } from "../../design/tokens";
 import styled, { css, keyframes } from "styled-components";
 import { useFormat } from "../../hooks/useFormat";
 import { iconFor } from "./icons";
@@ -6,6 +7,7 @@ import { iconFor } from "./icons";
 
 const AmountText = styled.span`
     font-variant-numeric: tabular-nums;
+    font-family: ${(p) => (p.$big ? p.theme.fonts.display : "inherit")};
     white-space: nowrap;
     font-weight: ${(p) => p.$weight ?? 600};
     color: ${(p) => (p.$tone ? p.theme.colors[p.$tone] : "inherit")};
@@ -73,6 +75,10 @@ const tones = {
         background: ${(p) => p.theme.colors.infoSoft};
         color: ${(p) => p.theme.colors.info};
     `,
+    accent: css`
+        background: ${(p) => p.theme.colors.accentSoft};
+        color: ${(p) => p.theme.colors.accentText};
+    `,
 };
 
 export const Badge = styled.span`
@@ -103,7 +109,7 @@ const IconBubble = styled.span`
 
 export function CategoryIcon({ category, size = 36 }) {
     const Icon = iconFor(category?.icon);
-    const color = category?.color ?? "#64748b";
+    const color = category?.color ?? NEUTRAL_COLOR;
     return (
         <IconBubble $size={size} $color={color} aria-hidden="true">
             <Icon size={Math.round(size * 0.5)} strokeWidth={1.9} />
@@ -257,7 +263,7 @@ export function Delta({ value, goodWhenUp = true, suffix = "vs. mês anterior" }
         <DeltaText $tone={good ? "income" : "expense"}>
             <span aria-hidden="true">{up ? "↑" : "↓"}</span>
             <span className="sr-only">{up ? "Aumento de" : "Redução de"}</span>
-            {pct}% <span style={{ fontWeight: 500, opacity: 0.85 }}>{suffix}</span>
+            {pct}% <span style={{ fontWeight: 500, color: "var(--v-color-text-secondary)" }}>{suffix}</span>
         </DeltaText>
     );
 }

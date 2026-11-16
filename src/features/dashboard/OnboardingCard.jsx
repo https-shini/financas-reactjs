@@ -73,10 +73,10 @@ export function OnboardingCard() {
 
     return (
         <Card style={{ marginBottom: 20 }} aria-labelledby="onb-title">
-            <h2 id="onb-title" style={{ fontSize: "1.125rem" }}>
+            <h2 id="onb-title" style={{ fontSize: "var(--v-font-size-lg)" }}>
                 Vamos configurar suas finanças
             </h2>
-            <p style={{ marginTop: 4, opacity: 0.8 }}>Seus dados ficam apenas neste navegador. Faça backups regulares em Configurações › Dados.</p>
+            <p style={{ marginTop: 4, color: "var(--v-color-text-secondary)" }}>Seus dados ficam apenas neste navegador. Faça backups regulares em Configurações › Dados.</p>
             <Steps>
                 <li>
                     <h3>Sua conta principal</h3>

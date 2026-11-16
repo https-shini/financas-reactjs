@@ -1,13 +1,17 @@
+import { NEUTRAL_COLOR } from "../../design/tokens";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styled, { useTheme } from "styled-components";
-import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import styled from "styled-components";
+import { ResponsiveContainer, ComposedChart, Bar, Line } from "recharts";
 import {
-    Wallet, TrendingUp, CalendarClock, Lightbulb, PieChart, ListOrdered, Target, ChevronDown, ChevronUp, AlertTriangle,
-    CheckCircle2, Info, Plus, Upload, Sparkles,
+    Wallet, TrendingUp, CalendarClock, Lightbulb, PieChart, ListOrdered, Target, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2,
+    Info, Plus, Upload, Sparkles, CreditCard, Flag, Receipt,
 } from "lucide-react";
-import { Card, CardHeader, Amount, Delta, Progress, levelTone, EmptyState, Button, Badge, CategoryIcon, Muted } from "../../components/ui";
+import {
+    Card, CardHeader, Amount, Delta, Progress, levelTone, EmptyState, Button, Badge, CategoryIcon, StatCard, NumericDisplay, Text,
+} from "../../components/ui";
 import { PageHeader, Grid, Span, Stack, Row } from "../../components/layout/Page";
+import { useChartTheme, ChartLegend } from "../../components/charts/chartTheme";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
 import { useFormat } from "../../hooks/useFormat";
@@ -16,57 +20,40 @@ import {
     upcomingItems,
 } from "../../domain/selectors";
 import { budgetStatus } from "../../domain/budgets";
+import { goalProgress } from "../../domain/goals";
 import { generateInsights } from "../../domain/insights";
 import { forecastEndOfMonth, spendableToday } from "../../domain/projection";
-import { currentMonthKey, formatDateBR, formatDayHeading, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
-import { isCard } from "../../domain/cards";
+import { cardSummary, isCard, INVOICE_STATUS_LABEL } from "../../domain/cards";
+import { formatDateBR, formatDayHeading, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
+import { ACCOUNT_TYPES } from "../../domain/defaults";
 import { TransactionRow, TxList } from "../transactions/TransactionRow";
 import { OnboardingCard } from "./OnboardingCard";
-import { ACCOUNT_TYPES } from "../../domain/defaults";
 
-const Big = styled.p`
-    font-size: ${(p) => p.theme.fontSize["3xl"]};
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    margin: 4px 0 6px;
-    ${(p) => p.theme.media.mobile} {
-        font-size: 1.75rem;
-    }
-`;
-
-const Label = styled.p`
-    color: ${(p) => p.theme.colors.textSecondary};
-    font-size: ${(p) => p.theme.fontSize.sm};
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-`;
+// ---------------- estilos locais ----------------
 
 const Split = styled.dl`
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px 16px;
-    margin-top: 12px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid ${(p) => p.theme.colors.border};
     dt {
         font-size: ${(p) => p.theme.fontSize.xs};
         color: ${(p) => p.theme.colors.textMuted};
     }
     dd {
-        font-size: ${(p) => p.theme.fontSize.base};
         display: grid;
         gap: 2px;
+        font-size: ${(p) => p.theme.fontSize.base};
     }
 `;
 
 const AccountList = styled.ul`
     list-style: none;
-    margin-top: 12px;
-    border-top: 1px solid ${(p) => p.theme.colors.border};
-    padding-top: 8px;
+    margin-top: 4px;
     display: grid;
-    gap: 4px;
+    gap: 2px;
     li {
         display: flex;
         justify-content: space-between;
@@ -78,7 +65,7 @@ const AccountList = styled.ul`
     .dot {
         width: 8px;
         height: 8px;
-        border-radius: 50%;
+        border-radius: 2px;
         display: inline-block;
         margin-right: 8px;
     }
@@ -88,30 +75,35 @@ const ToggleLink = styled.button`
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    min-height: 36px;
+    min-height: 32px;
+    justify-self: start;
     font-size: ${(p) => p.theme.fontSize.sm};
-    font-weight: 500;
+    font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.primaryText};
+`;
+
+const SubMetric = styled.div`
+    display: grid;
+    gap: 2px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid ${(p) => p.theme.colors.border};
 `;
 
 const BarList = styled.ul`
     list-style: none;
     display: grid;
-    gap: 4px;
-`;
-
-const BarItem = styled.li`
-    a,
+    gap: 2px;
     button {
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
         gap: 10px;
         width: 100%;
-        padding: 6px 4px;
-        border-radius: 8px;
-        text-decoration: none;
+        padding: 6px;
+        border-radius: ${(p) => p.theme.radius.md};
         text-align: left;
+        transition: background ${(p) => p.theme.motion.fast};
         &:hover {
             background: ${(p) => p.theme.colors.bgHover};
         }
@@ -121,7 +113,7 @@ const BarItem = styled.li`
         justify-content: space-between;
         gap: 8px;
         font-size: ${(p) => p.theme.fontSize.sm};
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         span:first-child {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -138,15 +130,16 @@ const BarItem = styled.li`
 `;
 
 const DayHeading = styled.h3`
-    font-size: ${(p) => p.theme.fontSize.xs};
-    font-weight: 600;
+    font-family: ${(p) => p.theme.fonts.sans} !important;
+    font-size: ${(p) => p.theme.fontSize.xs} !important;
+    font-weight: ${(p) => p.theme.fontWeight.semibold};
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: ${(p) => p.theme.letterSpacing.wide} !important;
     color: ${(p) => p.theme.colors.textMuted};
     padding: 10px 8px 4px;
 `;
 
-const BillList = styled.ul`
+const ItemList = styled.ul`
     list-style: none;
     display: grid;
     gap: 2px;
@@ -155,8 +148,8 @@ const BillList = styled.ul`
         align-items: center;
         gap: 12px;
         min-height: 56px;
-        padding: 4px 8px;
-        border-radius: 8px;
+        padding: 4px 6px;
+        border-radius: ${(p) => p.theme.radius.md};
     }
     .info {
         flex: 1;
@@ -164,18 +157,18 @@ const BillList = styled.ul`
         display: grid;
         grid-template-columns: minmax(0, 1fr);
     }
-    .when {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .info span:first-child {
-        font-weight: 500;
+    .info > span:first-child {
+        font-weight: ${(p) => p.theme.fontWeight.medium};
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     .when {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 6px;
+        margin-top: 2px;
         font-size: ${(p) => p.theme.fontSize.xs};
         color: ${(p) => p.theme.colors.textMuted};
     }
@@ -184,23 +177,27 @@ const BillList = styled.ul`
 const InsightList = styled.ul`
     list-style: none;
     display: grid;
-    gap: 8px;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+    ${(p) => p.theme.media.tablet} {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     li {
         display: flex;
         gap: 12px;
-        padding: 12px;
+        padding: 14px;
         border-radius: ${(p) => p.theme.radius.md};
         background: ${(p) => p.theme.colors.bgSurface};
+        border: 1px solid ${(p) => p.theme.colors.border};
+    }
+    .ic {
+        flex-shrink: 0;
+        margin-top: 2px;
     }
     strong {
         display: block;
         font-size: ${(p) => p.theme.fontSize.md};
         margin-bottom: 2px;
-    }
-    p {
-        font-size: ${(p) => p.theme.fontSize.sm};
-        color: ${(p) => p.theme.colors.textSecondary};
-        line-height: 1.5;
     }
 `;
 
@@ -212,38 +209,49 @@ const ChartBox = styled.div`
     }
 `;
 
+const BigValue = ({ children }) => <NumericDisplay>{children}</NumericDisplay>;
+
+// ---------------- indicadores principais ----------------
+
 function BalanceCard({ store, today }) {
     const [open, setOpen] = useState(false);
     const c = consolidatedBalance(store, today);
     const balances = balancesByAccount(store, today).filter((b) => !b.account.archived || b.balanceCents !== 0);
-    const cash = balances.filter((b) => !isCard(b.account));
+    const multiple = balances.length > 1;
     return (
-        <Card aria-labelledby="bal-title">
-            <Label id="bal-title">
-                <Wallet size={16} aria-hidden="true" /> Saldo em contas
-            </Label>
-            <Big>
-                <Amount cents={c.cashCents} private colored={false} weight={700} big />
-            </Big>
-            {c.cardDebtCents > 0 && (
-                <Muted>
-                    Cartões a pagar: <Amount cents={c.cardDebtCents} private colored={false} weight={500} /> · Patrimônio: <Amount cents={c.netWorthCents} private colored={false} weight={500} />
-                </Muted>
-            )}
-            {cash.length > 1 || balances.length > cash.length ? (
+        <StatCard
+            label="Saldo disponível"
+            icon={Wallet}
+            iconTone="primaryText"
+            accent="brand"
+            tooltip="Soma do saldo realizado das contas (exceto cartões): considera apenas lançamentos pagos até hoje."
+            value={
+                <BigValue>
+                    <Amount cents={c.cashCents} private colored={false} weight={700} big />
+                </BigValue>
+            }
+            hint={
+                c.cardDebtCents > 0 ? (
+                    <>
+                        Cartões a pagar <Amount cents={c.cardDebtCents} private colored={false} weight={500} /> · patrimônio <Amount cents={c.netWorthCents} private colored={false} weight={500} />
+                    </>
+                ) : (
+                    "Saldo realizado em todas as contas"
+                )
+            }
+        >
+            {multiple && (
                 <>
-                    <div style={{ marginTop: 8 }}>
-                        <ToggleLink type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-                            {open ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />} Ver por conta
-                        </ToggleLink>
-                    </div>
+                    <ToggleLink type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+                        {open ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />} Ver por conta
+                    </ToggleLink>
                     {open && (
                         <AccountList>
                             {balances.map(({ account, balanceCents }) => (
                                 <li key={account.id}>
                                     <span>
                                         <span className="dot" style={{ background: account.color }} aria-hidden="true" />
-                                        {account.name} <Muted>· {ACCOUNT_TYPES[account.type]}</Muted>
+                                        {account.name} <Text as="span" $variant="caption" $tone="muted">· {ACCOUNT_TYPES[account.type]}</Text>
                                     </span>
                                     <Amount cents={balanceCents} private sign={isCard(account)} colored={isCard(account)} />
                                 </li>
@@ -251,26 +259,29 @@ function BalanceCard({ store, today }) {
                         </AccountList>
                     )}
                 </>
-            ) : (
-                <Muted>Saldo realizado: considera apenas lançamentos pagos até hoje.</Muted>
             )}
-        </Card>
+        </StatCard>
     );
 }
 
 function MonthResultCard({ store, month }) {
     const cmp = monthComparison(store, month);
     const cur = cmp.current;
-    const pending = cur.pendingIncomeCents + cur.pendingExpenseCents;
+    const monthName = formatMonthLabel(month).split(" de ")[0].toLowerCase();
     return (
-        <Card aria-labelledby="res-title">
-            <Label id="res-title">
-                <TrendingUp size={16} aria-hidden="true" /> Resultado de {formatMonthLabel(month).split(" de ")[0].toLowerCase()}
-            </Label>
-            <Big>
-                <Amount cents={cur.resultCents} sign private weight={700} big />
-            </Big>
-            <Delta value={cmp.resultVariation} />
+        <StatCard
+            label={`Resultado de ${monthName}`}
+            icon={TrendingUp}
+            iconTone={cur.resultCents >= 0 ? "income" : "expense"}
+            accent={cur.resultCents >= 0 ? "income" : "expense"}
+            tooltip="Receitas menos despesas do mês (competência: data do lançamento, incluindo pendentes). Transferências não entram."
+            value={
+                <BigValue>
+                    <Amount cents={cur.resultCents} sign private weight={700} big />
+                </BigValue>
+            }
+            delta={<Delta value={cmp.resultVariation} />}
+        >
             <Split>
                 <div>
                     <dt>Receitas</dt>
@@ -287,12 +298,7 @@ function MonthResultCard({ store, month }) {
                     </dd>
                 </div>
             </Split>
-            {pending > 0 && (
-                <Muted style={{ display: "block", marginTop: 8 }}>
-                    Inclui lançamentos pendentes do mês.
-                </Muted>
-            )}
-        </Card>
+        </StatCard>
     );
 }
 
@@ -300,43 +306,51 @@ function ForecastCard({ store, today }) {
     const f = forecastEndOfMonth(store, today);
     const s = spendableToday(store, today);
     return (
-        <Card aria-labelledby="fc-title">
-            <Label id="fc-title">
-                <CalendarClock size={16} aria-hidden="true" /> Previsto até {formatDateBR(f.endDate, "dd/MM")}
-            </Label>
-            <Big>
-                <Amount cents={f.endBalanceCents} private colored={false} weight={700} big />
-            </Big>
-            <Muted>
-                Entradas previstas <Amount cents={f.inflowCents} type="income" private weight={500} /> · saídas <Amount cents={f.outflowCents} type="expense" private weight={500} />
-            </Muted>
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid", borderColor: "inherit" }}>
-                <Label>Pode gastar por dia até o fim do mês</Label>
-                <p style={{ fontSize: "1.25rem", fontWeight: 600, marginTop: 2 }}>
+        <StatCard
+            label={`Previsto até ${formatDateBR(f.endDate, "dd/MM")}`}
+            icon={Sparkles}
+            iconTone="accentText"
+            accent="accent"
+            tooltip="Projeção do dinheiro em contas até o fim do mês: saldo atual + pendentes + recorrências + faturas de cartão a vencer."
+            value={
+                <BigValue>
+                    <Amount cents={f.endBalanceCents} private colored={false} weight={700} big />
+                </BigValue>
+            }
+            hint={
+                <>
+                    Entradas <Amount cents={f.inflowCents} type="income" private weight={500} /> · saídas <Amount cents={f.outflowCents} type="expense" private weight={500} />
+                </>
+            }
+        >
+            <SubMetric>
+                <Text $variant="caption" $tone="secondary">
+                    Pode gastar por dia até o fim do mês
+                </Text>
+                <Text $variant="h2" as="p">
                     <Amount cents={s.dailyCents} private colored={false} />
-                </p>
-                <Muted>
-                    {s.shortfall
-                        ? "Os compromissos já lançados superam o saldo previsto."
-                        : `Saldo previsto${s.reserveCents ? " menos a reserva para metas" : ""}, dividido por ${s.daysLeft} dia(s).`}
-                </Muted>
-            </div>
-            {f.firstNegativeDate && (
-                <Row $gap={2} style={{ marginTop: 12 }}>
-                    <Badge $tone="expense">
-                        <AlertTriangle size={12} aria-hidden="true" /> Saldo negativo em {formatDateBR(f.firstNegativeDate, "dd/MM")}
-                    </Badge>
-                </Row>
-            )}
-        </Card>
+                </Text>
+                <Text $variant="caption" $tone="muted">
+                    {s.shortfall ? "Os compromissos já lançados superam o saldo previsto." : `Saldo previsto${s.reserveCents ? " menos a reserva para metas" : ""}, dividido por ${s.daysLeft} dia(s).`}
+                </Text>
+                {f.firstNegativeDate && (
+                    <Row $gap={2} style={{ marginTop: 6 }}>
+                        <Badge $tone="expense">
+                            <AlertTriangle size={12} aria-hidden="true" /> Saldo negativo em {formatDateBR(f.firstNegativeDate, "dd/MM")}
+                        </Badge>
+                    </Row>
+                )}
+            </SubMetric>
+        </StatCard>
     );
 }
 
+// ---------------- gráficos ----------------
+
 function CashflowCard({ store, month, onPickMonth }) {
-    const theme = useTheme();
-    const { money, hideBalances } = useFormat();
-    const end = month > currentMonthKey() ? month : month;
-    const data = monthlySeries(store, end, 6).map((r) => ({
+    const chart = useChartTheme();
+    const { money } = useFormat();
+    const data = monthlySeries(store, month, 6).map((r) => ({
         ...r,
         label: formatMonthLabel(r.month, "short"),
         income: r.incomeCents / 100,
@@ -346,60 +360,61 @@ function CashflowCard({ store, month, onPickMonth }) {
     const hasData = data.some((d) => d.incomeCents || d.expenseCents);
     return (
         <Card aria-labelledby="cf-title">
-            <CardHeader id="cf-title" title="Receitas × despesas" subtitle="Últimos 6 meses · linha = resultado" actions={<Button size="sm" variant="ghost" as={Link} to="/relatorios">Relatórios</Button>} />
+            <CardHeader
+                id="cf-title"
+                title="Evolução: receitas × despesas"
+                subtitle="Últimos 6 meses · clique em um mês para selecioná-lo"
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/relatorios/anual">
+                        Relatórios
+                    </Button>
+                }
+            />
             {hasData ? (
                 <>
                     <ChartBox aria-hidden="true">
                         <ResponsiveContainer>
                             <ComposedChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} onClick={(e) => e?.activePayload && onPickMonth(e.activePayload[0].payload.month)}>
-                                <CartesianGrid vertical={false} stroke={theme.colors.chartGrid} />
-                                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: theme.colors.chartAxis, fontSize: 12 }} />
-                                <YAxis
-                                    width={56}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tick={{ fill: theme.colors.chartAxis, fontSize: 12 }}
-                                    tickFormatter={(v) => (hideBalances ? "•••" : Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(v))}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: theme.colors.bgHover }}
-                                    contentStyle={{ background: theme.colors.bgElevated, border: `1px solid ${theme.colors.border}`, borderRadius: 10, color: theme.colors.text }}
-                                    formatter={(v, name) => [hideBalances ? "••••" : money(Math.round(v * 100)), name]}
-                                />
-                                <Bar dataKey="income" name="Receitas" fill={theme.colors.income} radius={[4, 4, 0, 0]} maxBarSize={28} cursor="pointer" />
-                                <Bar dataKey="expense" name="Despesas" fill={theme.colors.expense} radius={[4, 4, 0, 0]} maxBarSize={28} cursor="pointer" />
-                                <Line dataKey="result" name="Resultado" stroke={theme.colors.primaryText} strokeWidth={2} dot={{ r: 3 }} type="monotone" />
+                                {chart.grid}
+                                {chart.xAxis({ dataKey: "label" })}
+                                {chart.yAxis()}
+                                {chart.tooltip()}
+                                <Bar dataKey="income" name="Receitas" fill={chart.colors.income} radius={chart.barRadius} maxBarSize={26} cursor="pointer" />
+                                <Bar dataKey="expense" name="Despesas" fill={chart.colors.expense} radius={chart.barRadius} maxBarSize={26} cursor="pointer" />
+                                <Line dataKey="result" name="Resultado" stroke={chart.colors.primary} strokeWidth={2.5} dot={{ r: 3, strokeWidth: 0, fill: chart.colors.primary }} activeDot={{ r: 5 }} type="monotone" />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </ChartBox>
                     <div className="sr-only">
-                    <table>
-                        <caption>Receitas e despesas por mês</caption>
-                        <thead>
-                            <tr>
-                                <th>Mês</th>
-                                <th>Receitas</th>
-                                <th>Despesas</th>
-                                <th>Resultado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((d) => (
-                                <tr key={d.month}>
-                                    <td>{formatMonthLabel(d.month)}</td>
-                                    <td>{money(d.incomeCents)}</td>
-                                    <td>{money(d.expenseCents)}</td>
-                                    <td>{money(d.resultCents)}</td>
+                        <table>
+                            <caption>Receitas e despesas por mês</caption>
+                            <thead>
+                                <tr>
+                                    <th>Mês</th>
+                                    <th>Receitas</th>
+                                    <th>Despesas</th>
+                                    <th>Resultado</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {data.map((d) => (
+                                    <tr key={d.month}>
+                                        <td>{formatMonthLabel(d.month)}</td>
+                                        <td>{money(d.incomeCents)}</td>
+                                        <td>{money(d.expenseCents)}</td>
+                                        <td>{money(d.resultCents)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                    <Row $gap={4} $wrap style={{ marginTop: 8, fontSize: "0.8125rem" }} aria-hidden="true">
-                        <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: theme.colors.income, marginRight: 6 }} />Receitas</span>
-                        <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: theme.colors.expense, marginRight: 6 }} />Despesas</span>
-                        <span><span style={{ display: "inline-block", width: 12, height: 2, background: theme.colors.primaryText, marginRight: 6, verticalAlign: "middle" }} />Resultado</span>
-                    </Row>
+                    <ChartLegend
+                        items={[
+                            { label: "Receitas", color: chart.colors.income },
+                            { label: "Despesas", color: chart.colors.expense },
+                            { label: "Resultado", color: chart.colors.primary, line: true },
+                        ]}
+                    />
                 </>
             ) : (
                 <EmptyState compact icon={TrendingUp} title="Sem histórico ainda" description="O gráfico aparece quando houver lançamentos nos últimos meses." />
@@ -414,11 +429,11 @@ function CategoriesCard({ store, month }) {
     const max = rows[0]?.totalCents ?? 0;
     return (
         <Card aria-labelledby="cat-title">
-            <CardHeader id="cat-title" title="Gastos por categoria" subtitle={formatMonthLabel(month)} />
+            <CardHeader id="cat-title" title="Despesas por categoria" subtitle={formatMonthLabel(month)} />
             {rows.length ? (
                 <BarList>
                     {rows.slice(0, 7).map((r) => (
-                        <BarItem key={r.category.id ?? "none"}>
+                        <li key={r.category.id ?? "none"}>
                             <button
                                 type="button"
                                 onClick={() => navigate(`/movimentacoes?inicio=${monthStart(month)}&fim=${monthEnd(month)}&tipo=expense&cat=${r.category.id ?? "none"}`)}
@@ -434,7 +449,7 @@ function CategoriesCard({ store, month }) {
                                 </span>
                                 <span className="pct">{Math.round(r.pct)}%</span>
                             </button>
-                        </BarItem>
+                        </li>
                     ))}
                 </BarList>
             ) : (
@@ -444,15 +459,25 @@ function CategoriesCard({ store, month }) {
     );
 }
 
+// ---------------- listas ----------------
+
 function RecentCard({ store, today }) {
     const { openTransaction } = useUI();
     const cats = useMemo(() => indexById(store.categories), [store.categories]);
     const accs = useMemo(() => indexById(store.accounts), [store.accounts]);
-    const recent = sortTransactions(store.transactions.filter((t) => t.date <= today), "date-desc").slice(0, 8);
+    const recent = sortTransactions(store.transactions.filter((t) => t.date <= today), "date-desc").slice(0, 7);
     const groups = groupByDay(recent);
     return (
         <Card aria-labelledby="recent-title">
-            <CardHeader id="recent-title" title="Últimas movimentações" actions={<Button size="sm" variant="ghost" as={Link} to="/movimentacoes">Ver todas</Button>} />
+            <CardHeader
+                id="recent-title"
+                title="Últimas transações"
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/movimentacoes">
+                        Ver todas
+                    </Button>
+                }
+            />
             {groups.length ? (
                 groups.map((g) => (
                     <section key={g.date} aria-label={formatDayHeading(g.date, today)}>
@@ -477,26 +502,30 @@ function RecentCard({ store, today }) {
 
 function UpcomingCard({ store, today }) {
     const { setTransactionsStatus } = useFinanceActions();
-    const items = upcomingItems(store, today, 30).slice(0, 6);
-    const total = upcomingItems(store, today, 30).length;
-    const navigate = useNavigate();
+    const all = upcomingItems(store, today, 30).filter((i) => i.kind === "transaction");
+    const items = all.slice(0, 5);
     return (
         <Card aria-labelledby="up-title">
-            <CardHeader id="up-title" title="Próximos vencimentos" subtitle="Atrasados e próximos 30 dias" actions={<Button size="sm" variant="ghost" as={Link} to="/planejamento">Ver todos{total > 6 ? ` (${total})` : ""}</Button>} />
+            <CardHeader
+                id="up-title"
+                title="Contas a pagar e receber"
+                subtitle="Atrasadas e próximos 30 dias"
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/planejamento/vencimentos">
+                        Ver todas{all.length > 5 ? ` (${all.length})` : ""}
+                    </Button>
+                }
+            />
             {items.length ? (
-                <BillList>
+                <ItemList>
                     {items.map((it) => (
                         <li key={it.id}>
-                            {it.kind === "invoice" ? (
-                                <CategoryIcon category={{ icon: "Receipt", color: it.card.color }} size={36} />
-                            ) : (
-                                <CategoryIcon category={store.categories.find((c) => c.id === it.tx.categoryId) ?? { icon: "Tag", color: "#64748b" }} size={36} />
-                            )}
+                            <CategoryIcon category={store.categories.find((c) => c.id === it.tx.categoryId) ?? { icon: "Tag", color: NEUTRAL_COLOR }} size={34} />
                             <span className="info">
                                 <span>{it.description}</span>
                                 <span className="when">
                                     {it.overdue ? (
-                                        <Badge $tone="expense">Atrasado desde {formatDateBR(it.date, "dd/MM")}</Badge>
+                                        <Badge $tone="expense">Atrasada desde {formatDateBR(it.date, "dd/MM")}</Badge>
                                     ) : it.daysUntil === 0 ? (
                                         <Badge $tone="warning">Vence hoje</Badge>
                                     ) : (
@@ -505,20 +534,126 @@ function UpcomingCard({ store, today }) {
                                 </span>
                             </span>
                             <Amount cents={it.amountCents} type={it.direction === "in" ? "income" : it.direction === "out" ? "expense" : "transfer"} private />
-                            {it.kind === "transaction" ? (
-                                <Button size="sm" variant="ghost" icon={CheckCircle2} onClick={() => setTransactionsStatus([it.tx.id], "paid")} aria-label={`Marcar ${it.description} como ${it.direction === "in" ? "recebido" : "pago"}`}>
-                                    <span className="hide-mobile">{it.direction === "in" ? "Recebido" : "Pago"}</span>
-                                </Button>
-                            ) : (
-                                <Button size="sm" variant="ghost" onClick={() => navigate(`/planejamento/cartoes?cartao=${it.card.id}`)}>
-                                    Pagar
-                                </Button>
-                            )}
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                icon={CheckCircle2}
+                                onClick={() => setTransactionsStatus([it.tx.id], "paid")}
+                                aria-label={`Marcar ${it.description} como ${it.direction === "in" ? "recebido" : "pago"}`}
+                                title={it.direction === "in" ? "Marcar como recebido" : "Marcar como pago"}
+                            />
                         </li>
                     ))}
-                </BillList>
+                </ItemList>
             ) : (
-                <EmptyState compact icon={CalendarClock} title="Nada a vencer" description="Lançamentos pendentes, recorrências e faturas aparecem aqui." />
+                <EmptyState compact icon={CalendarClock} title="Nada a vencer" description="Lançamentos pendentes e recorrências aparecem aqui." />
+            )}
+        </Card>
+    );
+}
+
+function InvoicesCard({ store, today }) {
+    const navigate = useNavigate();
+    const cards = store.accounts.filter((a) => isCard(a) && !a.archived);
+    const rows = cards
+        .map((c) => {
+            const s = cardSummary(store, c, today);
+            const pending = s.invoices.filter((i) => i.remainingCents > 0).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+            const next = pending[0] ?? s.currentInvoice;
+            return { card: c, summary: s, invoice: next };
+        })
+        .sort((a, b) => a.invoice.dueDate.localeCompare(b.invoice.dueDate));
+    return (
+        <Card aria-labelledby="inv-title">
+            <CardHeader
+                id="inv-title"
+                title="Próximas faturas"
+                subtitle="Cartões de crédito"
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/planejamento/cartoes">
+                        Cartões
+                    </Button>
+                }
+            />
+            {rows.length ? (
+                <ItemList>
+                    {rows.map(({ card, summary, invoice }) => {
+                        const overdue = invoice.status === "overdue";
+                        return (
+                            <li key={card.id}>
+                                <CategoryIcon category={{ icon: "Receipt", color: card.color }} size={34} />
+                                <span className="info">
+                                    <span>{card.name}</span>
+                                    <span className="when">
+                                        {overdue ? <Badge $tone="expense">Vencida em {formatDateBR(invoice.dueDate, "dd/MM")}</Badge> : <span>{`${INVOICE_STATUS_LABEL[invoice.status]} · vence ${formatDateBR(invoice.dueDate, "dd/MM")}`}</span>}
+                                        <span>
+                                            Limite livre <Amount cents={summary.availableCents} private colored={false} weight={400} />
+                                        </span>
+                                    </span>
+                                </span>
+                                <Amount cents={invoice.remainingCents || invoice.totalCents} private colored={false} />
+                                {invoice.remainingCents > 0 && (
+                                    <Button size="sm" variant="ghost" onClick={() => navigate(`/planejamento/cartoes?cartao=${card.id}&fatura=${invoice.month}`)}>
+                                        Pagar
+                                    </Button>
+                                )}
+                            </li>
+                        );
+                    })}
+                </ItemList>
+            ) : (
+                <EmptyState compact icon={CreditCard} title="Nenhum cartão" description="Cadastre cartões para acompanhar faturas, limite e parcelas.">
+                    <Button size="sm" as={Link} to="/planejamento/cartoes" icon={Receipt}>
+                        Adicionar cartão
+                    </Button>
+                </EmptyState>
+            )}
+        </Card>
+    );
+}
+
+function GoalsCard({ store, today }) {
+    const goals = store.goals.filter((g) => !g.archived).slice(0, 3);
+    return (
+        <Card aria-labelledby="goals-title">
+            <CardHeader
+                id="goals-title"
+                title="Metas financeiras"
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/planejamento/metas">
+                        Gerenciar
+                    </Button>
+                }
+            />
+            {goals.length ? (
+                <Stack $gap={4}>
+                    {goals.map((g) => {
+                        const p = goalProgress(g, today);
+                        return (
+                            <div key={g.id}>
+                                <Row $justify="space-between" $gap={2} style={{ marginBottom: 6 }}>
+                                    <Text as="span" $variant="body" style={{ fontWeight: 500, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                        {g.name}
+                                    </Text>
+                                    <Text as="span" $variant="caption" $tone="secondary" $numeric>
+                                        {Math.round(p.pct)}%
+                                    </Text>
+                                </Row>
+                                <Progress value={p.savedCents} max={g.targetCents} color={g.color} label={`${g.name}: ${Math.round(p.pct)}% concluída`} />
+                                <Text $variant="caption" $tone="muted" style={{ marginTop: 6 }}>
+                                    <Amount cents={p.savedCents} private colored={false} weight={500} /> de <Amount cents={g.targetCents} private colored={false} weight={400} />
+                                    {p.completed ? " · concluída" : p.suggestedMonthlyCents ? <> · aporte sugerido <Amount cents={p.suggestedMonthlyCents} private colored={false} weight={400} />/mês</> : ""}
+                                </Text>
+                            </div>
+                        );
+                    })}
+                </Stack>
+            ) : (
+                <EmptyState compact icon={Flag} title="Nenhuma meta" description="Defina objetivos como reserva de emergência ou viagem e acompanhe o progresso.">
+                    <Button size="sm" as={Link} to="/planejamento/metas">
+                        Criar meta
+                    </Button>
+                </EmptyState>
             )}
         </Card>
     );
@@ -528,20 +663,31 @@ function BudgetsCard({ store, month }) {
     const rows = budgetStatus(store, month).slice(0, 5);
     return (
         <Card aria-labelledby="bud-title">
-            <CardHeader id="bud-title" title="Orçamentos" subtitle={formatMonthLabel(month)} actions={<Button size="sm" variant="ghost" as={Link} to="/planejamento/orcamentos">Gerenciar</Button>} />
+            <CardHeader
+                id="bud-title"
+                title="Orçamentos"
+                subtitle={formatMonthLabel(month)}
+                actions={
+                    <Button size="sm" variant="ghost" as={Link} to="/planejamento/orcamentos">
+                        Gerenciar
+                    </Button>
+                }
+            />
             {rows.length ? (
                 <Stack $gap={4}>
                     {rows.map((r) => (
                         <div key={r.budget.id}>
-                            <Row $justify="space-between" style={{ marginBottom: 6, fontSize: "0.875rem" }}>
+                            <Row $justify="space-between" $wrap $gap={2} style={{ marginBottom: 6 }}>
                                 <Row $gap={2}>
                                     <CategoryIcon category={r.category} size={24} />
-                                    <span>{r.category.name}</span>
-                                    {r.level !== "ok" && <Badge $tone={levelTone(r.level)}>{r.level === "exceeded" ? "Estourado" : "Atenção"}</Badge>}
+                                    <Text as="span" $variant="caption" style={{ fontWeight: 500 }} $tone="default">
+                                        {r.category.name}
+                                    </Text>
+                                    {r.level !== "ok" && <Badge $tone={levelTone(r.level)}>{r.level === "exceeded" ? "Estourado" : "80% atingido"}</Badge>}
                                 </Row>
-                                <span>
-                                    <Amount cents={r.spentCents} private colored={false} weight={500} /> <Muted>de <Amount cents={r.limitCents} private colored={false} weight={400} /></Muted>
-                                </span>
+                                <Text as="span" $variant="caption" $tone="secondary">
+                                    <Amount cents={r.spentCents} private colored={false} weight={500} /> de <Amount cents={r.limitCents} private colored={false} weight={400} />
+                                </Text>
                             </Row>
                             <Progress value={r.spentCents} max={r.limitCents} tone={levelTone(r.level)} label={`${r.category.name}: ${Math.round(r.pct)}% do orçamento`} />
                         </div>
@@ -561,22 +707,27 @@ function BudgetsCard({ store, month }) {
 function InsightsCard({ store, month, today }) {
     const { locale, currency } = store.settings;
     const list = generateInsights(store, month, today, { locale, currency });
-    const theme = useTheme();
     const iconFor = (tone) => (tone === "warning" ? AlertTriangle : tone === "good" ? CheckCircle2 : Info);
-    const colorFor = (tone) => (tone === "warning" ? theme.colors.warning : tone === "good" ? theme.colors.income : theme.colors.info);
+    const toneFor = (tone) => (tone === "warning" ? "warning" : tone === "good" ? "income" : "accent");
     return (
         <Card aria-labelledby="ins-title">
-            <CardHeader id="ins-title" title="Insights" subtitle="Calculados a partir dos seus lançamentos" />
+            <CardHeader id="ins-title" title="Insights" subtitle="Análises automáticas calculadas a partir dos seus lançamentos" actions={<Badge $tone="accent">Inteligência</Badge>} />
             {list.length ? (
                 <InsightList>
                     {list.slice(0, 4).map((i) => {
                         const Icon = iconFor(i.tone);
                         return (
                             <li key={i.id}>
-                                <Icon size={18} color={colorFor(i.tone)} aria-hidden="true" style={{ flexShrink: 0, marginTop: 2 }} />
+                                <span className="ic">
+                                    <Badge $tone={toneFor(i.tone)} aria-hidden="true" style={{ padding: 6 }}>
+                                        <Icon size={14} />
+                                    </Badge>
+                                </span>
                                 <div>
                                     <strong>{i.title}</strong>
-                                    <p>{i.detail}</p>
+                                    <Text $variant="caption" $tone="secondary">
+                                        {i.detail}
+                                    </Text>
                                 </div>
                             </li>
                         );
@@ -598,8 +749,8 @@ export default function DashboardPage() {
     return (
         <>
             <PageHeader
-                title="Início"
-                description={isEmpty ? "Bem-vindo! Comece registrando sua primeira movimentação." : `Visão geral de ${formatMonthLabel(month).toLowerCase()}`}
+                title="Dashboard"
+                description={isEmpty ? "Bem-vindo à VELDORA. Comece registrando sua primeira movimentação." : `Visão geral de ${formatMonthLabel(month).toLowerCase()}`}
                 actions={
                     isEmpty ? null : (
                         <span className="only-mobile">
@@ -617,7 +768,7 @@ export default function DashboardPage() {
                         <Button variant="primary" icon={Plus} onClick={() => openTransaction()}>
                             Nova transação
                         </Button>
-                        <Button as={Link} to="/configuracoes/dados" icon={Upload}>
+                        <Button as={Link} to="/configuracoes/dados#importar" icon={Upload}>
                             Importar dados
                         </Button>
                     </EmptyState>
@@ -645,10 +796,16 @@ export default function DashboardPage() {
                 <Span $desktop={6}>
                     <RecentCard store={store} today={today} />
                 </Span>
-                <Span $desktop={6}>
+                <Span $desktop={4}>
+                    <InvoicesCard store={store} today={today} />
+                </Span>
+                <Span $desktop={4}>
+                    <GoalsCard store={store} today={today} />
+                </Span>
+                <Span $desktop={4}>
                     <BudgetsCard store={store} month={month} />
                 </Span>
-                <Span $desktop={6}>
+                <Span $desktop={12}>
                     <InsightsCard store={store} month={month} today={today} />
                 </Span>
             </Grid>

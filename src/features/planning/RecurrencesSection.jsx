@@ -1,7 +1,8 @@
+import { NEUTRAL_COLOR } from "../../design/tokens";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Repeat, Plus, Pencil, StopCircle, Trash2, Sparkles, Check, X } from "lucide-react";
-import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Menu, Modal, ModalBody, ModalFooter, Field, Input, Select, MoneyInput, DatePicker, SegmentedControl, FormGrid, Muted, useConfirm } from "../../components/ui";
+import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Menu, Modal, ModalBody, ModalFooter, Field, Input, Select, MoneyInput, DatePicker, SegmentedControl, FormGrid, Muted, useConfirm, Subheading } from "../../components/ui";
 import { Stack } from "../../components/layout/Page";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { describeFrequency, monthlyEquivalent, occurrenceDates, validateRecurrenceInput } from "../../domain/recurrence";
@@ -143,7 +144,7 @@ export function RecurrencesSection() {
         const next = r.active ? nextDate(r) : null;
         return (
             <li key={r.id}>
-                <CategoryIcon category={cat ?? { icon: "Repeat", color: "#64748b" }} />
+                <CategoryIcon category={cat ?? { icon: "Repeat", color: NEUTRAL_COLOR }} />
                 <span className="grow">
                     <span>{r.description}</span>
                     <Muted>
@@ -241,9 +242,9 @@ export function RecurrencesSection() {
                         <ItemList>{active.map(row)}</ItemList>
                         {ended.length > 0 && (
                             <>
-                                <h3 style={{ fontSize: "0.8125rem", margin: "16px 8px 4px" }}>
+                                <Subheading>
                                     Encerradas <Badge>{ended.length}</Badge>
-                                </h3>
+                                </Subheading>
                                 <ItemList>{ended.map(row)}</ItemList>
                             </>
                         )}

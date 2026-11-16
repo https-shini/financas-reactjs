@@ -12,13 +12,33 @@ const FieldWrap = styled.div`
 
 const Label = styled.label`
     font-size: ${(p) => p.theme.fontSize.sm};
-    font-weight: 500;
+    font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textSecondary};
 `;
 
 const Hint = styled.p`
+    display: flex;
+    gap: 6px;
+    align-items: center;
     font-size: ${(p) => p.theme.fontSize.xs};
     color: ${(p) => (p.$error ? p.theme.colors.expense : p.theme.colors.textMuted)};
+    ${(p) =>
+        p.$error &&
+        css`
+            &::before {
+                content: "!";
+                display: inline-grid;
+                place-items: center;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                font-size: 10px;
+                font-weight: 800;
+                color: ${p.theme.colors.bgElevated};
+                background: ${p.theme.colors.expense};
+                flex-shrink: 0;
+            }
+        `}
 `;
 
 /**
@@ -53,25 +73,23 @@ export const controlStyles = css`
     background: ${(p) => p.theme.colors.bgElevated};
     color: ${(p) => p.theme.colors.text};
     font-size: 16px; /* evita zoom automático no iOS */
-    transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast};
+    transition: border-color ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, box-shadow ${(p) => p.theme.motion.fast} ${(p) => p.theme.motion.easing}, background ${(p) => p.theme.motion.fast};
     &::placeholder {
         color: ${(p) => p.theme.colors.textMuted};
     }
     &:hover:not(:disabled) {
         border-color: ${(p) => p.theme.colors.borderStrong};
     }
-    &:focus {
-        outline: none;
-        border-color: ${(p) => p.theme.colors.primary};
-        box-shadow: 0 0 0 3px ${(p) => p.theme.colors.primarySoft};
-    }
+    &:focus,
     &:focus-visible {
-        outline: 2px solid ${(p) => p.theme.colors.focus};
-        outline-offset: 1px;
+        outline: none;
+        border-color: ${(p) => (p["aria-invalid"] ? p.theme.colors.expense : p.theme.colors.brand)};
+        box-shadow: ${(p) => p.theme.shadows.focus};
     }
     &:disabled {
-        opacity: 0.6;
+        opacity: ${(p) => p.theme.opacity.disabled};
         cursor: not-allowed;
+        background: ${(p) => p.theme.colors.bgSurface};
     }
     ${(p) => p.theme.media.desktop} {
         font-size: ${(p) => p.theme.fontSize.md};
@@ -216,6 +234,10 @@ const SegButton = styled.button`
     background: ${(p) => (p["aria-checked"] ? p.theme.colors.bgElevated : "transparent")};
     box-shadow: ${(p) => (p["aria-checked"] ? p.theme.shadows.sm : "none")};
     border: 1px solid ${(p) => (p["aria-checked"] ? p.theme.colors.border : "transparent")};
+    transition: background ${(p) => p.theme.motion.fast}, color ${(p) => p.theme.motion.fast};
+    &:hover {
+        color: ${(p) => p.theme.colors.text};
+    }
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -309,7 +331,7 @@ export function Switch({ checked, onChange, label, disabled, description }) {
             <span>
                 {label}
                 {description && (
-                    <span style={{ display: "block", fontSize: "0.8125rem", opacity: 0.75 }}>{description}</span>
+                    <span style={{ display: "block", fontSize: "var(--v-font-size-sm)", color: "var(--v-color-text-secondary)" }}>{description}</span>
                 )}
             </span>
         </SwitchLabel>
@@ -321,7 +343,56 @@ export const Checkbox = styled.input.attrs({ type: "checkbox" })`
     height: 18px;
     accent-color: ${(p) => p.theme.colors.primary};
     cursor: pointer;
+    &:disabled {
+        cursor: not-allowed;
+        opacity: ${(p) => p.theme.opacity.disabled};
+    }
 `;
+
+export const Radio = styled.input.attrs({ type: "radio" })`
+    width: 18px;
+    height: 18px;
+    accent-color: ${(p) => p.theme.colors.primary};
+    cursor: pointer;
+    &:disabled {
+        cursor: not-allowed;
+        opacity: ${(p) => p.theme.opacity.disabled};
+    }
+`;
+
+const RadioFieldset = styled.fieldset`
+    border: 0;
+    display: grid;
+    gap: 4px;
+    legend {
+        font-size: ${(p) => p.theme.fontSize.sm};
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+        color: ${(p) => p.theme.colors.textSecondary};
+        margin-bottom: 6px;
+    }
+    label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 40px;
+        cursor: pointer;
+    }
+`;
+
+/** Grupo de opções nativas (teclado e leitor de tela funcionam sem código extra). */
+export function RadioGroup({ legend, name, options, value, onChange }) {
+    return (
+        <RadioFieldset>
+            <legend>{legend}</legend>
+            {options.map((o) => (
+                <label key={o.value}>
+                    <Radio name={name} value={o.value} checked={value === o.value} disabled={o.disabled} onChange={() => onChange(o.value)} />
+                    {o.label}
+                </label>
+            ))}
+        </RadioFieldset>
+    );
+}
 
 export const FormGrid = styled.div`
     display: grid;

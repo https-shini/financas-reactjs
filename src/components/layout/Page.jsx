@@ -1,5 +1,8 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { Breadcrumbs } from "../ui/Feedback";
+import { navContext } from "../../app/navigation";
 
 const Head = styled.div`
     display: flex;
@@ -9,14 +12,19 @@ const Head = styled.div`
     flex-wrap: wrap;
     margin-bottom: ${(p) => p.theme.space(5)};
     h1 {
+        font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize["2xl"]};
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.2;
+        font-weight: ${(p) => p.theme.fontWeight.bold};
+        letter-spacing: ${(p) => p.theme.letterSpacing.tight};
+        line-height: ${(p) => p.theme.lineHeight.tight};
+        margin-top: 6px;
+        ${(p) => p.theme.media.desktop} {
+            font-size: 1.75rem;
+        }
     }
-    p {
+    .desc {
         color: ${(p) => p.theme.colors.textSecondary};
-        margin-top: 4px;
+        margin-top: 6px;
         font-size: ${(p) => p.theme.fontSize.md};
     }
     .actions {
@@ -26,16 +34,20 @@ const Head = styled.div`
     }
 `;
 
-/** Cabeçalho de página com título (h1), descrição e ações. Atualiza o título da aba. */
-export function PageHeader({ title, description, actions, docTitle }) {
+/** Cabeçalho de página: trilha (breadcrumbs) automática, título (h1), descrição e ações. Atualiza o título da aba. */
+export function PageHeader({ title, description, actions, docTitle, breadcrumbs = true }) {
+    const location = useLocation();
+    const ctx = navContext(location);
     useEffect(() => {
-        document.title = `${docTitle ?? title} · Finanças`;
+        document.title = `${docTitle ?? title} · VELDORA`;
     }, [title, docTitle]);
+    const crumbs = breadcrumbs && ctx && ctx.item.id !== "dashboard" ? [{ label: "Dashboard", to: "/" }, { label: ctx.group.label }, { label: ctx.item.label }] : null;
     return (
         <Head>
             <div>
+                {crumbs && <Breadcrumbs items={crumbs} />}
                 <h1>{title}</h1>
-                {description && <p>{description}</p>}
+                {description && <p className="desc">{description}</p>}
             </div>
             {actions && <div className="actions">{actions}</div>}
         </Head>

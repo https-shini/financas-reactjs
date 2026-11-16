@@ -6,6 +6,7 @@ export const Card = styled.section`
     border-radius: ${(p) => p.theme.radius.lg};
     box-shadow: ${(p) => p.theme.shadows.sm};
     padding: ${(p) => (p.$flush ? "0" : p.theme.space(5))};
+    transition: border-color ${(p) => p.theme.motion.base} ${(p) => p.theme.motion.easing}, background ${(p) => p.theme.motion.base};
     min-width: 0;
     ${(p) => p.theme.media.mobile} {
         padding: ${(p) => (p.$flush ? "0" : p.theme.space(4))};
@@ -22,9 +23,11 @@ const HeaderWrap = styled.header`
     min-height: 32px;
     h2,
     h3 {
+        font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize.md};
-        font-weight: 600;
-        line-height: 1.3;
+        font-weight: ${(p) => p.theme.fontWeight.bold};
+        letter-spacing: ${(p) => p.theme.letterSpacing.snug};
+        line-height: ${(p) => p.theme.lineHeight.snug};
     }
     p {
         color: ${(p) => p.theme.colors.textMuted};

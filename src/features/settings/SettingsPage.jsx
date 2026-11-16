@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Navigate, Route, Routes, Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, Route, Routes, Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import {
@@ -8,8 +8,7 @@ import {
 } from "lucide-react";
 import {
     Card, CardHeader, Button, Menu, Modal, ModalBody, ModalFooter, Field, Input, Select, MoneyInput, SegmentedControl, Switch,
-    CategoryIcon, Badge, Amount, Muted, RouteTabs, useConfirm, CATEGORY_ICON_COMPONENTS, Divider,
-} from "../../components/ui";
+    CategoryIcon, Badge, Amount, Muted, RouteTabs, useConfirm, CATEGORY_ICON_COMPONENTS, Divider, FieldLabel } from "../../components/ui";
 import { PageHeader, Stack, Row } from "../../components/layout/Page";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { ACCOUNT_TYPES, CATEGORY_COLORS, CATEGORY_ICONS, createEmptyStore, SCHEMA_VERSION } from "../../domain/defaults";
@@ -123,9 +122,9 @@ function AppearanceSection() {
             <CardHeader id="ap-title" title="Aparência" subtitle="Tema e privacidade dos valores" />
             <Stack $gap={5}>
                 <div>
-                    <p id="theme-label" style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>
+                    <FieldLabel id="theme-label">
                         Tema
-                    </p>
+                    </FieldLabel>
                     <SegmentedControl
                         label="Tema"
                         value={store.settings.theme}
@@ -243,7 +242,7 @@ function CategoryDialog({ open, onClose, category }) {
                         </Field>
                     </Row>
                     <div>
-                        <p style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>Usada em</p>
+                        <FieldLabel>Usada em</FieldLabel>
                         <SegmentedControl
                             label="Tipo de categoria"
                             value={kind}
@@ -256,9 +255,9 @@ function CategoryDialog({ open, onClose, category }) {
                         />
                     </div>
                     <div>
-                        <p id="icon-l" style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>
+                        <FieldLabel id="icon-l">
                             Ícone
-                        </p>
+                        </FieldLabel>
                         <IconGrid role="radiogroup" aria-labelledby="icon-l">
                             {CATEGORY_ICONS.map((n) => {
                                 const I = CATEGORY_ICON_COMPONENTS[n];
@@ -271,9 +270,9 @@ function CategoryDialog({ open, onClose, category }) {
                         </IconGrid>
                     </div>
                     <div>
-                        <p id="color-l" style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>
+                        <FieldLabel id="color-l">
                             Cor
-                        </p>
+                        </FieldLabel>
                         <Swatches role="radiogroup" aria-labelledby="color-l">
                             {CATEGORY_COLORS.map((c) => (
                                 <button key={c} type="button" role="radio" aria-checked={color === c} aria-label={`Cor ${c}`} style={{ background: c }} onClick={() => setColor(c)} />
@@ -471,9 +470,9 @@ export function AccountDialog({ open, onClose, account }) {
                     </Field>
                     <Switch checked={negative} onChange={setNegative} label="Saldo inicial negativo" />
                     <div>
-                        <p id="acc-color" style={{ fontSize: "0.8125rem", fontWeight: 500, marginBottom: 6 }}>
+                        <FieldLabel id="acc-color">
                             Cor
-                        </p>
+                        </FieldLabel>
                         <Swatches role="radiogroup" aria-labelledby="acc-color">
                             {CATEGORY_COLORS.map((c) => (
                                 <button key={c} type="button" role="radio" aria-checked={color === c} aria-label={`Cor ${c}`} style={{ background: c }} onClick={() => setColor(c)} />
@@ -612,6 +611,17 @@ function DataSection() {
     const last = store.settings.lastBackupAt;
     const daysSince = last ? diffDays(today, todayISO(new Date(last))) : null;
     const all = [...store.transactions].sort((a, b) => b.date.localeCompare(a.date));
+    const { hash } = useLocation();
+
+    // Atalhos da navegação (#backup, #importar) levam direto à seção correspondente.
+    useEffect(() => {
+        if (!hash) return;
+        const el = document.getElementById(hash.slice(1));
+        if (el) {
+            el.scrollIntoView({ block: "start", behavior: "smooth" });
+            el.querySelector("button")?.focus({ preventScroll: true });
+        }
+    }, [hash]);
 
     const doBackup = () => {
         downloadBackup(store);
@@ -665,7 +675,7 @@ function DataSection() {
 
     return (
         <Stack $gap={4}>
-            <Card aria-labelledby="bk-title">
+            <Card id="backup" aria-labelledby="bk-title" style={{ scrollMarginTop: 88 }}>
                 <CardHeader id="bk-title" title="Backup e restauração" subtitle="O backup em JSON contém tudo: transações, contas, cartões, categorias, orçamentos, metas, recorrências e preferências." />
                 <Row $wrap $gap={2}>
                     <Button variant="primary" icon={Download} onClick={doBackup}>
@@ -688,7 +698,7 @@ function DataSection() {
                 {locals.length > 0 && (
                     <>
                         <Divider />
-                        <h3 style={{ fontSize: "0.9375rem", marginBottom: 4 }}>Cópias de segurança automáticas</h3>
+                        <h3 style={{ fontSize: "var(--v-font-size-md)", marginBottom: 4 }}>Cópias de segurança automáticas</h3>
                         <Muted>Criadas antes de migrações, restaurações, importações e exclusões em massa (últimas 3).</Muted>
                         <List>
                             {locals.map((b) => (
@@ -708,7 +718,7 @@ function DataSection() {
                 )}
             </Card>
 
-            <Card aria-labelledby="imp-title">
+            <Card id="importar" aria-labelledby="imp-title" style={{ scrollMarginTop: 88 }}>
                 <CardHeader id="imp-title" title="Importar" subtitle="CSV, XLSX ou OFX do seu banco, com prévia, detecção de duplicados e linhas inválidas." />
                 <Row $wrap $gap={2}>
                     <Button variant="primary" icon={Upload} onClick={() => setImportOpen(true)}>
@@ -773,9 +783,12 @@ function AboutSection() {
     return (
         <Stack $gap={4}>
             <Card aria-labelledby="ab-title">
-                <CardHeader id="ab-title" title="Sobre o Finanças" />
+                <CardHeader id="ab-title" title="Sobre o VELDORA" />
                 <Stack $gap={3}>
-                    <p>Aplicativo de controle financeiro pessoal local-first: funciona sem internet e não envia seus dados a nenhum servidor.</p>
+                    <p>VELDORA — Smart Financial Platform. Controle financeiro pessoal local-first: funciona sem internet e não envia seus dados a nenhum servidor.</p>
+                    <p>
+                        <Link to="/design-system">Ver o Design System</Link> (componentes, cores e tipografia da interface).
+                    </p>
                     <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "6px 16px" }}>
                         <dt>Versão</dt>
                         <dd>2.0.0</dd>
@@ -790,7 +803,7 @@ function AboutSection() {
                     </dl>
                     {migrations.length > 0 && (
                         <>
-                            <h3 style={{ fontSize: "0.9375rem" }}>Histórico de migrações</h3>
+                            <h3 style={{ fontSize: "var(--v-font-size-md)" }}>Histórico de migrações</h3>
                             <ul style={{ paddingLeft: 20, lineHeight: 1.7 }}>
                                 {migrations.map((m, i) => (
                                     <li key={i}>
@@ -800,7 +813,7 @@ function AboutSection() {
                             </ul>
                         </>
                     )}
-                    <h3 style={{ fontSize: "0.9375rem" }}>Assistente inteligente</h3>
+                    <h3 style={{ fontSize: "var(--v-font-size-md)" }}>Assistente inteligente</h3>
                     <p>
                         Os insights atuais são calculados por regras, no seu navegador. Uma futura integração com IA exigirá um servidor seguro e o seu consentimento explícito antes de qualquer envio de dados
                         financeiros. Hoje nenhum dado sai do dispositivo.

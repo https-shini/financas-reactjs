@@ -14,6 +14,8 @@ export default defineConfig({
         outDir: "build",
         sourcemap: false,
         chunkSizeWarningLimit: 900,
+        // Fontes nunca viram data: URI — a CSP de produção só permite font-src 'self'.
+        assetsInlineLimit: (file) => (/\.(woff2?|ttf|otf)$/.test(file) ? false : undefined),
     },
     server: { port: 3000 },
     preview: { port: 3000, headers: productionHeaders },
