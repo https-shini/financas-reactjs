@@ -41,6 +41,12 @@ function spentByCategory(store, month) {
     return map;
 }
 
+/** Percentual usado. Limite zero com gasto conta como 100% (estourado), evitando divisão por zero. */
+export function usagePct(spent, limit) {
+    if (limit > 0) return percentOf(spent, limit);
+    return spent > 0 ? 100 : 0;
+}
+
 export function levelOf(pct) {
     if (pct >= 100) return "exceeded";
     if (pct >= WARNING_PCT) return "warning";
@@ -55,7 +61,7 @@ export function budgetStatus(store, month) {
         .map((budget) => {
             const limit = limitFor(budget, month);
             const s = spent.get(budget.categoryId) ?? 0;
-            const pct = percentOf(s, limit);
+            const pct = usagePct(s, limit);
             return {
                 budget,
                 category: cats.get(budget.categoryId),
@@ -73,7 +79,7 @@ export function budgetStatus(store, month) {
 export function budgetTotals(rows) {
     const limit = rows.reduce((s, r) => s + r.limitCents, 0);
     const spent = rows.reduce((s, r) => s + r.spentCents, 0);
-    return { limitCents: limit, spentCents: spent, remainingCents: limit - spent, pct: percentOf(spent, limit) };
+    return { limitCents: limit, spentCents: spent, remainingCents: limit - spent, pct: usagePct(spent, limit) };
 }
 
 /** Histórico mensal de um orçamento. */
@@ -81,7 +87,7 @@ export function budgetHistory(store, budget, endMonth, count = 6) {
     return lastMonths(endMonth, count).map((month) => {
         const spent = spentByCategory(store, month).get(budget.categoryId) ?? 0;
         const limit = limitFor(budget, month);
-        const pct = percentOf(spent, limit);
+        const pct = usagePct(spent, limit);
         return { month, limitCents: limit, spentCents: spent, pct, level: levelOf(pct) };
     });
 }

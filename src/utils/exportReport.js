@@ -1,5 +1,6 @@
 // Exportação de relatórios (tabelas já formatadas) para PDF e CSV.
 import { downloadText } from "../storage/backup";
+import { toCsv } from "./csv";
 
 /** sections: [{ heading, head: [...], body: [[...]] }] */
 export async function exportReportPDF({ title, subtitle, sections, filename }) {
@@ -35,16 +36,7 @@ export async function exportReportPDF({ title, subtitle, sections, filename }) {
 }
 
 export function exportReportCSV({ sections, filename }) {
-    const esc = (v) => {
-        const s = String(v ?? "");
-        return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
-    const lines = [];
-    for (const s of sections) {
-        lines.push(esc(s.heading));
-        lines.push(s.head.map(esc).join(";"));
-        for (const row of s.body) lines.push(row.map(esc).join(";"));
-        lines.push("");
-    }
-    downloadText(`\ufeff${lines.join("\r\n")}`, filename, "text/csv");
+    const rows = [];
+    for (const s of sections) rows.push([s.heading], s.head, ...s.body, []);
+    downloadText(toCsv(rows), filename, "text/csv");
 }

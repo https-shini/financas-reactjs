@@ -119,7 +119,8 @@ function ContributionDialog({ goal, onClose }) {
     const [note, setNote] = useState("");
     const [withdraw, setWithdraw] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const error = amount <= 0 ? "Informe um valor." : undefined;
+    const saved = goal.contributions.reduce((acc, c) => acc + c.amountCents, 0);
+    const error = amount <= 0 ? "Informe um valor." : withdraw && amount > saved ? "O resgate não pode ser maior que o valor acumulado." : undefined;
     const save = (e) => {
         e.preventDefault();
         setSubmitted(true);

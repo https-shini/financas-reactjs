@@ -62,7 +62,7 @@ export function goalProgress(goal, today) {
     return {
         savedCents: saved,
         remainingCents: remaining,
-        pct: Math.min(100, percentOf(saved, goal.targetCents)),
+        pct: Math.max(0, Math.min(100, percentOf(saved, goal.targetCents))),
         completed: saved >= goal.targetCents,
         monthsLeft,
         suggestedMonthlyCents,

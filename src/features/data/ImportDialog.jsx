@@ -9,6 +9,7 @@ import { formatDateBR } from "../../domain/dates";
 import { formatMoney } from "../../domain/money";
 import { isCard } from "../../domain/cards";
 import { downloadText } from "../../storage/backup";
+import { toCsv } from "../../utils/csv";
 
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
@@ -170,8 +171,8 @@ export function ImportDialog({ open, onClose }) {
     };
 
     const downloadInvalid = () => {
-        const lines = ["Linha;Motivo;Conteúdo", ...invalid.map((r) => `${r.line};"${r.errors.join(", ")}";"${r.raw.join(" | ").replace(/"/g, '""')}"`)];
-        downloadText(`\ufeff${lines.join("\r\n")}`, "linhas-nao-importadas.csv", "text/csv");
+        const rows = [["Linha", "Motivo", "Conteúdo"], ...invalid.map((r) => [String(r.line), r.errors.join(", "), r.raw.join(" | ")])];
+        downloadText(toCsv(rows), "linhas-nao-importadas.csv", "text/csv");
     };
 
     return (
