@@ -1,204 +1,248 @@
-<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24&height=120&section=header"/>
-
-<h1 align="center">💰 Finanças</h1>
+<h1 align="center">Finanças</h1>
 
 <p align="center">
-  Controle financeiro pessoal <b>local-first</b>: receitas, despesas, contas, cartões, parcelas, recorrências, orçamentos, metas, relatórios e projeções — no seu navegador, sem servidor.
+  Controle financeiro pessoal <strong>local-first</strong>: receitas, despesas, contas, cartões, parcelas, recorrências,<br>
+  orçamentos, metas, relatórios e projeções — tudo no navegador, sem servidor e sem cadastro.
 </p>
 
 <div align="center">
 
-  [![Demo](https://img.shields.io/badge/🌐%20Acessar%20Projeto-4f46e5?style=for-the-badge)](https://financas.gcruz.dev.br)
-  [![Código](https://img.shields.io/badge/Ver%20Código-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/https-shini/financas-reactjs)
-  [![Licença](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](./LICENSE)
+[![Demonstração](https://img.shields.io/badge/Demonstração-financas.gcruz.dev.br-4f46e5?style=for-the-badge)](https://financas.gcruz.dev.br)
+[![CI](https://img.shields.io/github/actions/workflow/status/https-shini/financas-reactjs/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/https-shini/financas-reactjs/actions/workflows/ci.yml)
+[![Licença MIT](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](LICENSE)
 
 </div>
 
-<div align="center">
-  <img src="./read-model/img/v2-dashboard-escuro.png" alt="Painel inicial no tema escuro" width="100%"/>
-</div>
+![Painel inicial no tema escuro: saldo em contas, resultado do mês, previsão, gráfico de receitas e despesas e gastos por categoria](docs/images/cover.webp)
+
+<p align="center">
+  <a href="https://financas.gcruz.dev.br"><strong>Acessar a aplicação</strong></a> ·
+  <a href="read-model/MODEL.md">Modelo de dados e regras</a> ·
+  <a href="read-model/STRUCTURE.md">Estrutura e decisões</a>
+</p>
 
 ---
 
 ## Sumário
 
-[Descrição](#descrição) · [Funcionalidades](#funcionalidades) · [Tecnologias](#tecnologias) · [Requisitos](#requisitos) · [Instalação e execução](#instalação-e-execução) · [Testes](#testes) · [Build](#build) · [Deploy](#deploy-vercel) · [Estrutura](#estrutura-do-projeto) · [Seus dados: backup e segurança](#seus-dados-backup-e-segurança) · [Limitações conhecidas](#limitações-conhecidas)
+- [Sobre o projeto](#sobre-o-projeto)
+- [Problema e proposta](#problema-e-proposta)
+- [Funcionalidades](#funcionalidades)
+- [Capturas de tela](#capturas-de-tela)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação e execução](#instalação-e-execução)
+- [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Testes e qualidade](#testes-e-qualidade)
+- [Build e deploy](#build-e-deploy)
+- [Exemplos de uso](#exemplos-de-uso)
+- [Seus dados: backup e segurança](#seus-dados-backup-e-segurança)
+- [Limitações conhecidas](#limitações-conhecidas)
+- [Licença](#licença)
 
-## Descrição
+## Sobre o projeto
 
-O **Finanças** é uma aplicação React para gestão financeira pessoal. Todos os números vêm dos seus lançamentos, com regras explícitas e testadas:
+O Finanças é uma aplicação React para gestão financeira pessoal em que todos os números vêm dos lançamentos do usuário, calculados por regras explícitas e testadas. Ela cobre o ciclo completo: registrar receitas e despesas, controlar contas e cartões de crédito, planejar orçamentos e metas, acompanhar vencimentos e projetar o saldo dos próximos meses.
 
-- valores guardados em **centavos inteiros** (sem erros de arredondamento de ponto flutuante);
+Os dados ficam somente no navegador (`localStorage`), validados por schema e protegidos por migrações versionadas, cópias de segurança automáticas e uma tela de recuperação para armazenamento corrompido. Nada é enviado a servidores.
+
+## Problema e proposta
+
+Planilhas e aplicativos financeiros costumam errar em detalhes que distorcem o saldo: arredondamento de ponto flutuante, transferências contadas como gasto, fatura do cartão somada duas vezes, recorrências duplicadas. O Finanças trata cada um desses casos com uma regra de domínio:
+
+- valores guardados em **centavos inteiros**;
 - **transferências** movem dinheiro entre contas sem contar como receita ou despesa;
-- lançamentos **pendentes** e futuros não entram no saldo realizado, mas entram nas projeções;
+- lançamentos **pendentes** e futuros ficam fora do saldo realizado, mas entram nas projeções;
 - o **pagamento de fatura** não duplica as compras já registradas no cartão;
 - **recorrências** nunca geram lançamentos duplicados, mesmo abrindo o app várias vezes.
 
-Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a servidores.
-
 ## Funcionalidades
 
-**Início (dashboard)** — saldo em contas (com detalhe por conta, dívida de cartões e patrimônio), resultado do mês comparado ao anterior, saldo previsto até o fim do mês, quanto pode gastar por dia, receitas × despesas dos últimos 6 meses, gastos por categoria, próximos vencimentos, últimas movimentações, orçamentos, insights e um guia inicial para quem ainda não tem dados.
+- **Painel inicial** — saldo em contas, resultado do mês comparado ao anterior, saldo previsto até o fim do mês, quanto pode gastar por dia, receitas × despesas dos últimos 6 meses, gastos por categoria, próximos vencimentos e insights.
+- **Movimentações** — cadastro, edição, duplicação e exclusão com desfazer; busca, filtros refletidos na URL, agrupamento por dia, seleção em lote e exportação do filtro em CSV, Excel, PDF e Word.
+- **Planejamento** — vencimentos a pagar e receber, orçamentos por categoria com alertas em 80% e 100%, metas com aportes, recorrências com detecção de assinaturas, cartões com faturas e um simulador de cenários.
+- **Relatórios** — mensal, anual com evolução do patrimônio, comparação entre períodos, projeção de 30/90 dias com alerta de saldo negativo e indicador de saúde financeira (0–100) com critérios explicados.
+- **Captura rápida** — tecla `Q`: escreva "Mercado 85,90 ontem" e confirme a prévia com tipo, valor, categoria, data e conta já interpretados.
+- **Importação e backup** — CSV, XLSX e OFX com mapeamento de colunas, prévia e detecção de duplicados; backup e restauração em JSON com prévia.
+- Lançamento com máscara `R$ 1.234,56`, tipo (despesa, receita, transferência), status pago/pendente, repetição e parcelamento.
+- Temas claro, escuro e automático, ocultação de valores, formato regional e moeda de exibição.
+- Atalhos de teclado: `N` nova transação, `Q` captura rápida, `/` busca, `←` `→` troca de mês e `Esc` fecha diálogos.
+- Acessibilidade: navegação por teclado, foco visível, tabelas alternativas para gráficos, contraste WCAG AA nos dois temas, `prefers-reduced-motion` e alvos de toque de 44 px.
 
-**Movimentações** — cadastro, edição, duplicação e exclusão com **desfazer**; busca por descrição, categoria ou observação; filtros por período, tipo, status, categoria e conta (refletidos na URL); ordenação; agrupamento por dia com subtotal; totais do filtro; seleção em lote (marcar como pago, recategorizar, excluir); exportação do filtro em CSV, Excel, PDF e Word.
+## Capturas de tela
 
-**Cadastro** — painel (bottom sheet no celular) com valor em destaque e máscara `R$ 1.234,56`, tipo (despesa, receita, transferência), descrição, categorias em grade, data com atalhos Hoje/Ontem, conta ou cartão, status pago/pendente, observações, **repetir** (recorrência) e **parcelar**. Enter salva, Esc fecha, "Salvar e criar outra". Edição de lançamento recorrente (só este ou toda a série) e de parcela (só esta ou todas).
+|                                            Movimentações                                            |                                        Captura rápida                                        |
+| :-------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
+| ![Lista de movimentações agrupada por dia com totais do período](docs/images/01-movimentacoes.webp) |  ![Diálogo de captura rápida com a prévia interpretada](docs/images/02-captura-rapida.webp)  |
+|                                           **Vencimentos**                                           |                                     **Relatório mensal**                                     |
+|         ![Contas a pagar e a receber nos próximos 30 dias](docs/images/03-vencimentos.webp)         | ![Resumo do mês com despesas e receitas por categoria](docs/images/04-relatorio-mensal.webp) |
+|                                        **Projeção de saldo**                                        |                                        **Tema claro**                                        |
+|                    ![Saldo projetado para 30 dias](docs/images/05-projecao.webp)                    |               ![Painel inicial no tema claro](docs/images/06-tema-claro.webp)                |
 
-**Planejamento**
-- **Vencimentos:** contas a pagar e a receber (7, 30, 90 dias ou 12 meses), atrasados e faturas, com marcação de pago/recebido.
-- **Orçamentos:** limite mensal por categoria, ajuste só para um mês, alertas em 80% e 100%, histórico de 6 meses.
-- **Metas:** valor, prazo, aportes e resgates (resgate limitado ao acumulado), progresso e aporte mensal sugerido.
-- **Recorrências:** diária, semanal, mensal ou anual, com intervalo e data final; edição da série; encerramento; **detecção de possíveis assinaturas**, criadas somente após sua confirmação.
-- **Cartões:** limite, dia de fechamento e de vencimento, faturas, compras parceladas, pagamento total, parcial ou agendado.
-- **Simulador:** corte de gastos por categoria, aumento de receita, aportes e antecipação de parcelas, com impacto em 6 e 12 meses — sem alterar os dados reais.
+<p align="center">
+  <img src="docs/images/mobile-inicio.webp" alt="Painel inicial no celular com navegação inferior" width="300">
+</p>
 
-**Relatórios** — mensal, anual (com evolução do patrimônio), comparação entre dois períodos, projeção de saldo em 30/90 dias com alerta de saldo negativo e **saúde financeira** (0–100, mostrando como cada critério foi calculado). Exportação em PDF e CSV.
-
-**Configurações** — tema claro, escuro ou automático; ocultar valores; formato regional e moeda de exibição; categorias (criar, editar, ícone, cor, palavras-chave, arquivar, excluir movendo os lançamentos); contas; **importação** CSV, XLSX e OFX com mapeamento de colunas, prévia, linhas inválidas e possíveis duplicados; exportação completa; **backup e restauração** com prévia; cópias de segurança automáticas.
-
-**Captura rápida** — tecla `Q` ou ícone ⚡: escreva "Mercado 85,90 ontem" e confirme a prévia.
-
-**Atalhos** — `N` nova transação · `Q` captura rápida · `/` buscar · `←` `→` trocar mês · `Esc` fechar diálogos.
-
-**Acessibilidade** — navegação por teclado, foco visível, rótulos associados aos campos, leitores de tela (tabelas alternativas para gráficos), contraste WCAG AA nos dois temas, `prefers-reduced-motion`, alvos de toque de 44 px.
-
-### Capturas
-
-| Tema claro | Celular | Cadastro no celular |
-| --- | --- | --- |
-| <img src="./read-model/img/v2-dashboard-claro.png" alt="Painel no tema claro" width="420"/> | <img src="./read-model/img/v2-mobile.png" alt="Painel no celular" width="200"/> | <img src="./read-model/img/v2-mobile-cadastro.png" alt="Cadastro no celular" width="200"/> |
-
-| Movimentações | Cartões e faturas | Saúde financeira |
-| --- | --- | --- |
-| <img src="./read-model/img/v2-movimentacoes.png" alt="Movimentações" width="300"/> | <img src="./read-model/img/v2-cartoes.png" alt="Cartões" width="300"/> | <img src="./read-model/img/v2-saude.png" alt="Saúde financeira" width="300"/> |
+> Capturas da demonstração publicada, com lançamentos de exemplo inseridos pela própria interface (onboarding e captura rápida).
 
 ## Tecnologias
 
-| Área | Tecnologia |
-| --- | --- |
-| Interface | React 18, Styled Components, Lucide (ícones), React Toastify |
-| Rotas | React Router 7 |
-| Gráficos | Recharts |
-| Regras e validação | JavaScript puro em `src/domain`, Zod (schema do armazenamento), date-fns |
-| Arquivos | SheetJS/xlsx 0.20.3 (CDN oficial), jsPDF + autotable, docx, file-saver — carregados sob demanda |
-| Fonte | Inter (self-hosted via `@fontsource-variable/inter`) |
-| Build e testes | Vite 7, Vitest 4, Testing Library, ESLint 9 |
+- **React 18** — interface com componentes funcionais, contextos e páginas carregadas sob demanda.
+- **React Router 7** — navegação e filtros refletidos na URL.
+- **Styled Components** — design system com tokens e temas.
+- **Recharts** — gráficos de barras, área e categorias.
+- **Zod** — schema e validação do armazenamento.
+- **date-fns** — cálculo de datas, recorrências e vencimentos.
+- **SheetJS (xlsx 0.20.3)** — importação e exportação de planilhas, a partir da CDN oficial.
+- **jsPDF** — relatórios em PDF, com `jspdf-autotable`.
+- **docx** — exportação para Word, com `file-saver`.
+- **Lucide** — ícones.
+- **React Toastify** — notificações.
+- **Inter** — fonte auto-hospedada via `@fontsource-variable/inter`.
+- **Vite 7** — desenvolvimento e build.
+- **Vitest 4** — testes, com **Testing Library** e jsdom.
+- **ESLint 9** — análise estática.
+- **Vercel** — hospedagem, com cabeçalhos de segurança em `vercel.json`.
 
-## Requisitos
+## Arquitetura
 
-- **Node.js 20.19+ ou 22.12+** (exigência do Vite 7; recomendado 22 LTS)
-- npm 10+
-- Acesso a `cdn.sheetjs.com` durante a instalação (o pacote `xlsx` é baixado da distribuição oficial da SheetJS, fixado no `package-lock.json` com hash de integridade)
+As regras de negócio são funções puras em `src/domain`, sem dependência de React. O estado é manipulado por operações puras (`store → store`) e persistido por um repositório que valida o schema, aplica migrações e guarda cópias de segurança antes de operações destrutivas.
+
+```text
+features/ (páginas e diálogos) ──► state/FinanceProvider ──► state/operations (store → store)
+          │                                │                         │
+          ▼                                ▼                         ▼
+components/ui (design system)      storage/repository ──►   domain/ (dinheiro, datas, saldos,
+                                   schema Zod, migrações,    cartões, parcelas, recorrências,
+                                   backup, localStorage      orçamentos, metas, projeção, insights)
+```
+
+<details>
+<summary><strong>Estrutura de diretórios</strong></summary>
+
+```text
+src/
+├── domain/      regras de negócio puras e testadas
+├── storage/     schema Zod, migrações, repositório (localStorage) e backup
+├── state/       FinanceProvider e operações puras
+├── components/  design system (ui/) e layout
+├── app/         shell (menu lateral, barra superior, navegação inferior), tema e contexto de UI
+├── features/    dashboard, transactions, planning, reports, settings, data, recovery
+├── hooks/       formatação, media queries e atalhos de teclado
+├── styles/      tokens de tema e estilos globais
+└── utils/       exportação (CSV com proteção, Excel, PDF, Word e relatórios)
+```
+
+</details>
+
+## Pré-requisitos
+
+- **Node.js 20.19+ ou 22.12+** (exigência do Vite 7; recomendado 22 LTS) e **npm 10+**.
+- Acesso a `cdn.sheetjs.com` durante a instalação: o pacote `xlsx` vem da distribuição oficial da SheetJS, fixado no `package-lock.json` com hash de integridade.
 
 ## Instalação e execução
 
 ```bash
 git clone https://github.com/https-shini/financas-reactjs.git
+```
+
+```bash
 cd financas-reactjs
+```
+
+```bash
 npm install
+```
+
+```bash
 npm run dev
 ```
 
-O app abre em `http://localhost:3000`.
+A aplicação abre em http://localhost:3000. O arquivo `.npmrc` ativa `legacy-peer-deps`, necessário para o npm 10 resolver as dependências opcionais do Vitest 4; ele não afeta o código entregue ao navegador.
 
-> O arquivo `.npmrc` ativa `legacy-peer-deps`: o npm 10 falha ao resolver as dependências opcionais do Vitest 4 sem essa opção. Ele não afeta o código entregue ao navegador.
+| Comando              | O que faz                                                       |
+| -------------------- | --------------------------------------------------------------- |
+| `npm run dev`        | Servidor de desenvolvimento                                     |
+| `npm test`           | Executa todos os testes uma vez                                 |
+| `npm run test:watch` | Testes em modo de observação                                    |
+| `npm run lint`       | ESLint                                                          |
+| `npm run build`      | Build de produção em `build/`                                   |
+| `npm run preview`    | Serve o build com os mesmos cabeçalhos de segurança da produção |
 
-| Comando | O que faz |
-| --- | --- |
-| `npm run dev` | Servidor de desenvolvimento |
-| `npm test` | Executa todos os testes uma vez |
-| `npm run test:watch` | Testes em modo observação |
-| `npm run lint` | ESLint |
-| `npm run build` | Build de produção em `build/` |
-| `npm run preview` | Serve o build com os **mesmos cabeçalhos de segurança da produção** (lidos do `vercel.json`) |
+## Variáveis de ambiente
 
-## Testes
+Nenhuma. A aplicação não usa backend, chaves de API nem variáveis de ambiente — toda a configuração do usuário fica em **Configurações** e no armazenamento do navegador.
+
+## Testes e qualidade
 
 ```bash
 npm test
 ```
 
-Os testes ficam ao lado do código (`*.test.js`/`*.test.jsx`) e cobrem: dinheiro e arredondamento, datas, transações, saldos e transferências, cartões e faturas, parcelas, recorrências, orçamentos, metas, projeções, insights, saúde financeira, simulador, captura rápida, importação (CSV/XLSX/OFX), proteção de CSV, migração de dados antigos, armazenamento corrompido ou cheio, backup e restauração, e fluxos da interface. Há também um teste de invariante com 2.000 operações aleatórias que confirma que nenhuma operação cria ou duplica dinheiro.
+Os testes ficam ao lado do código (`*.test.js` e `*.test.jsx`) e cobrem dinheiro e arredondamento, datas, saldos e transferências, cartões e faturas, parcelas, recorrências, orçamentos, metas, projeções, insights, saúde financeira, simulador, captura rápida, importação (CSV, XLSX e OFX), proteção contra injeção de fórmulas, migração de dados antigos, armazenamento corrompido ou cheio, backup e fluxos da interface. Há também um teste de invariante com 2.000 operações aleatórias que confirma que nenhuma operação cria ou duplica dinheiro.
 
-O CI (`.github/workflows/ci.yml`) roda lint, testes e build a cada push e pull request.
+Na última verificação: **157 testes em 17 arquivos, todos aprovados**, com lint e build sem erros. A CI (`.github/workflows/ci.yml`) roda lint, testes e build a cada push e pull request; o CodeQL faz a análise de segurança.
 
-## Build
+## Build e deploy
 
 ```bash
 npm run build
 ```
 
-Gera `build/` com páginas carregadas sob demanda; bibliotecas de exportação (xlsx, jsPDF, docx) só são baixadas quando usadas.
+Gera `build/` com páginas carregadas sob demanda; as bibliotecas de exportação (xlsx, jsPDF, docx) só são baixadas quando usadas.
 
-## Deploy (Vercel)
+A publicação é na **Vercel**, com toda a configuração no `vercel.json` (sem depender do painel):
 
-A configuração de produção está no `vercel.json` e **não depende das opções do painel**:
+| Item               | Valor                                                                                                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework          | `vite`                                                                                                                                                                             |
+| Instalação e build | `npm ci` e `npm run build`                                                                                                                                                         |
+| Saída              | `build`                                                                                                                                                                            |
+| Rotas              | todas reescritas para `/index.html` (SPA)                                                                                                                                          |
+| Cabeçalhos         | CSP restritiva (sem `unsafe-eval` e sem domínios externos), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` e cache imutável em `/assets` |
+| Redirecionamento   | `financas-reactjs.vercel.app` → `financas.gcruz.dev.br`                                                                                                                            |
 
-| Item | Valor |
-| --- | --- |
-| Framework | `vite` |
-| Instalação | `npm ci` |
-| Build | `npm run build` |
-| Saída | `build` |
-| Rotas | todas as rotas reescritas para `/index.html` (SPA) |
-| Cabeçalhos | CSP restritiva (sem `unsafe-eval`, sem domínios externos), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy`, cache imutável para `/assets` |
-| Redirecionamento | `financas-reactjs.vercel.app` → `financas.gcruz.dev.br` |
+Para validar localmente exatamente o que será publicado, rode `npm ci`, `npm run build` e `npm run preview`.
 
-Use Node 20.19+ ou 22+ no projeto da Vercel. Para validar localmente exatamente o que será publicado:
+## Exemplos de uso
 
-```bash
-npm ci
-```
-```bash
-npm run build
-```
-```bash
-npm run preview
+**Captura rápida** (tecla `Q`):
+
+```text
+Mercado 85,90 ontem              despesa de R$ 85,90 com a data de ontem
+recebi salário 5.000 dia 5       receita de R$ 5.000,00 no dia 5
+Uber 23,50 hoje                  despesa em Transporte, hoje
+Conta de luz 186,40 dia 20       data futura: entra como pendente
 ```
 
-## Estrutura do projeto
+**Importação de planilha** — em Configurações › Dados › Importar, envie um arquivo CSV, XLSX ou OFX, associe as colunas (apenas o valor é obrigatório; data, descrição, tipo, categoria, status e observações são opcionais), revise a prévia com linhas inválidas e possíveis duplicados e confirme.
 
-```
-src/
-├── domain/      regras de negócio puras e testadas (dinheiro, datas, saldos, cartões, parcelas,
-│                recorrências, orçamentos, metas, projeção, insights, importação, captura rápida)
-├── storage/     schema Zod, migrações, repositório (localStorage) e backup
-├── state/       FinanceProvider e operações puras (store → store)
-├── components/  design system (ui/) e layout
-├── app/         shell (menu lateral, barra superior, navegação inferior), tema, contexto de UI
-├── features/    dashboard, transactions, planning, reports, settings, data, recovery
-├── hooks/       formatação, media queries, atalhos de teclado
-├── styles/      tokens de tema e estilos globais
-└── utils/       exportação (CSV com proteção, Excel, PDF, Word, relatórios)
-```
-
-Detalhes: [modelo de dados, regras e migrações](./read-model/MODEL.md) · [estrutura e decisões](./read-model/STRUCTURE.md) · [como contribuir](./read-model/CONTRIBUTING.md).
+**Backup** — em Configurações › Dados › Baixar backup, o app gera um `.json` com transações, contas, cartões, categorias, orçamentos, metas, recorrências e preferências.
 
 ## Seus dados: backup e segurança
 
-- **Onde ficam:** apenas no navegador e no dispositivo em que você usa o app. Outro navegador, janela anônima ou limpeza dos dados do site **não** mostrará seus lançamentos.
-- **Faça backup regularmente:** Configurações › Dados › **Baixar backup** gera um arquivo `.json` com tudo (transações, contas, cartões, categorias, orçamentos, metas, recorrências e preferências). O app mostra a data do último backup.
-- **Restauração segura:** o arquivo é validado e você vê uma prévia antes de confirmar. Antes de substituir, o app guarda uma cópia dos dados atuais no navegador; se não houver espaço para essa cópia, nada é substituído.
-- **Cópias automáticas:** antes de migrações, restaurações, importações e de apagar tudo, o app guarda uma cópia local (as 3 mais recentes, em Configurações › Dados).
-- **Dados antigos:** dados da versão anterior são migrados automaticamente; a chave original é mantida intacta.
-- **Dados corrompidos:** abrem uma tela de recuperação com opções (baixar o conteúdo original, aproveitar os registros válidos, restaurar um backup ou começar do zero). Nada é apagado sem sua escolha.
-- **Armazenamento cheio:** o app avisa que a alteração não foi salva, mantém tudo na sessão e permite tentar de novo após liberar espaço.
-- **Privacidade:** nenhum dado é enviado a servidores. O arquivo de backup **não é criptografado** — guarde-o em local seguro.
-- **Exportações:** textos que poderiam ser interpretados como fórmulas em planilhas (`=`, `+`, `-`, `@`) são neutralizados nos arquivos CSV e XLSX.
+- **Onde ficam:** apenas no navegador e no dispositivo em uso; outro navegador, janela anônima ou limpeza dos dados do site não mostra os lançamentos.
+- **Restauração segura:** o backup é validado e exibido em prévia antes de substituir os dados; uma cópia dos dados atuais é guardada antes.
+- **Cópias automáticas:** antes de migrações, restaurações, importações e de apagar tudo (as 3 mais recentes, em Configurações › Dados).
+- **Dados antigos:** os dados da versão anterior são migrados automaticamente, mantendo a chave original intacta.
+- **Dados corrompidos:** abrem uma tela de recuperação; nada é apagado sem escolha do usuário.
+- **Armazenamento cheio:** o app avisa que a alteração não foi salva e permite tentar de novo.
+- **Exportações:** textos que poderiam ser interpretados como fórmulas (`=`, `+`, `-`, `@`) são neutralizados em CSV e XLSX.
+- **Privacidade:** nada é enviado a servidores; o arquivo de backup não é criptografado.
 
 ## Limitações conhecidas
 
-- **Sem sincronização** entre dispositivos e **sem backup automático na nuvem** (exigiriam servidor e contas de usuário).
-- **Sem login**: qualquer pessoa com acesso ao navegador vê os dados; use "Ocultar valores" em locais públicos.
-- Os dados ficam sem criptografia no armazenamento do navegador.
-- Capacidade limitada ao armazenamento do navegador (~5 MB, suficiente para dezenas de milhares de lançamentos); não há anexos de comprovantes.
-- O app precisa de conexão para ser aberto pela primeira vez em cada acesso (não é um PWA instalável); depois de carregado, funciona sem servidor.
-- Transferências não são importadas de planilhas/OFX (registre-as manualmente); a moeda escolhida altera só a exibição, sem conversão de valores.
-- Sem notificações fora do app e sem integração bancária automática (Open Finance).
+- Sem sincronização entre dispositivos e sem backup automático na nuvem.
+- Sem login: qualquer pessoa com acesso ao navegador vê os dados (use "Ocultar valores" em locais públicos).
+- Dados sem criptografia no armazenamento do navegador, com capacidade limitada a cerca de 5 MB.
+- Não é um PWA instalável: o primeiro acesso exige conexão.
+- Transferências não são importadas de planilhas/OFX; a moeda escolhida altera só a exibição, sem conversão.
+- Sem integração bancária automática (Open Finance), notificações fora do app ou anexos de comprovantes.
 - Os insights são calculados por regras; não há assistente com IA.
 
 ## Licença
 
-MIT — veja [LICENSE](./LICENSE).
+Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
 
-<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24&height=120&section=footer"/>
+Desenvolvido por [Guilherme Cruz](https://gcruz.dev.br).
