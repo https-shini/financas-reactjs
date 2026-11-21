@@ -53,7 +53,7 @@ const ChartBox = styled.div`
 /** Comparativo de receitas e despesas: resumo do mês de referência + evolução dos últimos 6 meses. */
 export function CashflowChart({ store, month, onPickMonth }) {
     const chart = useChartTheme();
-    const { money, hideBalances } = useFormat();
+    const { privateMoney: money, hideBalances } = useFormat();
     const series = monthlySeries(store, month, 6);
     const data = series.map((r) => ({
         ...r,

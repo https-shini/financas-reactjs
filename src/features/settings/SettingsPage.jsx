@@ -10,6 +10,7 @@ import {
     Card, CardHeader, Button, Menu, Modal, ModalBody, ModalFooter, Field, Input, Select, MoneyInput, SegmentedControl, Switch,
     CategoryIcon, Badge, Amount, Muted, RouteTabs, useConfirm, CATEGORY_ICON_COMPONENTS, Divider, FieldLabel } from "../../components/ui";
 import { PageHeader, Stack, Row } from "../../components/layout/Page";
+import { accountNameTaken, DUPLICATE_ACCOUNT_NAME } from "./accountName";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { ACCOUNT_TYPES, CATEGORY_COLORS, CATEGORY_ICONS, createEmptyStore, SCHEMA_VERSION } from "../../domain/defaults";
 import { accountBalance, categoryUsage } from "../../domain/selectors";
@@ -412,6 +413,7 @@ function CategoriesSection() {
 // ---------------- Contas ----------------
 
 export function AccountDialog({ open, onClose, account }) {
+    const { store } = useFinance();
     const { upsertAccount } = useFinanceActions();
     const [name, setName] = useState(account?.name ?? "");
     const [type, setType] = useState(account?.type ?? "checking");
@@ -419,7 +421,7 @@ export function AccountDialog({ open, onClose, account }) {
     const [balance, setBalance] = useState(Math.abs(account?.initialBalanceCents ?? 0));
     const [negative, setNegative] = useState((account?.initialBalanceCents ?? 0) < 0);
     const [submitted, setSubmitted] = useState(false);
-    const nameError = !cleanText(name) ? "Informe um nome." : undefined;
+    const nameError = !cleanText(name) ? "Informe um nome." : accountNameTaken(store.accounts, name, account?.id) ? DUPLICATE_ACCOUNT_NAME : undefined;
 
     const save = (e) => {
         e.preventDefault();

@@ -322,7 +322,8 @@ export function TransactionSheet({ open, onClose, mode = "create", tx, defaults 
                                     large
                                     value={form.amountCents}
                                     onChange={(c) => set({ amountCents: c })}
-                                    onBlur={() => touch("amountCents")}
+                                    // Campo vazio só acusa erro ao salvar: mostrar o erro ao sair do campo empurrava o seletor de tipo e o clique se perdia.
+                                    onBlur={() => form.amountCents > 0 && touch("amountCents")}
                                     aria-describedby={describedBy}
                                     aria-invalid={invalid || undefined}
                                 />
@@ -344,7 +345,7 @@ export function TransactionSheet({ open, onClose, mode = "create", tx, defaults 
                                     maxLength={DESCRIPTION_MAX}
                                     placeholder={form.type === "transfer" ? "Ex.: Guardar na poupança" : form.type === "income" ? "Ex.: Salário" : "Ex.: Mercado"}
                                     onChange={(e) => set({ description: e.target.value })}
-                                    onBlur={() => touch("description")}
+                                    onBlur={(e) => e.target.value.trim() && touch("description")}
                                     aria-describedby={describedBy}
                                     aria-invalid={invalid || undefined}
                                     autoComplete="off"
@@ -445,7 +446,7 @@ export function TransactionSheet({ open, onClose, mode = "create", tx, defaults 
                                 checked={form.status === "paid"}
                                 onChange={(v) => set({ status: v ? "paid" : "pending" })}
                                 label={form.type === "income" ? "Recebido" : form.type === "transfer" ? "Transferência realizada" : "Pago"}
-                                description={form.status === "pending" ? "Fica em Vencimentos e não entra no saldo realizado." : undefined}
+                                description={form.status === "pending" ? "Fica em Contas a pagar ou a receber e não entra no saldo realizado." : undefined}
                             />
                         )}
 

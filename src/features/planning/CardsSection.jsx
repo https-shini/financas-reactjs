@@ -9,6 +9,8 @@ import {
 import { Grid, Span, Row, Stack } from "../../components/layout/Page";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
+import { useFormat } from "../../hooks/useFormat";
+import { accountNameTaken, DUPLICATE_ACCOUNT_NAME } from "../settings/accountName";
 import { cardSummary, INVOICE_STATUS_LABEL, isCard } from "../../domain/cards";
 import { buildTransaction, cleanText } from "../../domain/transactions";
 import { formatDateBR, formatMonthLabel } from "../../domain/dates";
@@ -75,6 +77,7 @@ function CardDialog({ card, onClose }) {
     const set = (p) => setForm((f) => ({ ...f, ...p }));
     const errors = {};
     if (!cleanText(form.name)) errors.name = "Informe um nome.";
+    else if (accountNameTaken(store.accounts, form.name, card?.id)) errors.name = DUPLICATE_ACCOUNT_NAME;
     if (!(form.closingDay >= 1 && form.closingDay <= 31)) errors.closingDay = "Dia entre 1 e 31.";
     if (!(form.dueDay >= 1 && form.dueDay <= 31)) errors.dueDay = "Dia entre 1 e 31.";
 
@@ -161,11 +164,22 @@ function PayInvoiceDialog({ card, invoice, onClose }) {
     const { store, today } = useFinance();
     const { addTransactions } = useFinanceActions();
     const cash = store.accounts.filter((a) => !isCard(a) && !a.archived);
-    const [amount, setAmount] = useState(Math.max(0, invoice.remainingCents - invoice.scheduledCents));
-    const [date, setDate] = useState(today < invoice.dueDate ? today : today);
+    const { money } = useFormat();
+    const openCents = Math.max(0, invoice.remainingCents - invoice.scheduledCents);
+    const [amount, setAmount] = useState(openCents);
+    const [date, setDate] = useState(today);
     const [accountId, setAccountId] = useState(card.paymentAccountId && cash.some((a) => a.id === card.paymentAccountId) ? card.paymentAccountId : cash[0]?.id);
     const [scheduled, setScheduled] = useState(false);
-    const error = amount <= 0 ? "Informe o valor do pagamento." : !accountId ? "Escolha a conta." : undefined;
+    // O excedente não seria levado à fatura seguinte (o cartão ficaria com crédito e as próximas faturas
+    // continuariam cobradas integralmente), por isso o pagamento é limitado ao saldo em aberto.
+    const error =
+        amount <= 0
+            ? "Informe o valor do pagamento."
+            : amount > openCents
+              ? `O valor não pode passar do saldo em aberto da fatura (${money(openCents)}).`
+              : !accountId
+                ? "Escolha a conta."
+                : undefined;
     const [submitted, setSubmitted] = useState(false);
 
     const save = (e) => {

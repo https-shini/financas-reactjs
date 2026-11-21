@@ -195,7 +195,7 @@ export default function TransactionsPage() {
     const { store, today } = useFinance();
     const actions = useFinanceActions();
     const { month, setMonth, openTransaction, deleteWithUndo } = useUI();
-    const { money } = useFormat();
+    const { privateMoney } = useFormat();
     const [params, setParams] = useSearchParams();
     const [limit, setLimit] = useState(PAGE);
     const [filtersOpen, setFiltersOpen] = useState(false);
@@ -203,6 +203,10 @@ export default function TransactionsPage() {
     const [selected, setSelected] = useState(() => new Set());
     const searchRef = useRef(null);
     const [qDraft, setQDraft] = useState(params.get("q") ?? "");
+    const paramsRef = useRef(params);
+    paramsRef.current = params;
+    const qDraftRef = useRef(qDraft);
+    qDraftRef.current = qDraft;
 
     const { periodo, filters, sort } = readFilters(params, month, today);
     const cats = useMemo(() => indexById(store.categories), [store.categories]);
@@ -222,7 +226,7 @@ export default function TransactionsPage() {
     // Busca com pequeno atraso para não recalcular a cada tecla.
     useEffect(() => {
         const t = setTimeout(() => {
-            if ((params.get("q") ?? "") !== qDraft) update({ q: qDraft || null });
+            if ((paramsRef.current.get("q") ?? "") !== qDraft) update({ q: qDraft || null });
         }, 250);
         return () => clearTimeout(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,7 +238,11 @@ export default function TransactionsPage() {
     }, [params]);
 
     const update = (patch) => {
-        const next = new URLSearchParams(params);
+        // Sempre a partir dos parâmetros mais recentes: o temporizador da busca não pode desfazer outro filtro.
+        const current = paramsRef.current;
+        const next = new URLSearchParams(current);
+        // Busca ainda no atraso (250 ms): aplica junto, senão a troca de outro filtro descartaria o texto digitado.
+        if (!("q" in patch) && (current.get("q") ?? "") !== qDraftRef.current) patch = { ...patch, q: qDraftRef.current || null };
         for (const [k, v] of Object.entries(patch)) {
             if (v === null || v === undefined || v === "" || (Array.isArray(v) && !v.length)) next.delete(k);
             else next.set(k, Array.isArray(v) ? v.join(",") : v);
@@ -536,7 +544,7 @@ export default function TransactionsPage() {
                 }}
             />
             <Muted className="sr-only" aria-live="polite">
-                {result.length} resultado(s). {money(totals.netCents)} no período.
+                {result.length} resultado(s). {privateMoney(totals.netCents)} no período.
             </Muted>
         </>
     );

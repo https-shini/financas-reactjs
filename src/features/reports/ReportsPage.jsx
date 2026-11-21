@@ -298,7 +298,7 @@ function MonthlyReport() {
 
 function AnnualReport() {
     const { store, today } = useFinance();
-    const { money } = useFormat();
+    const { money, privateMoney } = useFormat();
     const chart = useChartProps();
     const first = firstMonthWithData(store);
     const years = useMemo(() => {
@@ -444,7 +444,7 @@ function AnnualReport() {
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </ChartBox>
-                            <p className="sr-only">{nw.map((r) => `${formatMonthLabel(r.month)}: ${money(r.balanceCents)}`).join("; ")}</p>
+                            <p className="sr-only">{nw.map((r) => `${formatMonthLabel(r.month)}: ${privateMoney(r.balanceCents)}`).join("; ")}</p>
                         </Card>
                         <Card aria-labelledby="y-cat">
                             <CardHeader id="y-cat" title="Categorias que mais consomem" />
@@ -616,7 +616,7 @@ function CompareReport() {
 
 function ProjectionReport() {
     const { store, today } = useFinance();
-    const { money } = useFormat();
+    const { privateMoney } = useFormat();
     const chart = useChartProps();
     const [days, setDays] = useState(30);
     const p = useMemo(() => projectCashBalance(store, today, days), [store, today, days]);
@@ -705,7 +705,7 @@ function ProjectionReport() {
                 ) : (
                     <Muted>Nenhum lançamento futuro. A projeção mantém o saldo atual.</Muted>
                 )}
-                <p className="sr-only">Saldo projetado em {days} dias: {money(p.endBalanceCents)}.</p>
+                <p className="sr-only">Saldo projetado em {days} dias: {privateMoney(p.endBalanceCents)}.</p>
             </Card>
         </Stack>
     );

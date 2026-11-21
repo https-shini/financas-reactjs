@@ -136,6 +136,17 @@ npm test
 
 Os testes ficam ao lado do código (`*.test.js`/`*.test.jsx`) e cobrem: dinheiro e arredondamento, datas, transações, saldos e transferências, cartões e faturas, parcelas, recorrências, orçamentos, metas, projeções, insights, saúde financeira, simulador, captura rápida, importação (CSV/XLSX/OFX), proteção de CSV, migração de dados antigos, armazenamento corrompido ou cheio, backup e restauração, e fluxos da interface, além de contraste WCAG AA dos tokens, marca (logo e favicon), navegação agrupada, breadcrumbs, seletor de tema e componentes do design system. Há também um teste de invariante com 2.000 operações aleatórias que confirma que nenhuma operação cria ou duplica dinheiro.
 
+### Bateria E2E (navegador real)
+
+`e2e/` tem 60 testes de ponta a ponta que operam o app no Chromium (Playwright) e conferem o resultado **no armazenamento** (`localStorage`) e **na tela**: CRUD de transações, contas, categorias, cartões, orçamentos, metas e recorrências; Contas a pagar/receber e indicadores do painel; importação, exportação, backup e restauração; dados corrompidos, armazenamento cheio e duas abas abertas; validações; navegação, atalhos e 6 larguras de tela.
+
+```bash
+npx vite --port 5173 &        # servidor de desenvolvimento
+node e2e/run.cjs              # toda a bateria (ONLY="Contas a pagar" filtra; MOTION=1 mantém animações)
+```
+
+Requer o Playwright com Chromium disponível no ambiente (não é dependência do projeto). O resultado fica em `e2e/out/results.json`; falhas geram capturas em `e2e/out/`. O relatório da última auditoria está em [`read-model/AUDITORIA-FUNCIONAL.md`](read-model/AUDITORIA-FUNCIONAL.md).
+
 O CI (`.github/workflows/ci.yml`) roda lint, testes e build a cada push e pull request.
 
 ## Build

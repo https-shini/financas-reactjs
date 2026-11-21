@@ -53,7 +53,7 @@ const EMPTY = { cuts: {}, budgets: {}, extraIncomeCents: 0, contributionCents: 0
 export function SimulatorSection() {
     const { store, today } = useFinance();
     const chart = useChartTheme();
-    const { money } = useFormat();
+    const { money, privateMoney } = useFormat();
     const baseline = useMemo(() => simulatorBaseline(store, today), [store, today]);
     const [scenario, setScenario] = useState(EMPTY);
     const result = useMemo(() => (baseline ? simulate(baseline, scenario, today) : null), [baseline, scenario, today]);
@@ -172,7 +172,7 @@ export function SimulatorSection() {
                         ]}
                     />
                     <p className="sr-only">
-                        Diferença em 6 meses: {money(diff6)}. Em 12 meses: {money(diff12)}.
+                        Diferença em 6 meses: {privateMoney(diff6)}. Em 12 meses: {privateMoney(diff12)}.
                     </p>
                     <Row $wrap $gap={2} style={{ marginTop: 12 }}>
                         <Badge $tone="info">Premissas</Badge>
