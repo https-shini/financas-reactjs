@@ -93,7 +93,7 @@ describe.each([
         expect(vars["--v-radius-lg"]).toBe("14px");
         expect(vars["--v-chart-income"]).toBe(c.chart.income);
         // Tokens de layout (estrutura do shell) também viram variáveis CSS.
-        expect(vars["--v-layout-header"]).toBe("60px");
+        expect(vars["--v-layout-header"]).toBe("64px");
         expect(vars["--v-layout-sidebar"]).toBe("248px");
         expect(vars["--v-layout-sidebar-footer-min-height"]).toBe(vars["--v-layout-header"]);
     });

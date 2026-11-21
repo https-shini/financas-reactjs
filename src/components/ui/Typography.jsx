@@ -85,16 +85,19 @@ export const FieldLabel = styled.p`
 
 /** Sobretítulo de página/seção: caixa alta na cor de destaque, precedido por um traço (ex.: "— Financeiro"). */
 export const Eyebrow = styled.p`
-    ${typeRole("overline")}
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-family: ${(p) => p.theme.fonts.mono};
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: ${(p) => p.theme.fontWeight.semibold};
+    letter-spacing: 0.14em;
+    line-height: 1;
     text-transform: uppercase;
-    color: ${(p) => p.theme.colors.primaryText};
+    color: ${(p) => p.theme.colors.accentText};
     &::before {
         content: "";
-        width: 18px;
+        width: 16px;
         height: 2px;
         border-radius: 2px;
         background: currentColor;

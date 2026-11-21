@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { navContext } from "../../app/navigation";
 import styled from "styled-components";
 import { Eyebrow } from "../ui/Typography";
 
@@ -13,15 +15,16 @@ const Head = styled.div`
         font-family: ${(p) => p.theme.fonts.display};
         font-size: ${(p) => p.theme.fontSize.xl};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
-        letter-spacing: ${(p) => p.theme.letterSpacing.tight};
+        letter-spacing: -0.03em;
         line-height: ${(p) => p.theme.lineHeight.tight};
+        margin-top: 10px;
         ${(p) => p.theme.media.tablet} {
-            font-size: 1.625rem;
+            font-size: 2rem;
         }
     }
     .desc {
         color: ${(p) => p.theme.colors.textSecondary};
-        margin-top: 4px;
+        margin-top: 8px;
         font-size: ${(p) => p.theme.fontSize.md};
         max-width: 72ch;
     }
@@ -54,14 +57,17 @@ const Head = styled.div`
 `;
 
 /**
- * Cabeçalho de página (padrão Nexus): título (h1), descrição e ações alinhadas à direita.
- * Sobretítulo opcional (`eyebrow`). A trilha (breadcrumbs) fica na barra superior. Atualiza o título da aba.
+ * Cabeçalho de página (padrão Lab Platform): sobretítulo com a seção do menu ("— FINANCEIRO"),
+ * título (h1), descrição e ações alinhadas à direita. `eyebrow` substitui o sobretítulo automático.
+ * A trilha (breadcrumbs) fica no header global. Atualiza o título da aba.
  */
 export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
+    const location = useLocation();
+    const section = navContext(location)?.group.label;
     useEffect(() => {
         document.title = `${docTitle ?? title} · Finanças`;
     }, [title, docTitle]);
-    const eyebrowText = eyebrow ?? null;
+    const eyebrowText = eyebrow ?? section ?? null;
     return (
         <Head>
             <div>

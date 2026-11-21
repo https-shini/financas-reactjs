@@ -14,7 +14,7 @@ import { MobileNav } from "./layout/MobileNav";
  * componente próprio em ./layout, com medidas vindas de theme.layout:
  *
  *   ┌──────────────┬───────────────────────────────────────┐
- *   │ SidebarHeader│ Header (Leading · Tools · Actions)    │  ← mesma altura: layout.header
+ *   │ Marca        │ Header (layout · breadcrumbs │ mês · busca · ícones) │  ← mesma altura: layout.header
  *   ├──────────────┼───────────────────────────────────────┤
  *   │ SidebarBody  │ Content (recuo = recuo do Header)     │
  *   │  (rola)      │                                       │
@@ -62,7 +62,6 @@ const Content = styled.main`
     flex: 1;
     width: 100%;
     max-width: ${(p) => p.theme.layout.content};
-    margin: 0 auto;
     padding: 20px ${(p) => p.theme.layout.contentPaddingInlineMobile} calc(${(p) => p.theme.layout.bottomNav} + 32px + env(safe-area-inset-bottom));
     overflow-x: clip;
     &:focus {
@@ -119,7 +118,12 @@ export function AppShell() {
             <SkipLink href="#conteudo">Pular para o conteúdo</SkipLink>
             <Sidebar collapsed={collapsed} onToggleCollapsed={() => updateSettings({ sidebarCollapsed: !collapsed })} />
             <Main>
-                <Header searchRef={searchRef} />
+                <Header
+                    searchRef={searchRef}
+                    collapsed={collapsed}
+                    onToggleSidebar={() => updateSettings({ sidebarCollapsed: !collapsed })}
+                    onOpenMenu={() => setMenuOpen(true)}
+                />
                 <Content id="conteudo" tabIndex={-1}>
                     <Outlet />
                 </Content>

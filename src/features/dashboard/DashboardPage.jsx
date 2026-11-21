@@ -5,7 +5,7 @@ import styled, { useTheme } from "styled-components";
 import { ResponsiveContainer, ComposedChart, Bar, Line } from "recharts";
 import {
     Wallet, TrendingUp, CalendarClock, Lightbulb, PieChart, ListOrdered, Target, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2,
-    Info, Plus, Upload, Sparkles, CreditCard, Flag, Receipt, ArrowUp, ArrowDown, ArrowLeftRight, PiggyBank,
+    Info, Plus, Upload, Sparkles, CreditCard, Flag, Receipt, Zap, ArrowUp, ArrowDown, ArrowLeftRight, PiggyBank,
 } from "lucide-react";
 import {
     Card, CardHeader, Amount, Delta, Progress, levelTone, EmptyState, Button, Badge, CategoryIcon, StatCard, NumericDisplay, Text, SegmentedControl,
@@ -1082,7 +1082,7 @@ function InsightsCard({ store, month, today }) {
 
 export default function DashboardPage() {
     const { store, today } = useFinance();
-    const { month, setMonth, openTransaction } = useUI();
+    const { month, setMonth, openTransaction, openQuickCapture } = useUI();
     const isEmpty = store.transactions.length === 0;
     const showOnboarding = !store.settings.onboardingDone && isEmpty;
 
@@ -1091,6 +1091,17 @@ export default function DashboardPage() {
             <PageHeader
                 title="Visão geral"
                 description={isEmpty ? "Bem-vindo ao Finanças. Comece registrando sua primeira transação." : `Resumo financeiro de ${formatMonthLabel(month).toLowerCase()}`}
+                actions={
+                    <>
+                        <Button icon={Zap} onClick={() => openQuickCapture()} title="Captura rápida (Q)">
+                            Captura rápida
+                        </Button>
+                        {/* No celular o botão "+" da navegação inferior já cria transações. */}
+                        <Button variant="primary" icon={Plus} onClick={() => openTransaction()} className="hide-mobile" title="Nova transação (N)">
+                            Nova transação
+                        </Button>
+                    </>
+                }
             />
             {showOnboarding && <OnboardingCard />}
             {!showOnboarding && isEmpty && (

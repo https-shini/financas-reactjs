@@ -111,4 +111,15 @@ describe("shell Finanças", () => {
         await waitFor(() => expect(JSON.parse(localStorage.getItem(STORE_KEY)).settings.sidebarCollapsed).toBe(true));
         expect(screen.getByRole("button", { name: "Expandir menu lateral", hidden: true })).toHaveAttribute("aria-expanded", "false");
     });
+    it("header: botão de layout recolhe a sidebar no desktop e abre o menu no celular", async () => {
+        const user = userEvent.setup();
+        render(<App />);
+        await screen.findByRole("heading", { level: 1, name: "Visão geral" });
+        const layout = screen.getByRole("button", { name: "Recolher barra lateral", hidden: true });
+        expect(layout).toHaveAttribute("aria-expanded", "true");
+        await user.click(layout);
+        await waitFor(() => expect(JSON.parse(localStorage.getItem(STORE_KEY)).settings.sidebarCollapsed).toBe(true));
+        await user.click(screen.getByRole("button", { name: "Abrir menu", hidden: true }));
+        expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    });
 });

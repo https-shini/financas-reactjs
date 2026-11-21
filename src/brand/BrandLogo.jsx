@@ -31,37 +31,47 @@ export function BrandMark({ size = 32, tone = "color", title, className, style }
     );
 }
 
+const tone = (p, dark, light, auto) => (p.$tone === "onDark" ? dark : p.$tone === "onLight" ? light : auto);
+
 const Lockup = styled.span`
     display: inline-flex;
     align-items: center;
-    gap: ${(p) => Math.round(p.$size * 0.34)}px;
+    gap: ${(p) => Math.round(p.$size * 0.36)}px;
     color: inherit;
     line-height: 1;
+    min-width: 0;
     .name {
         display: block;
         font-family: ${(p) => p.theme.fonts.sans};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         font-size: ${(p) => Math.round(p.$size * 0.5)}px;
-        letter-spacing: -0.01em;
-        color: ${(p) => (p.$tone === "onDark" ? BRAND_COLORS.mist : p.$tone === "onLight" ? BRAND_COLORS.ink : "currentColor")};
+        letter-spacing: -0.02em;
+        color: ${(p) => tone(p, BRAND_COLORS.mist, BRAND_COLORS.ink, "currentColor")};
+        white-space: nowrap;
     }
     .sig {
         display: block;
-        margin-top: ${(p) => Math.max(3, Math.round(p.$size * 0.13))}px;
+        margin-top: ${(p) => Math.max(3, Math.round(p.$size * 0.12))}px;
         font-family: ${(p) => p.theme.fonts.mono};
-        font-weight: ${(p) => p.theme.fontWeight.semibold};
-        font-size: ${(p) => Math.max(8, Math.round(p.$size * 0.28))}px;
-        letter-spacing: 0.12em;
-        color: ${(p) => (p.$tone === "onDark" ? BRAND_COLORS.muted : p.$tone === "onLight" ? "#5B5B63" : p.theme.colors.textMuted)};
+        font-weight: ${(p) => p.theme.fontWeight.medium};
+        font-size: ${(p) => Math.max(9, Math.round(p.$size * 0.31))}px;
+        color: ${(p) => tone(p, BRAND_COLORS.muted, "#5B5B63", p.theme.colors.textMuted)};
+        white-space: nowrap;
     }
-    .sig b {
-        font-weight: inherit;
-        color: ${(p) => (p.$tone === "onDark" ? BRAND_COLORS.gcruzIndigo : p.$tone === "onLight" ? BRAND_COLORS.gcruzIndigoLight : p.theme.colors.accentText)};
+    .sig .n {
+        color: ${(p) => tone(p, BRAND_COLORS.mist, BRAND_COLORS.ink, p.theme.colors.text)};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
+    }
+    .sig .b {
+        color: ${(p) => tone(p, BRAND_COLORS.gcruzBracket, BRAND_COLORS.gcruzBracketLight, p.theme.mode === "light" ? BRAND_COLORS.gcruzBracketLight : BRAND_COLORS.gcruzBracket)};
+    }
+    .sig .d {
+        color: ${(p) => tone(p, BRAND_COLORS.gcruzIndigo, BRAND_COLORS.gcruzIndigoLight, p.theme.colors.accentText)};
     }
 `;
 
 /**
- * Lockup horizontal: símbolo + "Finanças" + assinatura "BY GCRUZ.DEV".
+ * Lockup horizontal: símbolo + "Finanças" + assinatura institucional "by <gcruz.dev/>".
  * size: altura do símbolo em px. tone: "color" (texto herda a cor) | "onDark" | "onLight" | "mono".
  * compact: só o nome, sem assinatura.
  */
@@ -69,12 +79,14 @@ export function BrandLockup({ size = 32, tone = "color", compact = false, title 
     return (
         <Lockup $size={size} $tone={tone} className={className} role={title ? "img" : undefined} aria-label={title || undefined}>
             <BrandMark size={size} tone={tone === "mono" ? "mono" : "color"} />
-            <span aria-hidden="true">
+            <span aria-hidden="true" style={{ minWidth: 0 }}>
                 <span className="name">{PRODUCT_NAME}</span>
                 {!compact && (
                     <span className="sig">
-                        {SIGNATURE.prefix}
-                        <b>{SIGNATURE.suffix}</b>
+                        {SIGNATURE.by} <span className="b">{SIGNATURE.open}</span>
+                        <span className="n">{SIGNATURE.name}</span>
+                        <span className="d">{SIGNATURE.suffix}</span>
+                        <span className="b">{SIGNATURE.close}</span>
                     </span>
                 )}
             </span>

@@ -134,11 +134,32 @@ As fontes são self-hosted (CSP `font-src 'self'`), e o build nunca as embute co
 
 ## 9. Estrutura (Sidebar, Header e estados)
 
-Evoluída a partir da análise do Fluxer. Detalhes em [FLUXER-ANALYSIS.md](./FLUXER-ANALYSIS.md).
+Refeita do zero com base no **GCruz Lab Platform**, preservando a identidade do Finanças.
 
-- **Tokens de layout:** `theme.layout` (estrutura, controles e componentes); `--v-layout-*` em CSS.
-- **Estados de interação:** camadas `interactiveHover`, `interactiveSelected` e `interactivePressed`, aplicadas pelo padrão `interactiveItem` em `src/components/ui/interaction.js`.
-- **Componentes:** `Sidebar` (marca · navegação rolável · perfil e recolher), `Header` (contexto · ferramentas · ações) e `MobileNav`, em `src/app/layout/`.
+**Sidebar (248 px; 64 px recolhida)**
+
+- **Faixa da marca:** altura igual à do header (64 px), com a borda inferior contínua. Mostra o símbolo e "Finanças" com a assinatura `by <gcruz.dev/>`.
+- **Seções:** rótulos em caixa alta espaçada (Análise · Financeiro · Operações · Ajuda), com 20 px entre elas.
+- **Itens:** 40 px de altura e ícone de 18 px.
+- **Item ativo:** superfície própria, texto forte, ícone violeta e barra indicadora encostada na borda esquerda.
+- **Contador:** em pílula mono ("A pagar e receber").
+- **Rodapé:** cartão de perfil com borda (avatar "PL", "Perfil local", status do backup e ação de backup e dados) e a linha "Recolher" · `gcruz.dev ↗`.
+
+**Header (64 px)**
+
+- **Esquerda:** botão de layout com borda, que recolhe a sidebar no desktop e abre o menu no celular, seguido dos breadcrumbs `Finanças / página`.
+- **Direita:** mês de referência em pílula · busca (`Ctrl K`) │ ocultar valores · tema · notificações.
+- **Ações de página:** "Nova transação" e "Captura rápida" ficam no cabeçalho da Visão geral; "Nova" fica em Transações; no celular há o "+".
+
+**Cabeçalho de página:** sobretítulo `— SEÇÃO` em violeta, título de 32 px e ações à direita.
+
+**Conteúdo:** ocupa a largura útil (até 1680 px), com recuo de 32 a 64 px conforme a tela e um brilho de fundo sutil no tema escuro.
+
+**Tokens e componentes:**
+
+- `theme.layout` (`--v-layout-*`);
+- estados de interação: `interactiveItem` em `src/components/ui/interaction.js`;
+- componentes em `src/app/layout/`: `Sidebar`, `SidebarNav`, `SidebarUser`, `Header`, `MobileNav` e `responsive`.
 
 ## 10. Validação
 

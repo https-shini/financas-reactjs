@@ -98,3 +98,27 @@ Medido em 1280, 1440 e 1920 px, com a sidebar aberta e recolhida:
 - **Teclado:** a ordem de foco é pular para o conteúdo → marca → navegação → rodapé da sidebar → header, com anel de foco em todos os elementos.
 - **Testes:** contraste das camadas de interação, `--v-layout-*` e controle único de recolher (`aria-expanded`), além dos testes anteriores.
 - **Camadas financeiras:** nenhuma alteração em `src/domain`, `src/storage`, `src/state` ou `src/utils`.
+
+## 6. Atualização: Sidebar e Header refeitos com base no GCruz Lab Platform
+
+A pedido, Sidebar e Header foram refeitos do zero tomando como referência visual o GCruz Lab Platform. A arquitetura desta análise foi mantida:
+
+- tokens de layout e de interação;
+- componentes `Sidebar`, `Header` e `MobileNav`;
+- padrão `interactiveItem`.
+
+**Mudanças:**
+
+- **Faixa superior:** 64 px.
+- **Sidebar:**
+  - itens de 40 px, com barra indicadora encostada na borda da sidebar;
+  - rótulos de seção espaçados;
+  - cartão de perfil com borda e ação de backup;
+  - linha "Recolher" · `gcruz.dev ↗`;
+  - assinatura no formato `by <gcruz.dev/>`.
+- **Header:**
+  - botão de layout com borda e breadcrumbs `Finanças / página` à esquerda;
+  - mês, busca e ícones à direita;
+  - as ações de página saíram do header.
+- **Conteúdo:** usa a largura útil, alinhado logo após a sidebar, como na referência.
+- **Detalhes:** em `BRAND.md` › 9.

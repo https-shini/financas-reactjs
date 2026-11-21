@@ -73,7 +73,7 @@ export const darkTheme = {
         chartAxis: p.zinc[750],
         transfer: p.zinc[800],
         chart: { income: p.green[400], expense: p.red[400], primary: p.violet[400], accent: p.violet[400], neutral: "#6E6E76", area: "rgba(139, 107, 255, 0.16)" },
-        ambient: "none",
+        ambient: "radial-gradient(900px 420px at 30% -120px, rgba(139, 107, 255, 0.10), transparent 70%), radial-gradient(700px 500px at 100% 100%, rgba(96, 165, 250, 0.05), transparent 70%)",
     },
     shadows: {
         sm: "0 1px 2px rgba(0, 0, 0, 0.4)",
@@ -141,7 +141,7 @@ export const lightTheme = {
         chartAxis: p.zinc[500],
         transfer: p.zinc[600],
         chart: { income: p.green[500], expense: p.red[500], primary: p.violet[500], accent: p.violet[500], neutral: "#9999A1", area: "rgba(109, 76, 255, 0.12)" },
-        ambient: "none",
+        ambient: "radial-gradient(900px 420px at 30% -120px, rgba(109, 76, 255, 0.06), transparent 70%)",
     },
     shadows: {
         sm: "0 1px 2px rgba(15, 15, 17, 0.04), 0 1px 1px rgba(15, 15, 17, 0.03)",

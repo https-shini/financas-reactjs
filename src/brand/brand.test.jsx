@@ -13,12 +13,12 @@ describe("marca Finanças by GCruz.DEV", () => {
         wrap(<BrandLockup />);
         const img = screen.getByRole("img", { name: "Finanças by GCruz.DEV" });
         expect(img).toHaveTextContent(PRODUCT_NAME);
-        expect(img).toHaveTextContent(`${SIGNATURE.prefix}${SIGNATURE.suffix}`);
+        expect(img).toHaveTextContent(SIGNATURE.text);
     });
 
     it("lockup compacto omite a assinatura", () => {
         wrap(<BrandLockup compact title="Finanças" />);
-        expect(screen.getByRole("img", { name: "Finanças" })).not.toHaveTextContent("GCRUZ");
+        expect(screen.getByRole("img", { name: "Finanças" })).not.toHaveTextContent("gcruz");
     });
 
     it("símbolo sem título é decorativo (aria-hidden); com título é imagem", () => {

@@ -111,11 +111,12 @@ export const layout = {
     // Estrutura
     sidebar: "248px",
     sidebarCollapsed: "64px",
-    header: "60px",
-    topbar: "60px", // alias legado de `header`
+    header: "64px",
+    topbar: "64px", // alias legado de `header`
     bottomNav: "64px",
-    content: "1320px",
-    contentPaddingInline: space(8), // 32px (desktop) — também o recuo do Header
+    content: "1680px",
+    contentPaddingInline: "clamp(32px, 3.4vw, 64px)", // desktop: cresce com a tela, como na referência
+    headerPaddingInline: space(8), // 32px
     contentPaddingInlineTablet: space(6), // 24px
     contentPaddingInlineMobile: space(4), // 16px
     contentPaddingBlock: space(7), // 28px
@@ -124,17 +125,18 @@ export const layout = {
     controlIcon: "16px",
     touchTarget: "44px",
     // Sidebar
-    sidebarPaddingInline: space(2), // 8px
-    sidebarItemHeight: "34px",
+    sidebarPaddingInline: space(3), // 12px
+    sidebarItemHeight: "40px",
     sidebarItemGap: "2px",
-    sidebarItemPaddingInline: space(2.5), // 10px
+    sidebarItemPaddingInline: space(3), // 12px
     sidebarIcon: "18px",
-    sidebarSectionGap: space(2), // 8px entre seções (+ rótulo)
-    sidebarFooterMinHeight: "60px", // = header: as duas faixas fixas da sidebar têm a mesma altura
+    sidebarSectionLabelInset: space(3), // rótulos das seções alinhados ao texto dos itens
+    sidebarSectionGap: space(5), // 20px entre seções
+    sidebarFooterMinHeight: "64px", // = header: as duas faixas fixas da sidebar têm a mesma altura
     // Header
     headerGap: space(3), // 12px
     headerActionsGap: space(1), // 4px
-    headerSearchWidth: "320px",
+    headerSearchWidth: "300px",
 };
 
 export const zIndex = { sticky: 10, nav: 20, dropdown: 30, overlay: 50, toast: 60, tooltip: 70 };

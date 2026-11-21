@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Plus, Search, ChevronLeft, ChevronRight, Eye, EyeOff, Zap, CircleHelp } from "lucide-react";
-import { Button, IconButton, Breadcrumbs, focusRing, compactControl } from "../../components/ui";
+import { Search, ChevronLeft, ChevronRight, Eye, EyeOff, LayoutGrid, Menu as MenuIcon } from "lucide-react";
+import { IconButton, Breadcrumbs, focusRing, compactControl } from "../../components/ui";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../UIContext";
 import { addMonthsToKey, currentMonthKey, formatMonthLabel } from "../../domain/dates";
@@ -9,16 +9,14 @@ import { BrandMark } from "../../brand/BrandLogo";
 import { ThemeToggle } from "./ThemeToggle";
 import { Notifications } from "./Notifications";
 import { breadcrumbItems } from "../navigation";
-import { OnlyDesktop, OnlyBelowDesktop, HideMobile, OnlyWide, BelowWide } from "./responsive";
+import { OnlyDesktop, OnlyBelowDesktop, HideMobile } from "./responsive";
 
 /*
- * Header — três zonas, inspiradas na organização do cabeçalho do Fluxer
- * (contexto à esquerda, ferramentas ao centro, ações à direita):
- *   Leading:  onde estou (breadcrumbs no desktop; símbolo da marca abaixo de 1024 px).
- *   Tools:    o que estou vendo (mês de referência e busca global).
- *   Actions:  o que posso fazer (alternâncias, ajuda, notificações, tema e ação primária).
- * Altura = theme.layout.header (igual à faixa da marca na Sidebar). O recuo horizontal é o mesmo do
- * conteúdo, então os breadcrumbs ficam alinhados ao título da página.
+ * Header global, no padrão do GCruz Lab Platform:
+ *   esquerda — botão de layout (recolhe a sidebar no desktop; abre o menu abaixo de 1024 px) + breadcrumbs
+ *   direita  — mês de referência · busca (Ctrl K) │ ocultar valores · tema · notificações
+ * Altura = theme.layout.header (a borda inferior continua a da faixa da marca na sidebar).
+ * Ações de página ("Nova transação", "Captura rápida") ficam no cabeçalho de cada página.
  */
 
 const Root = styled.header`
@@ -30,95 +28,112 @@ const Root = styled.header`
     gap: ${(p) => p.theme.space(2)};
     height: ${(p) => p.theme.layout.header};
     padding-inline: ${(p) => p.theme.layout.contentPaddingInlineMobile};
-    background: ${(p) => p.theme.colors.bgSidebar};
+    background: ${(p) => p.theme.colors.bgGlass};
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     ${(p) => p.theme.media.tablet} {
         padding-inline: ${(p) => p.theme.layout.contentPaddingInlineTablet};
     }
     ${(p) => p.theme.media.desktop} {
-        gap: ${(p) => p.theme.layout.headerGap};
-        /* Mesmo recuo do conteúdo, inclusive quando ele é centralizado (área > layout.content). */
-        padding-inline: max(
-            ${(p) => p.theme.layout.contentPaddingInline},
-            calc((100% - ${(p) => p.theme.layout.content}) / 2 + ${(p) => p.theme.layout.contentPaddingInline})
-        );
+        gap: ${(p) => p.theme.space(3)};
+        padding-inline: ${(p) => p.theme.layout.headerPaddingInline};
     }
     @media (max-width: 374px) {
-        gap: 2px;
-        padding-inline: 6px;
+        gap: 4px;
+        padding-inline: 8px;
     }
 `;
 
-const Leading = styled.div`
+const Left = styled.div`
+    display: flex;
+    align-items: center;
+    gap: ${(p) => p.theme.space(3)};
+    min-width: 0;
+    flex: 1;
+`;
+
+const Right = styled.div`
     display: flex;
     align-items: center;
     gap: ${(p) => p.theme.space(2)};
+    flex-shrink: 0;
     min-width: 0;
-    flex-shrink: 1;
+    .divider {
+        width: 1px;
+        height: 22px;
+        margin-inline: ${(p) => p.theme.space(1)};
+        background: ${(p) => p.theme.colors.border};
+    }
+    .icons {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+    @media (max-width: 374px) {
+        gap: 2px;
+    }
 `;
 
 const Crumbs = styled.div`
-    display: none;
     min-width: 0;
+    overflow: hidden;
     white-space: nowrap;
-    ${(p) => p.theme.media.wide} {
-        display: block;
-    }
     ol {
-        font-size: 0.8125rem;
         flex-wrap: nowrap;
+        font-size: ${(p) => p.theme.fontSize.md};
     }
     [aria-current="page"] {
         font-weight: ${(p) => p.theme.fontWeight.semibold};
+        color: ${(p) => p.theme.colors.text};
     }
 `;
 
-const MobileBrand = styled(Link)`
+const BrandLink = styled(Link)`
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    border-radius: ${(p) => p.theme.radius.sm};
     flex-shrink: 0;
+    border-radius: ${(p) => p.theme.radius.sm};
     ${focusRing()}
-    @media (max-width: 349px) {
+    @media (max-width: 359px) {
         display: none;
     }
 `;
 
-const Tools = styled.div`
-    display: flex;
+/* Mês de referência: pílula com borda, como o indicador de status da referência. */
+const MonthPill = styled.div`
+    display: inline-flex;
     align-items: center;
-    gap: ${(p) => p.theme.layout.headerGap};
-    min-width: 0;
-    flex: 1;
-    ${(p) => p.theme.media.desktop} {
-        justify-content: flex-end;
-    }
-`;
-
-const MonthBox = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    min-width: 0;
-    padding: 1px;
+    ${compactControl}
+    padding: 0 2px;
     border-radius: ${(p) => p.theme.radius.md};
     border: 1px solid ${(p) => p.theme.colors.border};
     background: ${(p) => p.theme.colors.bgElevated};
-    h2 {
+    button {
+        width: 28px;
+        height: 28px;
+    }
+    .label {
+        min-width: 0;
+        padding-inline: 4px;
         font-family: ${(p) => p.theme.fonts.sans};
         font-size: 0.8125rem;
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         letter-spacing: 0;
-        min-width: 0;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         text-align: center;
         ${(p) => p.theme.media.tablet} {
-            min-width: 136px;
+            min-width: 128px;
         }
+    }
+    .today {
+        margin-inline: 2px 4px;
+        padding: 2px 6px;
+        border-radius: ${(p) => p.theme.radius.sm};
+        font-size: ${(p) => p.theme.fontSize.xs};
+        font-weight: ${(p) => p.theme.fontWeight.semibold};
+        color: ${(p) => p.theme.colors.accentText};
+        background: ${(p) => p.theme.colors.accentSoft};
+        ${focusRing()}
     }
     .short {
         display: none;
@@ -134,13 +149,16 @@ const MonthBox = styled.div`
         .short {
             display: inline;
         }
+        .label {
+            font-size: 0.75rem;
+        }
     }
 `;
 
 const SearchForm = styled.form`
     position: relative;
-    flex: 0 1 ${(p) => p.theme.layout.headerSearchWidth};
-    min-width: 160px;
+    width: ${(p) => p.theme.layout.headerSearchWidth};
+    min-width: 180px;
     svg {
         position: absolute;
         left: 11px;
@@ -152,18 +170,17 @@ const SearchForm = styled.form`
     input {
         width: 100%;
         ${compactControl}
-        padding: 0 64px 0 32px;
+        padding: 0 62px 0 34px;
         border-radius: ${(p) => p.theme.radius.md};
         border: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgSurface};
+        background: ${(p) => p.theme.colors.bgElevated};
         font-size: 0.8125rem;
-        transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
+        transition: border-color ${(p) => p.theme.motion.fast}, box-shadow ${(p) => p.theme.motion.fast};
         &:hover {
             border-color: ${(p) => p.theme.colors.borderStrong};
         }
         &:focus {
             outline: none;
-            background: ${(p) => p.theme.colors.bgElevated};
             border-color: ${(p) => p.theme.colors.brand};
             box-shadow: ${(p) => p.theme.shadows.focus};
         }
@@ -181,27 +198,15 @@ const SearchForm = styled.form`
         padding: 2px 6px;
         border-radius: ${(p) => p.theme.radius.xs};
         border: 1px solid ${(p) => p.theme.colors.border};
-        background: ${(p) => p.theme.colors.bgElevated};
+        background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.textMuted};
         pointer-events: none;
     }
-`;
-
-const Actions = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    margin-left: auto;
-    flex-shrink: 0;
-    ${(p) => p.theme.media.desktop} {
-        margin-left: 0;
-        gap: ${(p) => p.theme.layout.headerActionsGap};
+    ${(p) => p.theme.media.belowDesktop} {
+        display: none;
     }
-    .divider {
-        width: 1px;
-        height: 20px;
-        margin-inline: ${(p) => p.theme.space(1)};
-        background: ${(p) => p.theme.colors.border};
+    @media (max-width: 1180px) {
+        width: 220px;
     }
 `;
 
@@ -209,9 +214,9 @@ function MonthSwitcher() {
     const { month, setMonth } = useUI();
     const isCurrent = month === currentMonthKey();
     return (
-        <MonthBox>
+        <MonthPill role="group" aria-label="Mês de referência">
             <IconButton icon={ChevronLeft} label="Mês anterior" size="sm" onClick={() => setMonth(addMonthsToKey(month, -1))} />
-            <h2 aria-live="polite">
+            <h2 className="label" aria-live="polite" style={{ margin: 0 }}>
                 <span className="long">{formatMonthLabel(month)}</span>
                 <span className="short" aria-hidden="true">
                     {formatMonthLabel(month, "short")}
@@ -219,19 +224,21 @@ function MonthSwitcher() {
             </h2>
             <IconButton icon={ChevronRight} label="Próximo mês" size="sm" onClick={() => setMonth(addMonthsToKey(month, 1))} />
             {!isCurrent && (
-                <Button size="sm" variant="ghost" onClick={() => setMonth(currentMonthKey())}>
+                <button type="button" className="today" onClick={() => setMonth(currentMonthKey())}>
                     Hoje
-                </Button>
+                </button>
             )}
-        </MonthBox>
+        </MonthPill>
     );
 }
 
-/** Cabeçalho global. `searchRef` é exposto ao AppShell para os atalhos `/` e Ctrl+K. */
-export function Header({ searchRef }) {
+/**
+ * Cabeçalho global. `searchRef`: campo usado pelos atalhos `/` e Ctrl+K.
+ * `collapsed`/`onToggleSidebar`: botão de layout no desktop. `onOpenMenu`: abre o menu no celular.
+ */
+export function Header({ searchRef, collapsed, onToggleSidebar, onOpenMenu }) {
     const { store } = useFinance();
     const { updateSettings } = useFinanceActions();
-    const { openTransaction, openQuickCapture } = useUI();
     const navigate = useNavigate();
     const location = useLocation();
     const hide = store.settings.hideBalances;
@@ -245,60 +252,52 @@ export function Header({ searchRef }) {
 
     return (
         <Root>
-            <Leading>
+            <Left>
                 <OnlyDesktop>
+                    <IconButton
+                        icon={LayoutGrid}
+                        size="sm"
+                        bordered
+                        label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
+                        aria-expanded={!collapsed}
+                        onClick={onToggleSidebar}
+                    />
                     <Crumbs>
                         <Breadcrumbs items={breadcrumbItems(location)} />
                     </Crumbs>
                 </OnlyDesktop>
                 <OnlyBelowDesktop>
-                    <MobileBrand to="/" aria-label="Finanças — ir para a Visão geral">
+                    <IconButton icon={MenuIcon} size="sm" bordered label="Abrir menu" aria-haspopup="dialog" onClick={onOpenMenu} />
+                    <BrandLink to="/" aria-label="Finanças — ir para a Visão geral">
                         <BrandMark size={28} />
-                    </MobileBrand>
+                    </BrandLink>
                 </OnlyBelowDesktop>
-            </Leading>
+            </Left>
 
-            <Tools>
+            <Right>
                 <MonthSwitcher />
-                <OnlyDesktop>
-                    <SearchForm role="search" onSubmit={submitSearch}>
-                        <Search size={15} aria-hidden="true" />
-                        <label htmlFor="global-search" className="sr-only">
-                            Buscar transações
-                        </label>
-                        <input ref={searchRef} id="global-search" name="q" type="search" placeholder="Buscar transações" autoComplete="off" />
-                        <kbd aria-hidden="true">Ctrl K</kbd>
-                    </SearchForm>
-                </OnlyDesktop>
-            </Tools>
-
-            <Actions>
-                <OnlyBelowDesktop>
-                    {location.pathname !== "/movimentacoes" && <IconButton icon={Search} size="sm" label="Buscar transações" onClick={() => navigate("/movimentacoes?focus=busca")} />}
-                </OnlyBelowDesktop>
+                <SearchForm role="search" onSubmit={submitSearch}>
+                    <Search size={15} aria-hidden="true" />
+                    <label htmlFor="global-search" className="sr-only">
+                        Buscar transações
+                    </label>
+                    <input ref={searchRef} id="global-search" name="q" type="search" placeholder="Buscar transações" autoComplete="off" />
+                    <kbd aria-hidden="true">Ctrl K</kbd>
+                </SearchForm>
                 <HideMobile>
-                    <IconButton icon={hide ? EyeOff : Eye} size="sm" label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />
-                </HideMobile>
-                <IconButton icon={Zap} size="sm" label="Captura rápida (Q)" onClick={openQuickCapture} />
-                <HideMobile>
-                    <IconButton icon={CircleHelp} size="sm" label="Ajuda e atalhos" onClick={() => navigate("/configuracoes/sobre")} />
-                </HideMobile>
-                <Notifications />
-                <HideMobile>
-                    <ThemeToggle />
-                </HideMobile>
-                <OnlyDesktop>
                     <span className="divider" aria-hidden="true" />
-                    <OnlyWide>
-                        <Button variant="primary" size="sm" icon={Plus} onClick={() => openTransaction()} title="Nova transação (N)">
-                            Nova transação
-                        </Button>
-                    </OnlyWide>
-                    <BelowWide>
-                        <IconButton icon={Plus} size="sm" bordered label="Nova transação (N)" onClick={() => openTransaction()} />
-                    </BelowWide>
-                </OnlyDesktop>
-            </Actions>
+                </HideMobile>
+                <div className="icons">
+                    <OnlyBelowDesktop>
+                        {location.pathname !== "/movimentacoes" && <IconButton icon={Search} size="sm" label="Buscar transações" onClick={() => navigate("/movimentacoes?focus=busca")} />}
+                    </OnlyBelowDesktop>
+                    <HideMobile>
+                        <IconButton icon={hide ? EyeOff : Eye} size="sm" label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />
+                        <ThemeToggle />
+                    </HideMobile>
+                    <Notifications />
+                </div>
+            </Right>
         </Root>
     );
 }

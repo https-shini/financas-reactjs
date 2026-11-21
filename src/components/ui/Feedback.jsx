@@ -425,8 +425,8 @@ const Crumbs = styled.nav`
         color: ${(p) => p.theme.colors.textMuted};
     }
     li + li::before {
-        content: "›";
-        margin-right: 6px;
+        content: "/";
+        margin-right: 8px;
         color: ${(p) => p.theme.colors.textMuted};
     }
     a {

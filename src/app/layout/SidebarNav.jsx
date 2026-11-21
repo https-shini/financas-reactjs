@@ -1,9 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { NAV_GROUPS, activeNavId } from "../navigation";
-import { typeRole, interactiveItem } from "../../components/ui";
+import { interactiveItem } from "../../components/ui";
 import { useFinance } from "../../state/contexts";
 import { upcomingItems } from "../../domain/selectors";
+
+/*
+ * Navegação agrupada (sidebar do desktop e drawer do celular).
+ * Estrutura no padrão do GCruz Lab Platform: rótulo de seção em caixa alta espaçada,
+ * itens de 40 px, item ativo com superfície própria, ícone na cor de destaque e
+ * barra indicadora encostada na borda esquerda da sidebar.
+ */
 
 const Group = styled.div`
     display: grid;
@@ -14,38 +21,41 @@ const Group = styled.div`
 `;
 
 const GroupLabel = styled.p`
-    ${typeRole("overline")}
+    margin: 0 0 6px;
+    padding-inline: ${(p) => p.theme.layout.sidebarSectionLabelInset};
+    font-size: 0.65625rem;
+    font-weight: ${(p) => p.theme.fontWeight.semibold};
+    letter-spacing: 0.12em;
+    line-height: 1.6;
     text-transform: uppercase;
     color: ${(p) => p.theme.colors.textMuted};
-    padding: 12px 10px 6px;
     ${(p) =>
         p.$collapsed &&
         css`
-            padding: 10px 0 6px;
+            padding: 0;
+            margin-bottom: 8px;
             &::before {
                 content: "";
                 display: block;
                 height: 1px;
-                margin: 0 14px;
+                margin: 0 10px;
                 background: ${p.theme.colors.border};
             }
         `}
 `;
 
-// Item de navegação: dimensões vêm de theme.layout; cores e estados vêm do padrão `interactiveItem`.
 const ItemLink = styled(Link)`
     position: relative;
     display: flex;
     align-items: center;
-    gap: ${(p) => p.theme.space(2.5)};
+    gap: ${(p) => p.theme.space(3)};
     min-height: ${(p) => p.theme.layout.sidebarItemHeight};
     padding-inline: ${(p) => p.theme.layout.sidebarItemPaddingInline};
     border-radius: ${(p) => p.theme.radius.md};
     text-decoration: none;
+    font-size: ${(p) => p.theme.fontSize.md};
     font-weight: ${(p) => p.theme.fontWeight.medium};
-    font-size: 0.84375rem;
     white-space: nowrap;
-    overflow: hidden;
     ${interactiveItem}
     ${(p) =>
         p.$collapsed &&
@@ -59,28 +69,45 @@ const ItemLink = styled(Link)`
         height: ${(p) => p.theme.layout.sidebarIcon};
     }
     .label {
+        min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+    /* Barra indicadora do item ativo, encostada na borda esquerda da sidebar. */
+    &[aria-current="page"]::before {
+        content: "";
+        position: absolute;
+        left: calc(-1 * ${(p) => p.theme.layout.sidebarPaddingInline});
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: ${(p) => p.theme.colors.indicator};
     }
     .count {
         margin-left: auto;
         min-width: 20px;
-        padding: 1px 6px;
-        border-radius: ${(p) => p.theme.radius.full};
-        background: ${(p) => p.theme.colors.bgHover};
+        height: 20px;
+        padding: 0 6px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: ${(p) => p.theme.radius.sm};
+        border: 1px solid ${(p) => p.theme.colors.border};
+        background: ${(p) => p.theme.colors.bgSurface};
         color: ${(p) => p.theme.colors.textSecondary};
+        font-family: ${(p) => p.theme.fonts.mono};
         font-size: ${(p) => p.theme.fontSize.xs};
-        font-variant-numeric: tabular-nums;
-        text-align: center;
+        font-weight: ${(p) => p.theme.fontWeight.medium};
     }
     .count.alert {
+        border-color: transparent;
         background: ${(p) => p.theme.colors.expenseSoft};
         color: ${(p) => p.theme.colors.expense};
     }
     .dot {
         position: absolute;
-        top: 6px;
-        right: 9px;
+        top: 8px;
+        right: 10px;
         width: 7px;
         height: 7px;
         border-radius: 50%;
@@ -91,19 +118,20 @@ const ItemLink = styled(Link)`
     }
 `;
 
-/** Navegação agrupada da sidebar (e do drawer no celular). collapsed: só ícones, com rótulo acessível e dica. */
+/** Lista de navegação agrupada. collapsed: só ícones (com rótulo acessível e dica). */
 export function SidebarNav({ collapsed = false, onNavigate, label = "Navegação principal" }) {
     const location = useLocation();
     const active = activeNavId(location);
     const { store, today } = useFinance();
-    // Contador de "Contas a pagar e receber": atrasadas + próximos 7 dias (somente leitura).
+    // Contador de "A pagar e receber": atrasadas + próximos 7 dias (somente leitura).
     const bills = upcomingItems(store, today, 7);
     const counts = { bills: { n: bills.length, alert: bills.some((b) => b.overdue) } };
+    const idp = label === "Menu" ? "m" : "s";
     return (
         <nav aria-label={label}>
             {NAV_GROUPS.map((g) => (
-                <Group key={g.id} role="group" aria-labelledby={`nav-g-${g.id}-${label.length}`}>
-                    <GroupLabel id={`nav-g-${g.id}-${label.length}`} $collapsed={collapsed}>
+                <Group key={g.id} role="group" aria-labelledby={`nav-g-${idp}-${g.id}`}>
+                    <GroupLabel id={`nav-g-${idp}-${g.id}`} $collapsed={collapsed}>
                         <span className={collapsed ? "sr-only" : undefined}>{g.label}</span>
                     </GroupLabel>
                     {g.items.map((it) => {

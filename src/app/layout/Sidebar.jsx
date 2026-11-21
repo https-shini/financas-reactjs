@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { PanelLeftClose, PanelLeftOpen, ArrowUpRight } from "lucide-react";
-import { interactiveItem, focusRing } from "../../components/ui";
+import { focusRing } from "../../components/ui";
 import { BrandLockup, BrandMark } from "../../brand/BrandLogo";
 import { SidebarNav } from "./SidebarNav";
 import { SidebarUser } from "./SidebarUser";
@@ -9,11 +9,11 @@ import { SidebarUser } from "./SidebarUser";
 const GCRUZ_URL = "https://gcruz.dev.br";
 
 /*
- * Sidebar (desktop ≥ 1024 px) — três regiões, como no Fluxer:
- *   1. SidebarHeader: faixa fixa com a marca, mesma altura do Header (as bordas inferiores se alinham).
- *   2. SidebarBody:   única área com rolagem (navegação).
- *   3. SidebarFooter: faixa fixa com o perfil e o controle de recolher (fonte única desse controle).
- * Todas as medidas vêm de theme.layout.
+ * Sidebar do desktop (≥ 1024 px), no padrão do GCruz Lab Platform:
+ *   ┌ marca (altura = header, borda inferior contínua com o header)
+ *   ├ navegação por seções (única área com rolagem)
+ *   ├ cartão de perfil (borda)
+ *   └ linha de ações: "Recolher" à esquerda, link institucional à direita
  */
 
 const Root = styled.aside`
@@ -30,12 +30,12 @@ const Root = styled.aside`
     }
 `;
 
-const SidebarHeader = styled(Link)`
+const Brand = styled(Link)`
     display: flex;
     align-items: center;
     flex-shrink: 0;
     height: ${(p) => p.theme.layout.header};
-    padding-inline: ${(p) => (p.$collapsed ? "0" : p.theme.space(4.5))};
+    padding-inline: ${(p) => (p.$collapsed ? "0" : "18px")};
     justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
     border-bottom: 1px solid ${(p) => p.theme.colors.border};
     color: ${(p) => p.theme.colors.text};
@@ -43,89 +43,91 @@ const SidebarHeader = styled(Link)`
     ${focusRing(true)}
 `;
 
-const SidebarBody = styled.div`
+const Body = styled.div`
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: ${(p) => p.theme.space(1.5)} ${(p) => p.theme.layout.sidebarPaddingInline} ${(p) => p.theme.space(4)};
+    padding: 20px ${(p) => p.theme.layout.sidebarPaddingInline} 20px;
     scrollbar-width: thin;
 `;
 
-const SidebarFooter = styled.div`
+const Footer = styled.div`
     display: grid;
-    gap: ${(p) => p.theme.space(1)};
+    gap: 6px;
     flex-shrink: 0;
     min-height: ${(p) => p.theme.layout.sidebarFooterMinHeight};
-    padding: ${(p) => p.theme.layout.sidebarPaddingInline};
+    padding: ${(p) => p.theme.layout.sidebarPaddingInline} ${(p) => p.theme.layout.sidebarPaddingInline} 10px;
     border-top: 1px solid ${(p) => p.theme.colors.border};
 `;
 
-const FooterRow = styled.div`
+const Row = styled.div`
     display: flex;
     align-items: center;
     justify-content: ${(p) => (p.$collapsed ? "center" : "space-between")};
-    gap: ${(p) => p.theme.space(1)};
 `;
 
-const footerAction = css`
+const quiet = css`
     display: inline-flex;
     align-items: center;
-    gap: ${(p) => p.theme.space(1.5)};
-    height: 30px;
-    padding-inline: ${(p) => p.theme.space(2)};
+    gap: 6px;
+    height: 28px;
+    padding-inline: 6px;
     border-radius: ${(p) => p.theme.radius.sm};
     font-size: ${(p) => p.theme.fontSize.sm};
-    text-decoration: none;
-    ${interactiveItem}
-    color: ${(p) => p.theme.colors.textMuted};
     font-weight: ${(p) => p.theme.fontWeight.medium};
+    color: ${(p) => p.theme.colors.textMuted};
+    text-decoration: none;
+    transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
+    &:hover {
+        color: ${(p) => p.theme.colors.text};
+        background: ${(p) => p.theme.colors.interactiveHover};
+    }
+    ${focusRing()}
     ${(p) => p.theme.media.coarse} {
         height: ${(p) => p.theme.layout.touchTarget};
     }
 `;
 
-const FooterButton = styled.button`
-    ${footerAction}
+const QuietButton = styled.button`
+    ${quiet}
 `;
 
-const FooterLink = styled.a`
-    ${footerAction}
-    font-family: ${(p) => p.theme.fonts.mono};
-    font-size: ${(p) => p.theme.fontSize.xs};
+const QuietLink = styled.a`
+    ${quiet}
 `;
 
 /** Barra lateral do desktop. `collapsed`: só ícones (64 px). */
 export function Sidebar({ collapsed, onToggleCollapsed }) {
     return (
         <Root aria-label="Barra lateral">
-            <SidebarHeader to="/" $collapsed={collapsed} aria-label="Finanças by GCruz.DEV — ir para a Visão geral">
-                {collapsed ? <BrandMark size={28} /> : <BrandLockup size={28} title={null} />}
-            </SidebarHeader>
-            <SidebarBody>
+            <Brand to="/" $collapsed={collapsed} aria-label="Finanças by GCruz.DEV — ir para a Visão geral">
+                {collapsed ? <BrandMark size={30} /> : <BrandLockup size={32} title={null} />}
+            </Brand>
+            <Body>
                 <SidebarNav collapsed={collapsed} />
-            </SidebarBody>
-            <SidebarFooter>
+            </Body>
+            <Footer>
                 <SidebarUser collapsed={collapsed} />
-                <FooterRow $collapsed={collapsed}>
-                    <FooterButton
+                <Row $collapsed={collapsed}>
+                    <QuietButton
                         type="button"
                         onClick={onToggleCollapsed}
                         aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
                         aria-expanded={!collapsed}
                         title={collapsed ? "Expandir menu lateral" : undefined}
                     >
-                        {collapsed ? <PanelLeftOpen size={16} aria-hidden="true" /> : <PanelLeftClose size={16} aria-hidden="true" />}
+                        {collapsed ? <PanelLeftOpen size={15} aria-hidden="true" /> : <PanelLeftClose size={15} aria-hidden="true" />}
                         {!collapsed && "Recolher"}
-                    </FooterButton>
+                    </QuietButton>
                     {!collapsed && (
-                        <FooterLink href={GCRUZ_URL} target="_blank" rel="noopener noreferrer">
+                        <QuietLink href={GCRUZ_URL} target="_blank" rel="noopener noreferrer">
                             gcruz.dev <ArrowUpRight size={12} aria-hidden="true" />
                             <span className="sr-only">(abre em nova aba)</span>
-                        </FooterLink>
+                        </QuietLink>
                     )}
-                </FooterRow>
-            </SidebarFooter>
+                </Row>
+            </Footer>
         </Root>
     );
 }
