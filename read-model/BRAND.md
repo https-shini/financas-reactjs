@@ -40,12 +40,12 @@ A interface toma como base o modelo **Nexus Finanças**, um protótipo em HTML f
 | Seção | Itens (rota) |
 | --- | --- |
 | **Análise** | Visão geral (`/`), Relatórios (`/relatorios/*`) |
-| **Financeiro** | Transações, Contas e cartões (inclui Cartões e faturas), A pagar e receber (com contador de atrasadas e dos próximos 7 dias), Orçamentos, Metas financeiras |
+| **Financeiro** | Transações, Contas e cartões (inclui Cartões e faturas), Contas a pagar (`/contas-a-pagar`) e Contas a receber (`/contas-a-receber`), cada uma com seu contador de atrasadas e dos próximos 7 dias, Orçamentos, Metas financeiras |
 | **Operações** | Recorrências, Simulador, Categorias, Importar (`/configuracoes/dados#importar`), Exportar (`#exportar`) |
 | **Ajuda** | Manual e atalhos (`/configuracoes/sobre`), Configurações |
 
 - A definição fica em [`src/app/navigation.js`](../src/app/navigation.js) (`NAV_GROUPS`, `activeNavId`, `navContext` e `breadcrumbItems`).
-- No celular, a barra inferior tem Visão geral, Transações, "+", Planejamento e Menu, e o Menu abre um drawer com as mesmas seções.
+- No celular, a barra inferior tem Visão geral, Transações, "+", Contas (ativo nas duas páginas de contas) e Menu, e o Menu abre um drawer com as mesmas seções.
 
 ## 3. Cores
 
@@ -142,7 +142,7 @@ Refeita do zero com base no **GCruz Lab Platform**, preservando a identidade do 
 - **Seções:** rótulos em caixa alta espaçada (Análise · Financeiro · Operações · Ajuda), com 20 px entre elas.
 - **Itens:** 40 px de altura e ícone de 18 px.
 - **Item ativo:** superfície própria, texto forte, ícone violeta e barra indicadora encostada na borda esquerda.
-- **Contador:** em pílula mono ("A pagar e receber").
+- **Contador:** em pílula mono (Contas a pagar e Contas a receber).
 - **Rodapé:** apenas o controle "Recolher" (sem perfil e sem o link do domínio).
 
 **Header (64 px)**
@@ -172,6 +172,32 @@ Logo após os KPIs, em largura total, o card **Calendário** organiza o mês de 
 - **Dados:** apenas leitura, com as mesmas regras do resumo mensal (transferências não entram), calculados em `src/features/dashboard/calendarModel.js`, sem alterar `src/domain`.
 
 `MonthPicker` (`src/components/ui/MonthPicker.jsx`) é o seletor de mês reutilizável; também aparece em Relatórios, Orçamentos e Transações (período "mês").
+
+## 9.2 Contas a pagar e Contas a receber
+
+Módulos independentes, cada um com rota, item de navegação, contador, indicadores, filtros, listagem e painel lateral próprios. O endereço antigo `/planejamento/vencimentos` redireciona para Contas a pagar.
+
+| | Contas a pagar | Contas a receber |
+| --- | --- | --- |
+| Conteúdo | Despesas pendentes fora do cartão, faturas de cartão em aberto, pagamentos de fatura agendados; pagas = despesas pagas fora do cartão + pagamentos de fatura | Receitas pendentes; recebidas = receitas recebidas |
+| Indicadores | Total a pagar · Em atraso · Vence em 7 dias · Pago no mês | Total a receber · Em atraso · Previsto em 7 dias · Recebido no mês |
+| Filtros | Busca, categoria, tipo (contas ou faturas), horizonte (Em aberto) ou mês (Pagas) | Busca, origem, horizonte (Em aberto) ou mês (Recebidas) |
+| Ações | Pago, reabrir, editar, pagar fatura, nova conta a pagar | Recebido, reabrir, editar, nova conta a receber |
+| Painel lateral | Próximo vencimento + compromissos por categoria | Próximo recebimento + a receber por origem |
+
+- **Dados:** `src/features/bills/billsModel.js`, somente leitura sobre `upcomingItems` e o status dos lançamentos, sem alterar `src/domain`. Compras no cartão aparecem pela fatura, para não contar duas vezes; transferências entre contas comuns não pertencem a nenhum módulo.
+- **Pagador / cliente:** o modelo de dados não tem um campo de pagador, então "origem" usa a categoria da receita (ex.: Salário, Freelance). Um campo próprio exigiria mudar o esquema em `src/domain`/`src/storage`, o que depende de autorização.
+
+## 9.3 Visão geral (painel de controle)
+
+Hierarquia, do mais ao menos importante:
+
+1. **Posição:** Saldo atual (com saldo previsto no fim do mês, dívida de cartões e detalhe por conta) · Total a pagar · Total a receber (ambos com o valor em atraso e o link para o módulo) · Resultado do mês (com variação e receitas/despesas).
+2. **Desempenho e alertas:** Receitas × despesas (resumo do mês com poupança + gráfico de 6 meses com o mês em destaque; clicar em um mês o seleciona) │ Próximos vencimentos (atrasados e próximos 15 dias, alternando A pagar / A receber).
+3. **Atividade:** Movimentações recentes (filtro Todas/Entradas/Saídas) │ Despesas por categoria.
+4. **Agenda:** Calendário do mês.
+
+Um único `MonthPicker`, no cabeçalho da página, controla resultado, gráfico, categorias e calendário. Saíram do painel e continuam nas páginas próprias: orçamentos, metas, faturas (agora em Contas a pagar), donut de distribuição (redundante com o gráfico), "pode gastar por dia" e insights (Relatórios). Os componentes ficam em `src/features/dashboard/widgets/`.
 
 ## 10. Validação
 

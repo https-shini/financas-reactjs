@@ -1,6 +1,6 @@
 // Navegação do Finanças (padrão Nexus): seções ANÁLISE · FINANCEIRO · OPERAÇÕES · AJUDA,
 // mapeadas para as páginas reais do app.
-import { House, BarChart3, ArrowLeftRight, WalletCards, CalendarClock, Target, Flag, Repeat, Calculator, Tags, Upload, Download, BookOpen, Settings } from "lucide-react";
+import { House, BarChart3, ArrowLeftRight, WalletCards, ArrowUpRight, ArrowDownLeft, Target, Flag, Repeat, Calculator, Tags, Upload, Download, BookOpen, Settings } from "lucide-react";
 
 export const NAV_GROUPS = [
     {
@@ -17,7 +17,8 @@ export const NAV_GROUPS = [
         items: [
             { id: "transactions", label: "Transações", to: "/movimentacoes", icon: ArrowLeftRight },
             { id: "accounts", label: "Contas e cartões", to: "/configuracoes/contas", icon: WalletCards },
-            { id: "bills", label: "A pagar e receber", to: "/planejamento/vencimentos", icon: CalendarClock, badge: "bills" },
+            { id: "payables", label: "Contas a pagar", to: "/contas-a-pagar", icon: ArrowUpRight, badge: "payables" },
+            { id: "receivables", label: "Contas a receber", to: "/contas-a-receber", icon: ArrowDownLeft, badge: "receivables" },
             { id: "budgets", label: "Orçamentos", to: "/planejamento/orcamentos", icon: Target },
             { id: "goals", label: "Metas financeiras", to: "/planejamento/metas", icon: Flag },
         ],
@@ -56,12 +57,14 @@ export function activeNavId({ pathname, hash = "" }) {
     if (pathname === "/") return "dashboard";
     if (pathname.startsWith("/relatorios")) return "reports";
     if (pathname.startsWith("/movimentacoes")) return "transactions";
+    if (pathname.startsWith("/contas-a-pagar") || pathname.startsWith("/planejamento/vencimentos")) return "payables";
+    if (pathname.startsWith("/contas-a-receber")) return "receivables";
     if (pathname.startsWith("/configuracoes/contas") || pathname.startsWith("/planejamento/cartoes")) return "accounts";
     if (pathname.startsWith("/planejamento/orcamentos")) return "budgets";
     if (pathname.startsWith("/planejamento/metas")) return "goals";
     if (pathname.startsWith("/planejamento/recorrencias")) return "recurrences";
     if (pathname.startsWith("/planejamento/simulador")) return "simulator";
-    if (pathname.startsWith("/planejamento")) return "bills";
+    if (pathname.startsWith("/planejamento")) return "budgets";
     if (pathname.startsWith("/configuracoes/categorias")) return "categories";
     if (pathname.startsWith("/configuracoes/dados")) return hash === "#importar" ? "import" : hash === "#exportar" ? "export" : "settings";
     if (pathname.startsWith("/configuracoes/sobre")) return "help";

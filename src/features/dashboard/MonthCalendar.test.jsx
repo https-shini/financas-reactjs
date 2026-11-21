@@ -63,12 +63,14 @@ describe("calendário na Visão geral", () => {
         expect(within(dialog).getByLabelText("Data")).toHaveValue(next);
     });
 
-    it("o seletor do calendário troca o mês de referência do painel", async () => {
+    it("o seletor de mês do painel troca o mês do calendário", async () => {
         const user = userEvent.setup();
         render(<App />);
         await screen.findByRole("heading", { level: 1, name: "Visão geral" });
         const card = screen.getByRole("region", { name: "Calendário" });
-        const picker = within(card).getByRole("group", { name: "Mês do calendário" });
+        // Um único seletor de mês na Visão geral (no cabeçalho da página) controla todos os painéis.
+        expect(within(card).queryByRole("group", { name: "Mês do calendário" })).toBeNull();
+        const picker = screen.getByRole("group", { name: "Mês de referência do painel" });
         await user.click(within(picker).getByRole("button", { name: "Próximo mês" }));
         const nextMonth = addMonthsToKey(currentMonthKey(), 1);
         expect(within(picker).getByText(formatMonthLabel(nextMonth))).toBeInTheDocument();

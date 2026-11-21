@@ -10,7 +10,7 @@ import { detectSubscriptions } from "../../domain/intelligence";
 import { FREQUENCIES } from "../../domain/defaults";
 import { addYearsISO, formatDateBR } from "../../domain/dates";
 import { isCard } from "../../domain/cards";
-import { ItemList } from "./BillsSection";
+import { ItemList } from "./ItemList";
 
 function RecurrenceDialog({ recurrence, preset, onClose }) {
     const { store, today } = useFinance();

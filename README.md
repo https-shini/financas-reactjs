@@ -42,14 +42,17 @@ Os dados ficam **somente no seu navegador** (localStorage). Nada é enviado a se
 
 ## Funcionalidades
 
-**Início (dashboard)** — saldo em contas (com detalhe por conta, dívida de cartões e patrimônio), resultado do mês comparado ao anterior, saldo previsto até o fim do mês, quanto pode gastar por dia, receitas × despesas dos últimos 6 meses, gastos por categoria, próximos vencimentos, últimas movimentações, orçamentos, insights e um guia inicial para quem ainda não tem dados.
+**Visão geral (painel de controle)** — saldo atual (com detalhe por conta, dívida de cartões e saldo previsto no fim do mês), total a pagar e total a receber (com valores em atraso), resultado do mês comparado ao anterior, receitas × despesas dos últimos 6 meses com o resumo do mês, próximos vencimentos (a pagar e a receber), movimentações recentes, despesas por categoria, calendário do mês e um guia inicial para quem ainda não tem dados. Um único seletor de mês controla o painel.
+
+**Contas a pagar** (`/contas-a-pagar`) — despesas pendentes, faturas de cartão em aberto e pagamentos de fatura agendados; indicadores (total a pagar, em atraso, vence em 7 dias, pago no mês); listas Em aberto (agrupada em Em atraso · Vence hoje · Próximos 7 dias · Mais adiante) e Pagas (por mês); busca e filtros por categoria, tipo (contas ou faturas) e horizonte; marcar como pago, reabrir, editar e pagar fatura; compromissos por categoria.
+
+**Contas a receber** (`/contas-a-receber`) — receitas pendentes e recebidas, com indicadores próprios (total a receber, em atraso, previsto em 7 dias, recebido no mês), as mesmas listas e filtros por origem, marcar como recebido e reabrir; valores a receber por origem.
 
 **Movimentações** — cadastro, edição, duplicação e exclusão com **desfazer**; busca por descrição, categoria ou observação; filtros por período, tipo, status, categoria e conta (refletidos na URL); ordenação; agrupamento por dia com subtotal; totais do filtro; seleção em lote (marcar como pago, recategorizar, excluir); exportação do filtro em CSV, Excel, PDF e Word.
 
 **Cadastro** — painel (bottom sheet no celular) com valor em destaque e máscara `R$ 1.234,56`, tipo (despesa, receita, transferência), descrição, categorias em grade, data com atalhos Hoje/Ontem, conta ou cartão, status pago/pendente, observações, **repetir** (recorrência) e **parcelar**. Enter salva, Esc fecha, "Salvar e criar outra". Edição de lançamento recorrente (só este ou toda a série) e de parcela (só esta ou todas).
 
 **Planejamento**
-- **Vencimentos:** contas a pagar e a receber (7, 30, 90 dias ou 12 meses), atrasados e faturas, com marcação de pago/recebido.
 - **Orçamentos:** limite mensal por categoria, ajuste só para um mês, alertas em 80% e 100%, histórico de 6 meses.
 - **Metas:** valor, prazo, aportes e resgates (resgate limitado ao acumulado), progresso e aporte mensal sugerido.
 - **Recorrências:** diária, semanal, mensal ou anual, com intervalo e data final; edição da série; encerramento; **detecção de possíveis assinaturas**, criadas somente após sua confirmação.

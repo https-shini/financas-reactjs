@@ -92,6 +92,7 @@ const StyledButton = styled.button`
     align-items: center;
     justify-content: center;
     gap: 8px;
+    text-decoration: none; /* também quando renderizado como link (as={Link}) */
     border: 1px solid transparent;
     border-radius: ${(p) => p.theme.radius.md};
     font-weight: ${(p) => p.theme.fontWeight.medium};

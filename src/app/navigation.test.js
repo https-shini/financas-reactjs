@@ -6,7 +6,7 @@ describe("navegação do Finanças (padrão Nexus)", () => {
         expect(NAV_GROUPS.map((g) => g.label)).toEqual(["Análise", "Financeiro", "Operações", "Ajuda"]);
         expect(NAV_GROUPS.map((g) => g.items.map((i) => i.label))).toEqual([
             ["Visão geral", "Relatórios"],
-            ["Transações", "Contas e cartões", "A pagar e receber", "Orçamentos", "Metas financeiras"],
+            ["Transações", "Contas e cartões", "Contas a pagar", "Contas a receber", "Orçamentos", "Metas financeiras"],
             ["Recorrências", "Simulador", "Categorias", "Importar", "Exportar"],
             ["Manual e atalhos", "Configurações"],
         ]);
@@ -23,10 +23,12 @@ describe("navegação do Finanças (padrão Nexus)", () => {
         [{ pathname: "/planejamento/cartoes" }, "accounts"],
         [{ pathname: "/configuracoes/categorias" }, "categories"],
         [{ pathname: "/planejamento/orcamentos" }, "budgets"],
-        [{ pathname: "/planejamento/vencimentos" }, "bills"],
+        [{ pathname: "/contas-a-pagar" }, "payables"],
+        [{ pathname: "/contas-a-receber" }, "receivables"],
+        [{ pathname: "/planejamento/vencimentos" }, "payables"],
         [{ pathname: "/planejamento/recorrencias" }, "recurrences"],
         [{ pathname: "/planejamento/simulador" }, "simulator"],
-        [{ pathname: "/planejamento" }, "bills"],
+        [{ pathname: "/planejamento" }, "budgets"],
         [{ pathname: "/configuracoes/dados", hash: "#importar" }, "import"],
         [{ pathname: "/configuracoes/dados", hash: "#exportar" }, "export"],
         [{ pathname: "/relatorios/anual" }, "reports"],

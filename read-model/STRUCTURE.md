@@ -30,7 +30,7 @@ src/
 ├── app/           AppShell (composição + atalhos), navigation.js (seções, item ativo, breadcrumbs),
 │                  layout/ (Sidebar, Header, MobileNav, SidebarNav, ThemeToggle,
 │                  Notifications, responsive), tema, UIContext, alertas
-├── features/      dashboard, transactions, planning, reports, settings, data, recovery, design-system
+├── features/      dashboard (widgets/), bills (Contas a pagar e a receber), transactions, planning, reports, settings, data, recovery, design-system
 ├── hooks/         useFormat, useMediaQuery, useHotkeys
 ├── styles/        estilos globais (theme.js reexporta src/design/themes.js)
 └── utils/         exportação (Excel, CSV, PDF, Word, relatórios)

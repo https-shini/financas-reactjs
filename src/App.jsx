@@ -17,6 +17,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 const DashboardPage = lazy(() => import("./features/dashboard/DashboardPage"));
 const TransactionsPage = lazy(() => import("./features/transactions/TransactionsPage"));
 const PlanningPage = lazy(() => import("./features/planning/PlanningPage"));
+const PayablesPage = lazy(() => import("./features/bills/PayablesPage"));
+const ReceivablesPage = lazy(() => import("./features/bills/ReceivablesPage"));
 const ReportsPage = lazy(() => import("./features/reports/ReportsPage"));
 const SettingsPage = lazy(() => import("./features/settings/SettingsPage"));
 const DesignSystemPage = lazy(() => import("./features/design-system/DesignSystemPage"));
@@ -56,6 +58,10 @@ function Root() {
                         <Route element={<AppShell />}>
                             <Route index element={page(DashboardPage)} />
                             <Route path="movimentacoes" element={page(TransactionsPage)} />
+                            <Route path="contas-a-pagar" element={page(PayablesPage)} />
+                            <Route path="contas-a-receber" element={page(ReceivablesPage)} />
+                            {/* Endereço antigo de "A pagar e receber" (favoritos e links salvos). */}
+                            <Route path="planejamento/vencimentos" element={<Navigate to="/contas-a-pagar" replace />} />
                             <Route path="planejamento/*" element={page(PlanningPage)} />
                             <Route path="relatorios/*" element={page(ReportsPage)} />
                             <Route path="configuracoes/*" element={page(SettingsPage)} />

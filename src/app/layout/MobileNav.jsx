@@ -1,6 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { LayoutDashboard, ArrowLeftRight, CalendarRange, Plus, Menu as MenuIcon, Eye, EyeOff } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Receipt, Plus, Menu as MenuIcon, Eye, EyeOff } from "lucide-react";
 import { Drawer, ModalBody, IconButton, focusRing } from "../../components/ui";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../UIContext";
@@ -67,7 +67,8 @@ const item = css`
 
 const Item = styled(NavLink)`
     ${item}
-    &.active {
+    &.active,
+    &[data-active="true"] {
         color: ${(p) => p.theme.colors.interactiveSelectedText};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         svg {
@@ -129,6 +130,8 @@ export function MobileNav({ menuOpen, onMenuOpenChange }) {
     const { openTransaction } = useUI();
     const hide = store.settings.hideBalances;
     const close = () => onMenuOpenChange(false);
+    const { pathname } = useLocation();
+    const inBills = pathname.startsWith("/contas-a-");
     return (
         <>
             <Bar aria-label="Navegação rápida">
@@ -143,9 +146,10 @@ export function MobileNav({ menuOpen, onMenuOpenChange }) {
                 <Fab type="button" aria-label="Nova transação" onClick={() => openTransaction()}>
                     <Plus size={24} aria-hidden="true" />
                 </Fab>
-                <Item to="/planejamento">
-                    <CalendarRange size={21} aria-hidden="true" />
-                    Planejamento
+                {/* "Contas" reúne os dois módulos: fica ativo em Contas a pagar e em Contas a receber. */}
+                <Item to="/contas-a-pagar" data-active={inBills || undefined} aria-current={inBills ? "page" : undefined}>
+                    <Receipt size={21} aria-hidden="true" />
+                    Contas
                 </Item>
                 <ItemButton type="button" aria-haspopup="dialog" aria-expanded={menuOpen} onClick={() => onMenuOpenChange(true)}>
                     <MenuIcon size={21} aria-hidden="true" />

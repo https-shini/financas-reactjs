@@ -100,10 +100,18 @@ const Panel = styled.div`
         color: ${(p) => p.theme.colors.textSecondary};
         font-size: ${(p) => p.theme.fontSize.md};
     }
+    footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-top: 1px solid ${(p) => p.theme.colors.border};
+    }
+    footer a + a {
+        border-left: 1px solid ${(p) => p.theme.colors.border};
+    }
     footer a {
         display: block;
         padding: 10px 14px;
-        border-top: 1px solid ${(p) => p.theme.colors.border};
+        text-align: center;
         font-size: ${(p) => p.theme.fontSize.sm};
         font-weight: ${(p) => p.theme.fontWeight.semibold};
         color: ${(p) => p.theme.colors.primaryText};
@@ -160,7 +168,7 @@ export function Notifications() {
                         <ul>
                             {items.slice(0, 8).map((it) => (
                                 <li key={it.id}>
-                                    <Link to="/planejamento/vencimentos" onClick={() => setOpen(false)}>
+                                    <Link to={it.direction === "in" ? "/contas-a-receber" : "/contas-a-pagar"} onClick={() => setOpen(false)}>
                                         <CalendarClock size={16} className="ic" aria-hidden="true" />
                                         <span className="txt">
                                             <span className="desc">{it.description}</span>
@@ -179,8 +187,11 @@ export function Notifications() {
                         </p>
                     )}
                     <footer>
-                        <Link to="/planejamento/vencimentos" onClick={() => setOpen(false)}>
-                            Ver todos os vencimentos
+                        <Link to="/contas-a-pagar" onClick={() => setOpen(false)}>
+                            Contas a pagar
+                        </Link>
+                        <Link to="/contas-a-receber" onClick={() => setOpen(false)}>
+                            Contas a receber
                         </Link>
                     </footer>
                 </Panel>

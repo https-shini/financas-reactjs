@@ -16,8 +16,9 @@ describe("shell Finanças", () => {
         for (const g of ["Análise", "Financeiro", "Operações", "Ajuda"]) expect(within(nav).getByText(g, { selector: "p > span" })).toBeInTheDocument();
         expect(within(nav).getByRole("link", { name: "Visão geral", hidden: true })).toHaveAttribute("aria-current", "page");
         expect(document.title).toBe("Visão geral · Finanças");
-        // Contador de "A pagar e receber" (nenhuma pendência no perfil novo => sem contador).
-        expect(within(nav).getByRole("link", { name: "A pagar e receber", hidden: true })).toHaveAttribute("href", "/planejamento/vencimentos");
+        // Módulos separados de Contas a pagar e Contas a receber (sem pendências no perfil novo => sem contador).
+        expect(within(nav).getByRole("link", { name: "Contas a pagar", hidden: true })).toHaveAttribute("href", "/contas-a-pagar");
+        expect(within(nav).getByRole("link", { name: "Contas a receber", hidden: true })).toHaveAttribute("href", "/contas-a-receber");
     });
 
     it("header: alternância de tema persiste a preferência (Escuro → Claro → Sistema)", async () => {
@@ -53,7 +54,8 @@ describe("shell Finanças", () => {
         await user.click(bell);
         const panel = screen.getByRole("region", { name: "Notificações" });
         expect(within(panel).getByText(/Nenhuma conta atrasada/)).toBeInTheDocument();
-        expect(within(panel).getByRole("link", { name: "Ver todos os vencimentos" })).toHaveAttribute("href", "/planejamento/vencimentos");
+        expect(within(panel).getByRole("link", { name: "Contas a pagar" })).toHaveAttribute("href", "/contas-a-pagar");
+        expect(within(panel).getByRole("link", { name: "Contas a receber" })).toHaveAttribute("href", "/contas-a-receber");
         await user.keyboard("{Escape}");
         expect(screen.queryByRole("region", { name: "Notificações" })).toBeNull();
         expect(bell).toHaveFocus();
@@ -78,11 +80,14 @@ describe("shell Finanças", () => {
         expect(within(crumbs).getByText("Metas financeiras")).toHaveAttribute("aria-current", "page");
     });
 
-    it("dashboard: KPIs do mês e transações recentes com filtro", async () => {
+    it("dashboard: indicadores principais, gráfico, vencimentos e movimentações recentes com filtro", async () => {
         const user = userEvent.setup();
         render(<App />);
         await screen.findByRole("heading", { level: 1, name: "Visão geral" });
-        for (const k of ["Entradas", "Saídas", "Taxa de poupança"]) expect(screen.getByRole("region", { name: k })).toBeInTheDocument();
+        for (const k of ["Saldo atual", "Total a pagar", "Total a receber", "Receitas × despesas", "Próximos vencimentos", "Movimentações recentes", "Despesas por categoria", "Calendário"])
+            expect(screen.getByRole("region", { name: new RegExp(`^${k}`) })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Abrir contas a pagar" })).toHaveAttribute("href", "/contas-a-pagar");
+        expect(screen.getByRole("link", { name: "Abrir contas a receber" })).toHaveAttribute("href", "/contas-a-receber");
         const filter = screen.getByRole("radiogroup", { name: "Filtrar transações recentes" });
         await user.click(within(filter).getByRole("radio", { name: "Saídas" }));
         expect(within(filter).getByRole("radio", { name: "Saídas" })).toHaveAttribute("aria-checked", "true");

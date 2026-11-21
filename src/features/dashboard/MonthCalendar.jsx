@@ -356,7 +356,7 @@ function useCompactMoney() {
  * Calendário mensal da Visão geral: organiza entradas, saídas, pendências e vencimentos de fatura por dia
  * e funciona como navegador do mês de referência do painel (substitui o seletor de mês que ficava no header).
  */
-export function MonthCalendar({ store, today, month, onMonthChange }) {
+export function MonthCalendar({ store, today, month, onMonthChange, showPicker = true }) {
     const { openTransaction } = useUI();
     const { money, hideBalances } = useFormat();
     const compact = useCompactMoney();
@@ -415,7 +415,7 @@ export function MonthCalendar({ store, today, month, onMonthChange }) {
                 id="calendar-title"
                 title="Calendário"
                 subtitle="Entradas, saídas e vencimentos dia a dia"
-                actions={<MonthPicker value={month} onChange={onMonthChange} label="Mês do calendário" />}
+                actions={showPicker ? <MonthPicker value={month} onChange={onMonthChange} label="Mês do calendário" /> : undefined}
             />
             <Layout>
                 <div>

@@ -4,6 +4,7 @@ import { NAV_GROUPS, activeNavId } from "../navigation";
 import { interactiveItem } from "../../components/ui";
 import { useFinance } from "../../state/contexts";
 import { upcomingItems } from "../../domain/selectors";
+import { isCard } from "../../domain/cards";
 
 /*
  * Navegação agrupada (sidebar do desktop e drawer do celular).
@@ -123,9 +124,13 @@ export function SidebarNav({ collapsed = false, onNavigate, label = "Navegação
     const location = useLocation();
     const active = activeNavId(location);
     const { store, today } = useFinance();
-    // Contador de "A pagar e receber": atrasadas + próximos 7 dias (somente leitura).
-    const bills = upcomingItems(store, today, 7);
-    const counts = { bills: { n: bills.length, alert: bills.some((b) => b.overdue) } };
+    // Contadores de Contas a pagar / a receber: atrasadas + próximos 7 dias (somente leitura).
+    const soon = upcomingItems(store, today, 7);
+    const count = (list) => ({ n: list.length, alert: list.some((b) => b.overdue) });
+    const counts = {
+        payables: count(soon.filter((b) => b.direction === "out" || (b.kind === "transaction" && b.direction === "transfer" && isCard(store.accounts.find((a) => a.id === b.tx.toAccountId))))),
+        receivables: count(soon.filter((b) => b.direction === "in")),
+    };
     const idp = label === "Menu" ? "m" : "s";
     return (
         <nav aria-label={label}>
