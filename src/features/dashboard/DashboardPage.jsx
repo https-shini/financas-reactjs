@@ -29,6 +29,7 @@ import { cardSummary, isCard, INVOICE_STATUS_LABEL } from "../../domain/cards";
 import { formatDateBR, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
 import { ACCOUNT_TYPES } from "../../domain/defaults";
 import { OnboardingCard } from "./OnboardingCard";
+import { MonthCalendar } from "./MonthCalendar";
 
 // ---------------- estilos locais ----------------
 
@@ -1119,6 +1120,9 @@ export default function DashboardPage() {
             <Grid>
                 <Span $desktop={12}>
                     <KpiRow store={store} month={month} />
+                </Span>
+                <Span $desktop={12}>
+                    <MonthCalendar store={store} today={today} month={month} onMonthChange={setMonth} />
                 </Span>
                 <Span $desktop={8}>
                     <RecentCard store={store} today={today} />

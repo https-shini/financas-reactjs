@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import { ResponsiveContainer, BarChart, Bar, LineChart, Line, AreaChart, Area, ReferenceLine } from "recharts";
 import { CalendarDays, CalendarRange, GitCompare, TrendingUp, HeartPulse, Download, AlertTriangle, BarChart3 } from "lucide-react";
-import { Card, CardHeader, Button, Amount, Badge, EmptyState, Menu, RouteTabs, Select, Input, CategoryIcon, Progress, levelTone, Muted, Delta } from "../../components/ui";
+import { Card, CardHeader, Button, Amount, Badge, EmptyState, Menu, RouteTabs, Select, Input, CategoryIcon, Progress, levelTone, Muted, Delta, MonthPicker } from "../../components/ui";
 import { PageHeader, Grid, Span, Row, Stack } from "../../components/layout/Page";
 import { useFinance } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
@@ -14,7 +14,7 @@ import { categoryBreakdown, firstMonthWithData, monthComparison, monthlySeries, 
 import { budgetStatus } from "../../domain/budgets";
 import { projectCashBalance } from "../../domain/projection";
 import { healthScore } from "../../domain/intelligence";
-import { addMonthsToKey, currentMonthKey, formatDateBR, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
+import { addMonthsToKey, formatDateBR, formatMonthLabel, monthEnd, monthStart } from "../../domain/dates";
 import { formatMoney, percentOf, variation } from "../../domain/money";
 import { exportReportCSV, exportReportPDF } from "../../utils/exportReport";
 
@@ -189,7 +189,7 @@ function MonthlyReport() {
     if (!cur.count) {
         return (
             <Card>
-                <EmptyState icon={CalendarDays} title={`Sem lançamentos em ${formatMonthLabel(month).toLowerCase()}`} description="Use as setas no topo para escolher outro mês." />
+                <EmptyState icon={CalendarDays} title={`Sem lançamentos em ${formatMonthLabel(month).toLowerCase()}`} description="Use o seletor de mês acima para escolher outro mês." />
             </Card>
         );
     }
@@ -774,7 +774,7 @@ function HealthReport() {
 }
 
 export default function ReportsPage() {
-    const { month } = useUI();
+    const { month, setMonth } = useUI();
     const tabs = [
         { to: "/relatorios/mensal", label: "Mensal", icon: CalendarDays },
         { to: "/relatorios/anual", label: "Anual", icon: CalendarRange },
@@ -784,7 +784,7 @@ export default function ReportsPage() {
     ];
     return (
         <>
-            <PageHeader title="Relatórios" description={month === currentMonthKey() ? "Análises do seu histórico financeiro" : `Mês selecionado: ${formatMonthLabel(month)}`} />
+            <PageHeader title="Relatórios" description="Análises do seu histórico financeiro" meta={<MonthPicker value={month} onChange={setMonth} />} />
             <RouteTabs tabs={tabs} label="Tipos de relatório" />
             <Routes>
                 <Route index element={<Navigate to="mensal" replace />} />

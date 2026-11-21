@@ -1,19 +1,15 @@
 import { Link } from "react-router-dom";
-import styled, { css } from "styled-components";
-import { PanelLeftClose, PanelLeftOpen, ArrowUpRight } from "lucide-react";
+import styled from "styled-components";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { focusRing } from "../../components/ui";
 import { BrandLockup, BrandMark } from "../../brand/BrandLogo";
 import { SidebarNav } from "./SidebarNav";
-import { SidebarUser } from "./SidebarUser";
-
-const GCRUZ_URL = "https://gcruz.dev.br";
 
 /*
  * Sidebar do desktop (≥ 1024 px), no padrão do GCruz Lab Platform:
  *   ┌ marca (altura = header, borda inferior contínua com o header)
  *   ├ navegação por seções (única área com rolagem)
- *   ├ cartão de perfil (borda)
- *   └ linha de ações: "Recolher" à esquerda, link institucional à direita
+ *   └ rodapé: apenas o controle "Recolher"
  */
 
 const Root = styled.aside`
@@ -53,31 +49,25 @@ const Body = styled.div`
 `;
 
 const Footer = styled.div`
-    display: grid;
-    gap: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: ${(p) => (p.$collapsed ? "center" : "flex-start")};
     flex-shrink: 0;
-    min-height: ${(p) => p.theme.layout.sidebarFooterMinHeight};
-    padding: ${(p) => p.theme.layout.sidebarPaddingInline} ${(p) => p.theme.layout.sidebarPaddingInline} 10px;
+    height: 52px;
+    padding-inline: ${(p) => p.theme.layout.sidebarPaddingInline};
     border-top: 1px solid ${(p) => p.theme.colors.border};
 `;
 
-const Row = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: ${(p) => (p.$collapsed ? "center" : "space-between")};
-`;
-
-const quiet = css`
+const CollapseButton = styled.button`
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    height: 28px;
-    padding-inline: 6px;
+    gap: 8px;
+    height: 32px;
+    padding-inline: ${(p) => p.theme.space(2)};
     border-radius: ${(p) => p.theme.radius.sm};
     font-size: ${(p) => p.theme.fontSize.sm};
     font-weight: ${(p) => p.theme.fontWeight.medium};
     color: ${(p) => p.theme.colors.textMuted};
-    text-decoration: none;
     transition: color ${(p) => p.theme.motion.fast}, background ${(p) => p.theme.motion.fast};
     &:hover {
         color: ${(p) => p.theme.colors.text};
@@ -87,14 +77,6 @@ const quiet = css`
     ${(p) => p.theme.media.coarse} {
         height: ${(p) => p.theme.layout.touchTarget};
     }
-`;
-
-const QuietButton = styled.button`
-    ${quiet}
-`;
-
-const QuietLink = styled.a`
-    ${quiet}
 `;
 
 /** Barra lateral do desktop. `collapsed`: só ícones (64 px). */
@@ -107,26 +89,17 @@ export function Sidebar({ collapsed, onToggleCollapsed }) {
             <Body>
                 <SidebarNav collapsed={collapsed} />
             </Body>
-            <Footer>
-                <SidebarUser collapsed={collapsed} />
-                <Row $collapsed={collapsed}>
-                    <QuietButton
-                        type="button"
-                        onClick={onToggleCollapsed}
-                        aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
-                        aria-expanded={!collapsed}
-                        title={collapsed ? "Expandir menu lateral" : undefined}
-                    >
-                        {collapsed ? <PanelLeftOpen size={15} aria-hidden="true" /> : <PanelLeftClose size={15} aria-hidden="true" />}
-                        {!collapsed && "Recolher"}
-                    </QuietButton>
-                    {!collapsed && (
-                        <QuietLink href={GCRUZ_URL} target="_blank" rel="noopener noreferrer">
-                            gcruz.dev <ArrowUpRight size={12} aria-hidden="true" />
-                            <span className="sr-only">(abre em nova aba)</span>
-                        </QuietLink>
-                    )}
-                </Row>
+            <Footer $collapsed={collapsed}>
+                <CollapseButton
+                    type="button"
+                    onClick={onToggleCollapsed}
+                    aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+                    aria-expanded={!collapsed}
+                    title={collapsed ? "Expandir menu lateral" : undefined}
+                >
+                    {collapsed ? <PanelLeftOpen size={15} aria-hidden="true" /> : <PanelLeftClose size={15} aria-hidden="true" />}
+                    {!collapsed && "Recolher"}
+                </CollapseButton>
             </Footer>
         </Root>
     );

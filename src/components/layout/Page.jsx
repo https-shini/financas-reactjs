@@ -28,6 +28,9 @@ const Head = styled.div`
         font-size: ${(p) => p.theme.fontSize.md};
         max-width: 72ch;
     }
+    .meta {
+        margin-top: 14px;
+    }
     .actions {
         display: flex;
         gap: 8px;
@@ -58,10 +61,10 @@ const Head = styled.div`
 
 /**
  * Cabeçalho de página (padrão Lab Platform): sobretítulo com a seção do menu ("— FINANCEIRO"),
- * título (h1), descrição e ações alinhadas à direita. `eyebrow` substitui o sobretítulo automático.
+ * título (h1), descrição, controles de contexto (`meta`, ex.: seletor de mês) e ações alinhadas à direita. `eyebrow` substitui o sobretítulo automático.
  * A trilha (breadcrumbs) fica no header global. Atualiza o título da aba.
  */
-export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
+export function PageHeader({ title, description, actions, docTitle, eyebrow, meta }) {
     const location = useLocation();
     const section = navContext(location)?.group.label;
     useEffect(() => {
@@ -74,6 +77,7 @@ export function PageHeader({ title, description, actions, docTitle, eyebrow }) {
                 {eyebrowText && <Eyebrow>{eyebrowText}</Eyebrow>}
                 <h1>{title}</h1>
                 {description && <p className="desc">{description}</p>}
+                {meta && <div className="meta">{meta}</div>}
             </div>
             {actions && <div className="actions">{actions}</div>}
         </Head>

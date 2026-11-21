@@ -1,10 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Search, ChevronLeft, ChevronRight, Eye, EyeOff, LayoutGrid, Menu as MenuIcon } from "lucide-react";
+import { Search, Eye, EyeOff, LayoutGrid, Menu as MenuIcon } from "lucide-react";
 import { IconButton, Breadcrumbs, focusRing, compactControl } from "../../components/ui";
 import { useFinance, useFinanceActions } from "../../state/contexts";
-import { useUI } from "../UIContext";
-import { addMonthsToKey, currentMonthKey, formatMonthLabel } from "../../domain/dates";
 import { BrandMark } from "../../brand/BrandLogo";
 import { ThemeToggle } from "./ThemeToggle";
 import { Notifications } from "./Notifications";
@@ -14,7 +12,8 @@ import { OnlyDesktop, OnlyBelowDesktop, HideMobile } from "./responsive";
 /*
  * Header global, no padrão do GCruz Lab Platform:
  *   esquerda — botão de layout (recolhe a sidebar no desktop; abre o menu abaixo de 1024 px) + breadcrumbs
- *   direita  — mês de referência · busca (Ctrl K) │ ocultar valores · tema · notificações
+ *   direita  — busca (Ctrl K) │ ocultar valores · tema · notificações
+ * O mês de referência não fica no header: cada página o controla junto do conteúdo (calendário na Visão geral).
  * Altura = theme.layout.header (a borda inferior continua a da faixa da marca na sidebar).
  * Ações de página ("Nova transação", "Captura rápida") ficam no cabeçalho de cada página.
  */
@@ -99,62 +98,6 @@ const BrandLink = styled(Link)`
     }
 `;
 
-/* Mês de referência: pílula com borda, como o indicador de status da referência. */
-const MonthPill = styled.div`
-    display: inline-flex;
-    align-items: center;
-    ${compactControl}
-    padding: 0 2px;
-    border-radius: ${(p) => p.theme.radius.md};
-    border: 1px solid ${(p) => p.theme.colors.border};
-    background: ${(p) => p.theme.colors.bgElevated};
-    button {
-        width: 28px;
-        height: 28px;
-    }
-    .label {
-        min-width: 0;
-        padding-inline: 4px;
-        font-family: ${(p) => p.theme.fonts.sans};
-        font-size: 0.8125rem;
-        font-weight: ${(p) => p.theme.fontWeight.semibold};
-        letter-spacing: 0;
-        white-space: nowrap;
-        text-align: center;
-        ${(p) => p.theme.media.tablet} {
-            min-width: 128px;
-        }
-    }
-    .today {
-        margin-inline: 2px 4px;
-        padding: 2px 6px;
-        border-radius: ${(p) => p.theme.radius.sm};
-        font-size: ${(p) => p.theme.fontSize.xs};
-        font-weight: ${(p) => p.theme.fontWeight.semibold};
-        color: ${(p) => p.theme.colors.accentText};
-        background: ${(p) => p.theme.colors.accentSoft};
-        ${focusRing()}
-    }
-    .short {
-        display: none;
-    }
-    ${(p) => p.theme.media.mobile} {
-        .long {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-        }
-        .short {
-            display: inline;
-        }
-        .label {
-            font-size: 0.75rem;
-        }
-    }
-`;
-
 const SearchForm = styled.form`
     position: relative;
     width: ${(p) => p.theme.layout.headerSearchWidth};
@@ -210,28 +153,6 @@ const SearchForm = styled.form`
     }
 `;
 
-function MonthSwitcher() {
-    const { month, setMonth } = useUI();
-    const isCurrent = month === currentMonthKey();
-    return (
-        <MonthPill role="group" aria-label="Mês de referência">
-            <IconButton icon={ChevronLeft} label="Mês anterior" size="sm" onClick={() => setMonth(addMonthsToKey(month, -1))} />
-            <h2 className="label" aria-live="polite" style={{ margin: 0 }}>
-                <span className="long">{formatMonthLabel(month)}</span>
-                <span className="short" aria-hidden="true">
-                    {formatMonthLabel(month, "short")}
-                </span>
-            </h2>
-            <IconButton icon={ChevronRight} label="Próximo mês" size="sm" onClick={() => setMonth(addMonthsToKey(month, 1))} />
-            {!isCurrent && (
-                <button type="button" className="today" onClick={() => setMonth(currentMonthKey())}>
-                    Hoje
-                </button>
-            )}
-        </MonthPill>
-    );
-}
-
 /**
  * Cabeçalho global. `searchRef`: campo usado pelos atalhos `/` e Ctrl+K.
  * `collapsed`/`onToggleSidebar`: botão de layout no desktop. `onOpenMenu`: abre o menu no celular.
@@ -275,7 +196,6 @@ export function Header({ searchRef, collapsed, onToggleSidebar, onOpenMenu }) {
             </Left>
 
             <Right>
-                <MonthSwitcher />
                 <SearchForm role="search" onSubmit={submitSearch}>
                     <Search size={15} aria-hidden="true" />
                     <label htmlFor="global-search" className="sr-only">

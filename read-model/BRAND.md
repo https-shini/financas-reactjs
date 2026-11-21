@@ -15,7 +15,7 @@ A interface toma como base o modelo **Nexus Finanças**, um protótipo em HTML f
 | Paleta | Neutros zinco e um único acento violeta | `palette.zinc` e `palette.violet` em [`tokens.js`](../src/design/tokens.js) |
 | Botão primário | Invertido: preto no claro, branco no escuro, com brilho interno | `Button variant="primary"` (`primary` / `onPrimary`) |
 | Tipografia | Geist (interface) e Geist Mono (números) | `@fontsource-variable/geist` e `geist-mono`, self-hosted |
-| Sidebar | 248 px; seções em caixa alta; item ativo em superfície secundária com ícone violeta; contadores; usuário no rodapé | [`SidebarNav`](../src/app/layout/SidebarNav.jsx) e [`SidebarUser`](../src/app/layout/SidebarUser.jsx) |
+| Sidebar | 248 px; seções em caixa alta; item ativo em superfície secundária com ícone violeta; contadores; rodapé apenas com "Recolher" | [`SidebarNav`](../src/app/layout/SidebarNav.jsx) e [`Sidebar`](../src/app/layout/Sidebar.jsx) |
 | Topbar | 60 px; breadcrumbs com chevron; busca com atalho; ajuda, notificações e tema | [`AppShell`](../src/app/AppShell.jsx), [`Notifications`](../src/app/layout/Notifications.jsx) e [`ThemeToggle`](../src/app/layout/ThemeToggle.jsx) |
 | Cabeçalho de página | Título de 26 px e subtítulo; ações à direita | [`PageHeader`](../src/components/layout/Page.jsx) |
 | KPIs | Rótulo, ícone em bloco suave, valor em mono com "R$" menor, variação e minigráfico | `StatCard` + [`Sparkline`](../src/components/charts/Sparkline.jsx) + `Amount big`; no dashboard: Entradas, Saídas, Saldo do mês e Taxa de poupança |
@@ -28,12 +28,12 @@ A interface toma como base o modelo **Nexus Finanças**, um protótipo em HTML f
 
 - nome e assinatura (`BY GCRUZ.DEV`);
 - todas as páginas e funcionalidades (cartões e faturas, orçamentos, metas, recorrências, simulador, relatórios, importação, exportação e backup);
-- seletor de mês global, captura rápida, ocultar valores, notificações de vencimentos e atalhos.
+- mês de referência global (agora escolhido no calendário da Visão geral e no `MonthPicker` de cada página), captura rápida, ocultar valores, notificações de vencimentos e atalhos.
 
 **Não adotado:**
 
 - elementos do modelo sem funcionalidade correspondente no app: "Conciliação bancária", "Dashboards" e o seletor de organização "Nexus Studio · Plano Pro";
-- usuário com e-mail: o app não tem contas de usuário, então o rodapé mostra o perfil local com o status do backup.
+- usuário com e-mail e perfil: o app não tem contas de usuário, e o perfil foi retirado da interface por enquanto (o backup continua em Importar/Exportar e Configurações › Dados).
 
 ## 2. Navegação
 
@@ -143,12 +143,12 @@ Refeita do zero com base no **GCruz Lab Platform**, preservando a identidade do 
 - **Itens:** 40 px de altura e ícone de 18 px.
 - **Item ativo:** superfície própria, texto forte, ícone violeta e barra indicadora encostada na borda esquerda.
 - **Contador:** em pílula mono ("A pagar e receber").
-- **Rodapé:** cartão de perfil com borda (avatar "PL", "Perfil local", status do backup e ação de backup e dados) e a linha "Recolher" · `gcruz.dev ↗`.
+- **Rodapé:** apenas o controle "Recolher" (sem perfil e sem o link do domínio).
 
 **Header (64 px)**
 
 - **Esquerda:** botão de layout com borda, que recolhe a sidebar no desktop e abre o menu no celular, seguido dos breadcrumbs `Finanças / página`.
-- **Direita:** mês de referência em pílula · busca (`Ctrl K`) │ ocultar valores · tema · notificações.
+- **Direita:** busca (`Ctrl K`) │ ocultar valores · tema · notificações. O header não mostra mais o mês: ele fica junto do conteúdo que filtra (calendário da Visão geral, Relatórios, Orçamentos e Transações).
 - **Ações de página:** "Nova transação" e "Captura rápida" ficam no cabeçalho da Visão geral; "Nova" fica em Transações; no celular há o "+".
 
 **Cabeçalho de página:** sobretítulo `— SEÇÃO` em violeta, título de 32 px e ações à direita.
@@ -159,7 +159,19 @@ Refeita do zero com base no **GCruz Lab Platform**, preservando a identidade do 
 
 - `theme.layout` (`--v-layout-*`);
 - estados de interação: `interactiveItem` em `src/components/ui/interaction.js`;
-- componentes em `src/app/layout/`: `Sidebar`, `SidebarNav`, `SidebarUser`, `Header`, `MobileNav` e `responsive`.
+- componentes em `src/app/layout/`: `Sidebar`, `SidebarNav`, `Header`, `MobileNav` e `responsive`.
+
+## 9.1 Calendário da Visão geral
+
+Logo após os KPIs, em largura total, o card **Calendário** organiza o mês de referência dia a dia e substitui o seletor de mês que ficava no header.
+
+- **Grade:** semanas de segunda a domingo; dias de outros meses tracejados e atenuados; fins de semana em superfície secundária; **hoje** com o número em círculo violeta; dia selecionado com borda e fundo violeta suave.
+- **Cada dia:** entradas (verde) e saídas (vermelho) em mono compacto (`R$ 268`, `R$ 2,3 mil`), ponto âmbar para pendente, vermelho para pendente em atraso e ícone de cartão para vencimento de fatura. Com "ocultar valores" ativo, os valores viram `••••`. No celular a célula fica quadrada, só com o número e pontos coloridos.
+- **Painel do dia:** título ("Hoje", "Amanhã" ou "Quinta-feira, 12 de novembro"), totais de entradas e saídas, faturas e lançamentos do dia (clique edita), "Adicionar neste dia" (abre a nova transação com a data preenchida) e "Ver no extrato" (Transações filtradas pelo dia).
+- **Navegação:** `MonthPicker` no card (‹ mês › e "Hoje"); clicar em um dia de outro mês muda o mês; setas, `Home` e `End` movem a seleção pelo teclado, com foco móvel (*roving tabindex*). Os atalhos globais `←` `→` continuam trocando o mês.
+- **Dados:** apenas leitura, com as mesmas regras do resumo mensal (transferências não entram), calculados em `src/features/dashboard/calendarModel.js`, sem alterar `src/domain`.
+
+`MonthPicker` (`src/components/ui/MonthPicker.jsx`) é o seletor de mês reutilizável; também aparece em Relatórios, Orçamentos e Transações (período "mês").
 
 ## 10. Validação
 

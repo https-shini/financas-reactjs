@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import { Search, SlidersHorizontal, Download, Plus, X, CheckSquare, ListOrdered, CheckCircle2, Trash2, Tag } from "lucide-react";
-import { Card, Button, Select, Input, Amount, Badge, EmptyState, Menu, Modal, ModalBody, ModalFooter, Checkbox, Muted } from "../../components/ui";
+import { Card, Button, Select, Input, Amount, Badge, EmptyState, Menu, Modal, ModalBody, ModalFooter, Checkbox, Muted, MonthPicker } from "../../components/ui";
 import { PageHeader, Row } from "../../components/layout/Page";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
@@ -194,7 +194,7 @@ function readFilters(params, month, today) {
 export default function TransactionsPage() {
     const { store, today } = useFinance();
     const actions = useFinanceActions();
-    const { month, openTransaction, deleteWithUndo } = useUI();
+    const { month, setMonth, openTransaction, deleteWithUndo } = useUI();
     const { money } = useFormat();
     const [params, setParams] = useSearchParams();
     const [limit, setLimit] = useState(PAGE);
@@ -339,7 +339,8 @@ export default function TransactionsPage() {
         <>
             <PageHeader
                 title="Transações"
-                description={periodLabel}
+                description={periodo === "mes" ? undefined : periodLabel}
+                meta={periodo === "mes" ? <MonthPicker value={month} onChange={setMonth} label="Mês das transações" /> : undefined}
                 actions={
                     <>
                         <Menu

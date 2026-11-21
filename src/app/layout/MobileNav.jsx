@@ -6,12 +6,11 @@ import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../UIContext";
 import { BrandLockup } from "../../brand/BrandLogo";
 import { SidebarNav } from "./SidebarNav";
-import { SidebarUser } from "./SidebarUser";
 import { ThemeToggle } from "./ThemeToggle";
 
 /*
  * Navegação abaixo de 1024 px (padrão do Fluxer: barra inferior fixa com destinos principais
- * + a navegação completa em um painel). O drawer reutiliza SidebarNav e SidebarUser: uma única
+ * + a navegação completa em um painel). O drawer reutiliza SidebarNav: uma única
  * fonte de itens, estados e contadores para desktop e celular.
  */
 
@@ -161,7 +160,6 @@ export function MobileNav({ menuOpen, onMenuOpenChange }) {
                         <ThemeToggle size="md" />
                         <IconButton icon={hide ? EyeOff : Eye} label={hide ? "Mostrar valores" : "Ocultar valores"} onClick={() => updateSettings({ hideBalances: !hide })} />
                     </div>
-                    <SidebarUser onNavigate={close} />
                 </DrawerBody>
             </Drawer>
         </>

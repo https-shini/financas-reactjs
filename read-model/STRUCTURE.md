@@ -28,7 +28,7 @@ src/
 │   ├── charts/    useChartTheme + ChartLegend (eixos, grade, tooltip BRL por tema)
 │   └── layout/    PageHeader (breadcrumbs automáticos) e grade responsiva
 ├── app/           AppShell (composição + atalhos), navigation.js (seções, item ativo, breadcrumbs),
-│                  layout/ (Sidebar, Header, MobileNav, SidebarNav, SidebarUser, ThemeToggle,
+│                  layout/ (Sidebar, Header, MobileNav, SidebarNav, ThemeToggle,
 │                  Notifications, responsive), tema, UIContext, alertas
 ├── features/      dashboard, transactions, planning, reports, settings, data, recovery, design-system
 ├── hooks/         useFormat, useMediaQuery, useHotkeys

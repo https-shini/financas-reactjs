@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import { Target, Plus, Pencil, Trash2, CalendarRange, ChevronDown, ChevronUp } from "lucide-react";
-import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Progress, levelTone, Menu, Modal, ModalBody, ModalFooter, Field, Select, MoneyInput, Muted, useConfirm } from "../../components/ui";
+import { Card, CardHeader, Button, Amount, Badge, CategoryIcon, EmptyState, Progress, levelTone, Menu, Modal, ModalBody, ModalFooter, Field, Select, MoneyInput, Muted, useConfirm, MonthPicker } from "../../components/ui";
 import { Row, Stack } from "../../components/layout/Page";
 import { useFinance, useFinanceActions } from "../../state/contexts";
 import { useUI } from "../../app/UIContext";
@@ -107,7 +107,7 @@ function BudgetDialog({ budget, month, onClose, mode }) {
 export function BudgetsSection() {
     const { store } = useFinance();
     const { deleteBudget } = useFinanceActions();
-    const { month } = useUI();
+    const { month, setMonth } = useUI();
     const confirm = useConfirm();
     const [dialog, setDialog] = useState(null);
     const [expanded, setExpanded] = useState(null);
@@ -121,9 +121,12 @@ export function BudgetsSection() {
                 title={`Orçamentos de ${formatMonthLabel(month).toLowerCase()}`}
                 subtitle="Gasto planejado × realizado por categoria (inclui pendentes). Alertas em 80% e 100%."
                 actions={
-                    <Button variant="primary" size="sm" icon={Plus} onClick={() => setDialog({ mode: "create" })}>
-                        Novo
-                    </Button>
+                    <>
+                        <MonthPicker value={month} onChange={setMonth} label="Mês dos orçamentos" />
+                        <Button variant="primary" size="sm" icon={Plus} onClick={() => setDialog({ mode: "create" })}>
+                            Novo
+                        </Button>
+                    </>
                 }
             />
             {rows.length === 0 ? (

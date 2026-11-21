@@ -122,3 +122,12 @@ A pedido, Sidebar e Header foram refeitos do zero tomando como referência visua
   - as ações de página saíram do header.
 - **Conteúdo:** usa a largura útil, alinhado logo após a sidebar, como na referência.
 - **Detalhes:** em `BRAND.md` › 9.
+
+## 7. Atualização: header sem mês, sem perfil e calendário na Visão geral
+
+- **Domínio:** a linha "Recolher" · `gcruz.dev ↗` do rodapé da sidebar virou apenas "Recolher".
+- **Perfil:** `SidebarUser` foi removido da sidebar e do drawer do celular, sem espaço reservado. O backup continua acessível pela navegação.
+- **Mês no header:** removido. O mês de referência continua global (`UIContext`), mas agora é escolhido junto do conteúdo: calendário da Visão geral, Relatórios, Orçamentos e Transações, com o novo `MonthPicker`.
+- **Calendário:** novo card em largura total logo após os KPIs da Visão geral. Detalhes em `BRAND.md` › 9.1.
+
+Com isso o header ficou com duas zonas: **onde estou** (layout e breadcrumbs) e **ferramentas globais** (busca, ocultar valores, tema e notificações).

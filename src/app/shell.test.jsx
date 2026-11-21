@@ -122,4 +122,19 @@ describe("shell Finanças", () => {
         await user.click(screen.getByRole("button", { name: "Abrir menu", hidden: true }));
         expect(await screen.findByRole("dialog")).toBeInTheDocument();
     });
+    it("header e sidebar sem domínio, perfil ou seletor de mês", async () => {
+        const user = userEvent.setup();
+        render(<App />);
+        await screen.findByRole("heading", { level: 1, name: "Visão geral" });
+        const header = screen.getByRole("button", { name: "Recolher barra lateral", hidden: true }).closest("header");
+        expect(within(header).queryByRole("button", { name: /mês/i, hidden: true })).toBeNull();
+        expect(within(header).queryByText(/de 20\d\d/)).toBeNull();
+        expect(screen.queryByText(/gcruz\.dev\.br/i)).toBeNull();
+        expect(document.querySelector('a[href*="gcruz.dev"]')).toBeNull();
+        expect(screen.queryByText(/Perfil local/i)).toBeNull();
+        // O drawer do celular também não traz perfil.
+        await user.click(screen.getByRole("button", { name: "Abrir menu", hidden: true }));
+        const drawer = await screen.findByRole("dialog");
+        expect(within(drawer).queryByText(/Perfil|Fazer backup/i)).toBeNull();
+    });
 });

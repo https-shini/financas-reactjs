@@ -14,7 +14,7 @@ import { MobileNav } from "./layout/MobileNav";
  * componente próprio em ./layout, com medidas vindas de theme.layout:
  *
  *   ┌──────────────┬───────────────────────────────────────┐
- *   │ Marca        │ Header (layout · breadcrumbs │ mês · busca · ícones) │  ← mesma altura: layout.header
+ *   │ Marca        │ Header (layout · breadcrumbs │ busca · ícones) │  ← mesma altura: layout.header
  *   ├──────────────┼───────────────────────────────────────┤
  *   │ SidebarBody  │ Content (recuo = recuo do Header)     │
  *   │  (rola)      │                                       │
